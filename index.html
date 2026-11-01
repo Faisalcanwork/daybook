@@ -31,6 +31,7 @@
 
 
 
+
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Fonts are embedded (Latin letters, numbers and punctuation), so the page needs no internet. Other scripts use the system font. */
@@ -987,14 +988,27 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
   const refreshAll = () => { renderFolders(); renderStats(); renderList(); };
   /* On a phone the editor slides over the list. Whatever is out of sight cannot be tabbed to or read out. */
   const phoneMQ = matchMedia('(max-width: 900px)');
-  function setView(v) {
+  function applyView(v) {
     el.app.dataset.view = v;
     const phone = phoneMQ.matches;
     for (const sel of ['.topbar', '.listpane', '.fab']) { const x = document.querySelector(sel); if (x) x.inert = phone && v === 'editor'; }
     el.editor.inert = phone && v === 'list';
   }
-  phoneMQ.addEventListener('change', () => setView(el.app.dataset.view));
-  setView(el.app.dataset.view);
+  /* On a phone, opening a note adds one browser-history step, so the phone's own Back button (or swipe) returns to the list instead of leaving the app. */
+  let fromBack = false;
+  function setView(v) {
+    applyView(v);
+    if (!phoneMQ.matches) return;
+    try {
+      if (v === 'editor' && history.state?.dk !== 'ed') history.pushState({ dk: 'ed' }, '');
+      else if (v === 'list' && history.state?.dk === 'ed' && !fromBack) history.back();
+    } catch { /* history not available: the on-screen Back button still works */ }
+  }
+  window.addEventListener('popstate', () => {
+    if (el.app.dataset.view === 'editor' && history.state?.dk !== 'ed') { fromBack = true; applyView('list'); fromBack = false; }
+  });
+  phoneMQ.addEventListener('change', () => applyView(el.app.dataset.view));
+  applyView(el.app.dataset.view);
 
   /* ================= Notes ================= */
   /* Call after any edit to a note's content or look. */
