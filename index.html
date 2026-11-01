@@ -20,6 +20,14 @@
 
 
 
+
+
+
+
+
+
+
+
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Fonts are embedded (Latin letters, numbers and punctuation), so the page needs no internet. Other scripts use the system font. */
@@ -67,9 +75,10 @@
 /* ---------- Base ---------- */
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html { height: 100%; font-size: clamp(16px, calc(21px - 0.6vw), 19px); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html { height: 100%; height: 100dvh; font-size: clamp(16px, calc(21px - 0.6vw), 19px); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
   height: 100%;
+  height: 100dvh;
   margin: 0;
   padding-block: max(6px, env(safe-area-inset-top, 0px)) max(6px, env(safe-area-inset-bottom, 0px));
   padding-left: max(8px, env(safe-area-inset-left, 0px));
@@ -341,7 +350,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 
 /* ---------- Phones and narrow windows: list first, then editor ---------- */
 @media (max-width: 900px) {
-  body { padding-block: max(4px, env(safe-area-inset-top, 0px)) max(4px, env(safe-area-inset-bottom, 0px)); padding-left: max(4px, env(safe-area-inset-left, 0px)); padding-right: max(4px, env(safe-area-inset-right, 0px)); }
+  body { padding-block: max(5px, env(safe-area-inset-top, 0px)) max(7px, env(safe-area-inset-bottom, 0px)); padding-left: max(6px, env(safe-area-inset-left, 0px)); padding-right: max(6px, env(safe-area-inset-right, 0px)); }
   .search, .title, .body .ql-editor, .folder input, .sync-box input { font-size: 16px; }
   .panes { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
   .listpane { border-right: 0; }
@@ -377,14 +386,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 <div class="app" id="app" data-view="list">
   <header class="topbar">
     <div class="brand">
-      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
-        <rect width="32" height="32" rx="8" style="fill:var(--blue)"/>
-        <g transform="translate(16 16.4) translate(-16 -16)">
-          <path d="M16 10.4c-2.7-2-6.2-2.4-9.5-1.7v14.3c3.3-.6 6.8-.2 9.5 1.8 2.7-2 6.2-2.4 9.5-1.8V8.7c-3.3-.7-6.8-.3-9.5 1.7z" fill="#fff"/>
-          <path d="M16 10.4V24.8" style="stroke:var(--blue)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-          <path d="M20.6 4.2h4.2v8l-2.1-1.7-2.1 1.7z" style="fill:var(--red)"/>
-        </g>
-      </svg>
+      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="10" fill="#12161e"/><defs><filter id="brs" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="1.6" stdDeviation="1.4" flood-color="#000" flood-opacity=".6"/></filter><filter id="brp" x="-60%" y="-60%" width="220%" height="220%"><feDropShadow dx="0.5" dy="1" stdDeviation=".7" flood-color="#000" flood-opacity=".75"/></filter></defs><g filter="url(#brs)"><rect x="8" y="8" width="16" height="19" rx="3.5" fill="#5B93FF" opacity=".55"/></g><g transform="rotate(5 16 17)" filter="url(#brs)"><rect x="8" y="7" width="16" height="19" rx="3.5" fill="#1f2737" stroke="#5B93FF" stroke-width="1.5"/><rect x="11.5" y="13" width="9" height="2.2" rx="1.1" fill="#5b6a88"/><rect x="11.5" y="17.5" width="5.4" height="2.2" rx="1.1" fill="#5b6a88"/><rect x="11.5" y="22" width="5.4" height="2.2" rx="1.1" fill="#5b6a88"/></g><g filter="url(#brp)"><circle cx="16.4" cy="6.6" r="1.6" fill="#5B93FF"/><circle cx="16.4" cy="6.6" r=".85" fill="#F2F5FA"/></g></svg>
       <span class="brand-name">Daybook</span>
     </div>
     <div class="topbar-right">
@@ -394,7 +396,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
       </button>
       <span class="today" id="today"></span>
       <button class="icon-btn" type="button" id="settingsBtn" aria-label="Settings" title="Settings">
-        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.4" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.00 2.00L12.17 2.00L12.35 2.01L12.52 2.03L12.70 2.05L12.87 2.09L13.03 2.16L13.20 2.25L13.35 2.40L13.48 2.63L13.60 2.95L13.68 3.36L13.75 3.78L13.81 4.16L13.89 4.43L13.98 4.63L14.08 4.76L14.19 4.85L14.30 4.92L14.42 4.98L14.53 5.04L14.65 5.09L14.77 5.14L14.89 5.19L15.01 5.24L15.13 5.28L15.25 5.33L15.38 5.37L15.51 5.40L15.65 5.41L15.82 5.39L16.02 5.32L16.27 5.17L16.57 4.96L16.92 4.70L17.27 4.48L17.58 4.32L17.83 4.26L18.05 4.26L18.23 4.31L18.39 4.38L18.54 4.48L18.68 4.58L18.82 4.69L18.95 4.81L19.07 4.93L19.19 5.05L19.31 5.18L19.42 5.32L19.52 5.46L19.62 5.61L19.69 5.77L19.74 5.95L19.74 6.17L19.68 6.42L19.52 6.73L19.30 7.08L19.04 7.43L18.83 7.73L18.68 7.98L18.61 8.18L18.59 8.35L18.60 8.49L18.63 8.62L18.67 8.75L18.72 8.87L18.76 8.99L18.81 9.11L18.86 9.23L18.91 9.35L18.96 9.47L19.02 9.58L19.08 9.70L19.15 9.81L19.24 9.92L19.37 10.02L19.57 10.11L19.84 10.19L20.22 10.25L20.64 10.32L21.05 10.40L21.37 10.52L21.60 10.65L21.75 10.80L21.84 10.97L21.91 11.13L21.95 11.30L21.97 11.48L21.99 11.65L22.00 11.83L22.00 12.00L22.00 12.17L21.99 12.35L21.97 12.52L21.95 12.70L21.91 12.87L21.84 13.03L21.75 13.20L21.60 13.35L21.37 13.48L21.05 13.60L20.64 13.68L20.22 13.75L19.84 13.81L19.57 13.89L19.37 13.98L19.24 14.08L19.15 14.19L19.08 14.30L19.02 14.42L18.96 14.53L18.91 14.65L18.86 14.77L18.81 14.89L18.76 15.01L18.72 15.13L18.67 15.25L18.63 15.38L18.60 15.51L18.59 15.65L18.61 15.82L18.68 16.02L18.83 16.27L19.04 16.57L19.30 16.92L19.52 17.27L19.68 17.58L19.74 17.83L19.74 18.05L19.69 18.23L19.62 18.39L19.52 18.54L19.42 18.68L19.31 18.82L19.19 18.95L19.07 19.07L18.95 19.19L18.82 19.31L18.68 19.42L18.54 19.52L18.39 19.62L18.23 19.69L18.05 19.74L17.83 19.74L17.58 19.68L17.27 19.52L16.92 19.30L16.57 19.04L16.27 18.83L16.02 18.68L15.82 18.61L15.65 18.59L15.51 18.60L15.38 18.63L15.25 18.67L15.13 18.72L15.01 18.76L14.89 18.81L14.77 18.86L14.65 18.91L14.53 18.96L14.42 19.02L14.30 19.08L14.19 19.15L14.08 19.24L13.98 19.37L13.89 19.57L13.81 19.84L13.75 20.22L13.68 20.64L13.60 21.05L13.48 21.37L13.35 21.60L13.20 21.75L13.03 21.84L12.87 21.91L12.70 21.95L12.52 21.97L12.35 21.99L12.17 22.00L12.00 22.00L11.83 22.00L11.65 21.99L11.48 21.97L11.30 21.95L11.13 21.91L10.97 21.84L10.80 21.75L10.65 21.60L10.52 21.37L10.40 21.05L10.32 20.64L10.25 20.22L10.19 19.84L10.11 19.57L10.02 19.37L9.92 19.24L9.81 19.15L9.70 19.08L9.58 19.02L9.47 18.96L9.35 18.91L9.23 18.86L9.11 18.81L8.99 18.76L8.87 18.72L8.75 18.67L8.62 18.63L8.49 18.60L8.35 18.59L8.18 18.61L7.98 18.68L7.73 18.83L7.43 19.04L7.08 19.30L6.73 19.52L6.42 19.68L6.17 19.74L5.95 19.74L5.77 19.69L5.61 19.62L5.46 19.52L5.32 19.42L5.18 19.31L5.05 19.19L4.93 19.07L4.81 18.95L4.69 18.82L4.58 18.68L4.48 18.54L4.38 18.39L4.31 18.23L4.26 18.05L4.26 17.83L4.32 17.58L4.48 17.27L4.70 16.92L4.96 16.57L5.17 16.27L5.32 16.02L5.39 15.82L5.41 15.65L5.40 15.51L5.37 15.38L5.33 15.25L5.28 15.13L5.24 15.01L5.19 14.89L5.14 14.77L5.09 14.65L5.04 14.53L4.98 14.42L4.92 14.30L4.85 14.19L4.76 14.08L4.63 13.98L4.43 13.89L4.16 13.81L3.78 13.75L3.36 13.68L2.95 13.60L2.63 13.48L2.40 13.35L2.25 13.20L2.16 13.03L2.09 12.87L2.05 12.70L2.03 12.52L2.01 12.35L2.00 12.17L2.00 12.00L2.00 11.83L2.01 11.65L2.03 11.48L2.05 11.30L2.09 11.13L2.16 10.97L2.25 10.80L2.40 10.65L2.63 10.52L2.95 10.40L3.36 10.32L3.78 10.25L4.16 10.19L4.43 10.11L4.63 10.02L4.76 9.92L4.85 9.81L4.92 9.70L4.98 9.58L5.04 9.47L5.09 9.35L5.14 9.23L5.19 9.11L5.24 8.99L5.28 8.87L5.33 8.75L5.37 8.62L5.40 8.49L5.41 8.35L5.39 8.18L5.32 7.98L5.17 7.73L4.96 7.43L4.70 7.08L4.48 6.73L4.32 6.42L4.26 6.17L4.26 5.95L4.31 5.77L4.38 5.61L4.48 5.46L4.58 5.32L4.69 5.18L4.81 5.05L4.93 4.93L5.05 4.81L5.18 4.69L5.32 4.58L5.46 4.48L5.61 4.38L5.77 4.31L5.95 4.26L6.17 4.26L6.42 4.32L6.73 4.48L7.08 4.70L7.43 4.96L7.73 5.17L7.98 5.32L8.18 5.39L8.35 5.41L8.49 5.40L8.62 5.37L8.75 5.33L8.87 5.28L8.99 5.24L9.11 5.19L9.23 5.14L9.35 5.09L9.47 5.04L9.58 4.98L9.70 4.92L9.81 4.85L9.92 4.76L10.02 4.63L10.11 4.43L10.19 4.16L10.25 3.78L10.32 3.36L10.40 2.95L10.52 2.63L10.65 2.40L10.80 2.25L10.97 2.16L11.13 2.09L11.30 2.05L11.48 2.03L11.65 2.01L11.83 2.00L12.00 2.00ZM15 12a3 3 0 1 0 -6 0a3 3 0 1 0 6 0Z" fill="currentColor" fill-rule="evenodd" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/></svg>
       </button>
     </div>
   </header>
@@ -531,7 +533,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 
   /* ================= State and storage ================= */
   /* One object holds everything that is saved:
-     notes:   { id, title, content, color, pinned, created, updated, folders? }   (folders: ids of every folder the note is in; none = only under All)
+     notes:   { id, title, content, color, pinned, created, updated, meta, folders? }   (updated = last time the TEXT was written: orders the list. meta = last time title, colour, pin or folders changed: used only so sync picks the right copy)   (folders: ids of every folder the note is in; none = only under All)
               content is the editor's own format (a list of text pieces with their formatting), so bold, headings and lists
               are real formatting and never characters inside the text.
      folders: { id, name }     (the built-in "All" folder is not stored; only its name)
@@ -577,7 +579,8 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
       color: COLORS.includes(raw.color) ? raw.color : COLORS[0],
       pinned: raw.pinned === true,
       created: isNum(raw.created) ? raw.created : updated,
-      updated
+      updated,
+      meta: isNum(raw.meta) ? raw.meta : updated
     };
     const inFolders = [...new Set([].concat(raw.folders ?? []))].filter((f) => folderIds.has(f));
     if (inFolders.length) note.folders = inFolders;
@@ -998,6 +1001,13 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     store.saveSoon();
     refreshLists();
   }
+  /* Call after a change to a note's title, colour, pin or folders. It does not count as writing, so the note keeps its place in the list. */
+  function touchMeta(n) {
+    n.meta = Date.now();
+    if (n.id === ui.activeId) renderNoteHeader(n);
+    store.saveSoon();
+    refreshLists();
+  }
   /* Call after a change that must be saved at once (create, delete, move). */
   function commit() { store.save(); refreshAll(); }
 
@@ -1137,7 +1147,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 
   function setNoteColor(n, c) {
     if (n.color === c) return;
-    n.color = c; touch(n);
+    n.color = c; touchMeta(n);
     const head = el.menu.querySelector('.mav'); if (head) { head.style.setProperty('--nc', `var(--${c})`); head.innerHTML = avatar(n, 36); }
     const label = document.getElementById('mcolor'); if (label) label.textContent = cap(c);
     el.menu.querySelectorAll('.sw').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.v === c)));
@@ -1160,12 +1170,12 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     keep:            () => { menu.confirm = false; renderMenu(); },
     'delete-folder': () => { const id = menu.id; closeMenu(); deleteFolder(id); },
     'delete-note':   () => { const id = menu.id; closeMenu(); deleteNote(id); },
-    pin:             (n) => { n.pinned = !n.pinned; touch(n); closeMenu(); },
+    pin:             (n) => { n.pinned = !n.pinned; touchMeta(n); closeMenu(); },
     color:           (n, v) => setNoteColor(n, v),
     folder:          (n, v, b) => {                                              // a note can be in any number of folders
       const set = new Set(n.folders || []); set.has(v) ? set.delete(v) : set.add(v);
       if (set.size) n.folders = state.folders.map((f) => f.id).filter((id) => set.has(id)); else delete n.folders;
-      touch(n); b.setAttribute('aria-pressed', String(set.has(v)));
+      touchMeta(n); b.setAttribute('aria-pressed', String(set.has(v)));
     }
   };
 
@@ -1209,7 +1219,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
   });
   el.list.addEventListener('scroll', closeMenu);
 
-  el.title.addEventListener('input', (e) => { const n = activeNote(); if (n) { n.title = e.target.value; touch(n); } });
+  el.title.addEventListener('input', (e) => { const n = activeNote(); if (n) { n.title = e.target.value; touchMeta(n); } });
   el.title.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); quill.setSelection(quill.getLength() - 1, 0, USER); } });
 
   /* Shortcuts run before the editor's own keys, so the ones you set are the only ones. */
@@ -1282,7 +1292,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
   const localData = () => ({ notes: state.notes, folders: state.folders, gone: state.gone });
   /* A comparable form that ignores key order, so equal data always matches. */
   const sig = (d) => JSON.stringify([
-    [...d.notes].sort(byId).map((n) => [n.id, n.title, n.content, n.color, n.pinned, n.created, n.updated, n.folders || []]),
+    [...d.notes].sort(byId).map((n) => [n.id, n.title, n.content, n.color, n.pinned, n.created, n.updated, n.meta, n.folders || []]),
     [...d.folders].sort(byId).map((f) => [f.id, f.name, f.updated || 0]),
     Object.entries(d.gone).sort()
   ]);
@@ -1300,10 +1310,21 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     const gone = { ...a.gone };
     for (const [k, v] of Object.entries(b.gone)) gone[k] = Math.max(gone[k] || 0, v);
     const pick = (list) => { const m = new Map(); for (const x of list) { const o = m.get(x.id); if (!o || (x.updated || 0) > (o.updated || 0)) m.set(x.id, x); } return m; };
-    const keep = (m) => { for (const [id, x] of [...m]) { if (gone[id] !== undefined && gone[id] >= (x.updated || 0)) m.delete(id); else delete gone[id]; } return [...m.values()]; };
+    /* A note's text comes from whichever copy was written last; its title, colour, pin and folders come from whichever copy had those changed last. */
+    const pickNotes = (list) => {
+      const text = pick(list), look = new Map();
+      for (const x of list) { const o = look.get(x.id); if (!o || (x.meta || 0) > (o.meta || 0)) look.set(x.id, x); }
+      for (const [id, t] of text) {
+        const l = look.get(id); if (l === t) continue;
+        const c = { ...t, title: l.title, color: l.color, pinned: l.pinned, meta: l.meta }; if (l.folders) c.folders = l.folders; else delete c.folders;
+        text.set(id, c);
+      }
+      return text;
+    };
+    const keep = (m) => { for (const [id, x] of [...m]) { if (gone[id] !== undefined && gone[id] >= Math.max(x.updated || 0, x.meta || 0)) m.delete(id); else delete gone[id]; } return [...m.values()]; };
     const folders = keep(pick([...a.folders, ...b.folders]));
     const ids = new Set(folders.map((f) => f.id));
-    const notes = keep(pick([...a.notes, ...b.notes])).map((n) => {
+    const notes = keep(pickNotes([...a.notes, ...b.notes])).map((n) => {
       if (!n.folders?.some((f) => !ids.has(f))) return n;
       const c = { ...n, folders: n.folders.filter((f) => ids.has(f)) };
       if (!c.folders.length) delete c.folders;

@@ -26,7 +26,7 @@ INSTALL ON YOUR PHONE / PC
   After the first open it also works with no internet.
 
 IMPORTANT, notes live per device
-  A note written on your phone is not on your PC unless you turn on Google Drive sync in Settings.
+  A note written on your phone is not on your PC unless you turn on Google Drive sync in Settings (see SYNC-SETUP.txt, sent with this package).
   Always open the app from the same address on a device (the installed app and the browser tab share notes
   only when they use the same address).
 
