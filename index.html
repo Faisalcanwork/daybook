@@ -32,6 +32,9 @@
 
 
 
+
+
+
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Fonts are embedded (Latin letters, numbers and punctuation), so the page needs no internet. Other scripts use the system font. */
@@ -994,19 +997,36 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     for (const sel of ['.topbar', '.listpane', '.fab']) { const x = document.querySelector(sel); if (x) x.inert = phone && v === 'editor'; }
     el.editor.inert = phone && v === 'list';
   }
-  /* On a phone, opening a note adds one browser-history step, so the phone's own Back button (or swipe) returns to the list instead of leaving the app. */
-  let fromBack = false;
+  /* Back button (phone, tablet and PC alike): every layer on top of the list (an open note, the note menu, settings) adds one browser-history step, so the phone's own
+     Back button or swipe closes just the top layer instead of leaving the app. `layers` mirrors the steps we added. */
+  const layers = [];
+  let pendingBack = 0, waiting = [], backTimer = 0;
+  const flush = () => { pendingBack = 0; clearTimeout(backTimer); const w = waiting; waiting = []; w.forEach((f) => f()); };
+  const whenIdle = (f) => (pendingBack ? waiting.push(f) : f());
+  function pushLayer(kind) {
+    whenIdle(() => { if (layers.includes(kind)) return; layers.push(kind); try { history.pushState({ n: layers.length }, ''); } catch { /* the on-screen buttons still work */ } });
+  }
+  function dropLayer(kind) {
+    const i = layers.lastIndexOf(kind); if (i < 0) return;
+    const n = layers.length - i; layers.length = i;
+    try { pendingBack++; history.go(-n); clearTimeout(backTimer); backTimer = setTimeout(flush, 400); } catch { pendingBack = 0; }
+  }
+  function closeLayerUi(kind) {
+    if (kind === 'ed') { applyView('list'); if (!phoneMQ.matches && ui.activeId) { ui.activeId = null; renderEditor(); renderList(); } }   // on a wide screen, Back also closes the open note
+    else if (kind === 'dlg') { el.dlg.hidden = true; recording = null; }
+    else if (kind === 'menu') hideMenu();
+  }
   function setView(v) {
     applyView(v);
-    if (!phoneMQ.matches) return;
-    try {
-      if (v === 'editor' && history.state?.dk !== 'ed') history.pushState({ dk: 'ed' }, '');
-      else if (v === 'list' && history.state?.dk === 'ed' && !fromBack) history.back();
-    } catch { /* history not available: the on-screen Back button still works */ }
+    if (v === 'editor') pushLayer('ed'); else dropLayer('ed');
   }
   window.addEventListener('popstate', () => {
-    if (el.app.dataset.view === 'editor' && history.state?.dk !== 'ed') { fromBack = true; applyView('list'); fromBack = false; }
+    if (pendingBack) pendingBack--;
+    const depth = history.state?.n || 0;
+    while (layers.length > depth) closeLayerUi(layers.pop());
+    if (!pendingBack) flush();
   });
+  if (history.state?.n) { try { pendingBack++; history.go(-history.state.n); backTimer = setTimeout(flush, 400); } catch { pendingBack = 0; } }   // a reload inside a note: step back to the list's own entry
   phoneMQ.addEventListener('change', () => applyView(el.app.dataset.view));
   applyView(el.app.dataset.view);
 
@@ -1111,8 +1131,8 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
         `<button class="btn" type="button" data-rec="${id}">${rec ? 'Cancel' : 'Change'}</button></div>`;
     }).join('');
   }
-  function openDialog() { recording = null; say(''); renderDialog(); renderSync(); $('syncDet').open = !!sync.cfg; el.dlg.hidden = false; $('kDone').focus(); }
-  function closeDialog() { el.dlg.hidden = true; recording = null; $('settingsBtn').focus(); }
+  function openDialog() { recording = null; say(''); renderDialog(); renderSync(); $('syncDet').open = !!sync.cfg; el.dlg.hidden = false; pushLayer('dlg'); $('kDone').focus(); }
+  function closeDialog() { el.dlg.hidden = true; recording = null; dropLayer('dlg'); $('settingsBtn').focus(); }
   function focusRecButton(id) { $('krows').querySelector(`[data-rec="${id}"]`)?.focus(); }
 
   function recordKey(e) {
@@ -1173,13 +1193,14 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     if (kind === 'note' ? !findNote(id) : folderLabel(id) === undefined) return;
     Object.assign(menu, { kind, id, confirm: false });
     renderMenu();
-    const m = el.menu; m.hidden = false;
+    const m = el.menu; m.hidden = false; pushLayer('menu');
     const vw = document.documentElement.clientWidth, vh = window.innerHeight;
     m.style.left = `${Math.max(8, Math.min(x, vw - m.offsetWidth - 8))}px`;
     m.style.top = `${Math.max(8, Math.min(y, vh - m.offsetHeight - 8))}px`;
     m.querySelector('button')?.focus({ preventScroll: true });
   }
-  function closeMenu() { el.menu.hidden = true; Object.assign(menu, { kind: null, id: null, confirm: false }); }
+  function hideMenu() { el.menu.hidden = true; Object.assign(menu, { kind: null, id: null, confirm: false }); }
+  function closeMenu() { hideMenu(); dropLayer('menu'); }
 
   const menuActions = {
     rename:          () => { const id = menu.id; closeMenu(); startRename(id); },
