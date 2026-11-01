@@ -35,6 +35,8 @@
 
 
 
+
+
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Fonts are embedded (Latin letters, numbers and punctuation), so the page needs no internet. Other scripts use the system font. */
@@ -251,7 +253,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .body { position: relative; flex: 1; min-height: 200px; display: flex; flex-direction: column; }
 .ql-clipboard { position: absolute; left: -100000px; top: 50%; height: 1px; overflow-y: hidden; }
 .ql-editor { flex: 1; min-height: 0; overflow-y: auto; outline: none; white-space: pre-wrap; overflow-wrap: break-word; tab-size: 4;
-  padding: 0 var(--px); font-size: 0.9062rem; line-height: 1.6; caret-color: var(--nc); counter-reset: list-0; scrollbar-width: thin; }
+  padding: 0 var(--px); font-size: 1.25rem; line-height: 1.6; caret-color: var(--nc); counter-reset: list-0; scrollbar-width: thin; }
 .ql-editor > * { cursor: text; }
 /* Typewriter: a short note sits on the bottom edge of the page, each new line goes in at the bottom and the older lines move up.
    Nothing scrolls until the page is full; after that the page grows and scrolls as usual, following the line you are writing. */
@@ -262,7 +264,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .ql-editor.ql-blank::before { content: attr(data-placeholder); position: absolute; left: 0; right: 0; color: var(--grey); pointer-events: none; }
 .ql-editor p, .ql-editor ol, .ql-editor h1, .ql-editor h2, .ql-editor h3 { margin: 0; padding: 0; counter-set: list-0; }
 .ql-editor strong { font-weight: 700; }
-.ql-editor h1, .ql-editor h2, .ql-editor h3 { margin: 0.5em 0 0.1em; font-family: var(--font-body); font-weight: 600; font-size: 1.1875rem; line-height: 1.3; letter-spacing: -0.01em; }
+.ql-editor h1, .ql-editor h2, .ql-editor h3 { margin: 0.5em 0 0.1em; font-family: var(--font-body); font-weight: 600; font-size: 1.6875rem; line-height: 1.3; letter-spacing: -0.01em; }
 .ql-editor h1:first-child, .ql-editor h2:first-child, .ql-editor h3:first-child { margin-top: 0; }
 .ql-editor li { position: relative; padding-left: 1.5em; list-style-type: none; }
 .ql-editor li > .ql-ui { position: absolute; left: 0; top: 0; width: 1.5em; color: var(--nc); }
@@ -358,7 +360,8 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 /* ---------- Phones and narrow windows: list first, then editor ---------- */
 @media (max-width: 900px) {
   body { padding-block: max(5px, env(safe-area-inset-top, 0px)) max(7px, env(safe-area-inset-bottom, 0px)); padding-left: max(6px, env(safe-area-inset-left, 0px)); padding-right: max(6px, env(safe-area-inset-right, 0px)); }
-  .search, .title, .body .ql-editor, .folder input, .sync-box input { font-size: 16px; }
+  .search, .title, .folder input, .sync-box input { font-size: 16px; }
+  .body .ql-editor { font-size: 20px; }
   .panes { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
   .listpane { border-right: 0; }
   .cal-soon, .date-long { display: none; }
