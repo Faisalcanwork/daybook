@@ -2,8 +2,8 @@ DAYBOOK - how to put it online for your own use
 ================================================
 
 What is in this folder (upload ALL of it, keep the names as they are):
-  index.html, sw.js, manifest.webmanifest, icon.svg, icon-192.png, icon-512.png,
-  icon-maskable-512.png, apple-touch-icon.png
+  index.html, sw.js, manifest.webmanifest, icon.svg, icon-v2-192.png, icon-v2-512.png,
+  icon-v2-maskable-512.png, apple-touch-icon-v2.png
 
 There is no server, no database and nothing to renew. It is plain files, so it keeps working for years.
 Your notes stay on your own device (in the browser). Nothing is sent anywhere unless you turn on Google Drive sync.
