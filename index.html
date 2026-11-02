@@ -37,6 +37,46 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Fonts are embedded (Latin letters, numbers and punctuation), so the page needs no internet. Other scripts use the system font. */
@@ -53,6 +93,10 @@
 
 /* ---------- Tokens ---------- */
 :root {
+  /* One motion language for the whole app: three speeds and one curve. Things fade, presses dim, only whole screens slide. */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --t-fast: 120ms; --t-base: 200ms; --t-slow: 280ms;
+  --press: rgba(255, 255, 255, 0.11);
   --bg: #080B12;
   --panel: #111723;
   --surface: #161D2B;
@@ -60,16 +104,17 @@
   --ink-2: #A3ACBF;
   --line: #263046;
 
-  /* Note colours: eight that stay apart from each other (blue and purple, red and orange, red and pink are the closest pairs).
+  /* Note colours: six that stay clearly apart.
      Each has a fill and a text colour that reads on it. */
   --blue: #5B93FF;   --on-blue: #0B1230;
   --red: #FF5A66;    --on-red: #2A0C10;
-  --orange: #FF9136; --on-orange: #2A1402;
   --yellow: #FFD83D; --on-yellow: #141B2D;
   --green: #3FD98A;  --on-green: #07200F;
-  --purple: #C07CFF; --on-purple: #1B0E42;
   --pink: #FF6FBE;   --on-pink: #34091F;
   --grey: #8E98AB;   --on-grey: #10151F;
+
+  /* One spacing scale, a 4px grid: every gap and padding is one of these. */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px;
 
   --r-sm: 10px;
   --r-md: 14px;
@@ -84,9 +129,8 @@
 /* ---------- Base ---------- */
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html { height: 100%; height: 100dvh; font-size: clamp(16px, calc(21px - 0.6vw), 19px); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html { height: 100dvh; font-size: clamp(16px, calc(21px - 0.6vw), 19px); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
-  height: 100%;
   height: 100dvh;
   margin: 0;
   padding-block: max(6px, env(safe-area-inset-top, 0px)) max(6px, env(safe-area-inset-bottom, 0px));
@@ -105,28 +149,32 @@ ul { list-style: none; margin: 0; padding: 0; }
 kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(--line); border-bottom-width: 2px; background: var(--panel); border-radius: 5px; padding: 1px 6px; white-space: nowrap; }
 
 .btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  border: 1px solid var(--line); background: var(--surface); border-radius: var(--r-sm); padding: 4px 10px; font-size: 0.7812rem; font-weight: 500;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 1px solid var(--line); background: var(--surface); border-radius: var(--r-sm); padding: 4px 12px; font-size: 0.7812rem; font-weight: 500;
 }
 .btn:hover { border-color: var(--grey); }
 .editor .btn:hover { border-color: var(--nc); }
 .btn.solid { background: var(--blue); border-color: var(--blue); color: var(--on-blue); font-weight: 700; }
 .btn.danger { color: var(--red); }
 .btn.danger.solid { background: var(--red); border-color: var(--red); color: var(--on-red); }
-.icon-btn { display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); }
-.icon-btn:hover { background: var(--panel); color: var(--ink); }
+/* Every round icon button: one size, one look. */
+.icon-btn, .folder-add, #saved, .mpin, .mdel { flex: none; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); }
+.icon-btn:hover, .folder-add:hover, #saved:hover { background: var(--panel); color: var(--ink); }
+.mpin, .mdel { color: var(--grey); }
+.mpin:hover { background: var(--panel); color: var(--ink); }
+.mdel:hover { background: var(--panel); color: var(--red); }
 .av { flex: none; display: block; }
 
 /* ---------- App shell and top bar ---------- */
 .app { position: relative; height: 100%; display: flex; flex-direction: column; overflow: hidden; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); }
-.topbar { flex: none; display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg); }
+.topbar { flex: none; display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: var(--bg); }
 .brand { flex: none; display: flex; align-items: center; gap: 8px; }
 .brand-name { font-family: var(--font-display); font-weight: 700; font-size: 1.125rem; letter-spacing: -0.01em; }
-.topbar-right { margin-left: auto; flex: none; display: flex; align-items: center; gap: 10px; }
+.topbar-right { margin-left: auto; flex: none; display: flex; align-items: center; gap: 12px; }
 .today { font-size: 0.8125rem; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 .date-short { display: none; }
 .cal-soon { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--ink-2); padding: 4px 8px; font-size: 0.7812rem; font-weight: 500; cursor: not-allowed; }
-.soon { font-family: var(--font-mono); font-size: 0.5938rem; text-transform: uppercase; letter-spacing: 0.06em; background: var(--yellow); color: var(--on-yellow); padding: 0 4px; border-radius: 3px; }
+.soon { font-family: var(--font-mono); font-size: 0.5938rem; text-transform: uppercase; letter-spacing: 0.06em; background: var(--blue); color: var(--on-blue); padding: 0 4px; border-radius: 3px; }
 .panes { flex: 1; min-height: 0; display: grid; grid-template-columns: 300px minmax(0, 1fr); border-top: 1px solid var(--line); }
 .panes > * { min-width: 0; min-height: 0; }
 
@@ -134,21 +182,25 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 /* Laid out like a chat list (Telegram, iMessage): folder tabs on top, then one row per note ordered by recent edit. */
 .listpane { display: flex; flex-direction: column; background: var(--surface); border-right: 1px solid var(--line); }
 .listhead { display: flex; flex-direction: column; gap: 0; }
-.searchrow { padding: 10px 12px 8px; }
+.searchrow { padding: 12px 12px 8px; }
 .searchbox { position: relative; display: flex; align-items: center; min-width: 0; }
-.searchbox > svg { position: absolute; left: 12px; color: var(--grey); pointer-events: none; }
-.search { flex: 1; min-width: 0; border: 0; background: var(--panel); border-radius: var(--r-pill); padding: 8px 32px 8px 34px; font-size: 0.875rem; }
+.searchbox > svg { position: absolute; left: 16px; width: 16px; height: 16px; color: var(--grey); pointer-events: none; transition: color var(--t-fast) var(--ease); }
+.searchbox:focus-within > svg { color: var(--blue); }
+/* Search: a quiet field with a thin border that turns blue while you type. */
+.search { flex: 1; min-width: 0; height: 40px; border: 1px solid var(--line); background: var(--panel); border-radius: var(--r-pill); padding: 0 40px 0 40px; font-size: 0.875rem; outline: none; transition: border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease); }
+.search:hover { border-color: var(--grey); }
+.search:focus { border-color: var(--blue); background: var(--bg); }
 .search::-webkit-search-cancel-button { display: none; }
 .search::placeholder { color: var(--grey); }
-.search-clear { position: absolute; right: 6px; display: grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--grey); }
+.search-clear { position: absolute; right: 8px; display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--grey); }
 .search-clear:hover { color: var(--ink); }
 
 /* Folder tabs: plain text with a blue underline on the open one, and a small count badge. */
 .folder-bar { display: flex; align-items: stretch; min-width: 0; border-bottom: 1px solid var(--line); }
-.folder-list { flex: 0 1 auto; display: flex; align-items: stretch; min-width: 0; overflow-x: auto; scrollbar-width: none; padding-left: 6px; }
+.folder-list { flex: 0 1 auto; display: flex; align-items: stretch; min-width: 0; overflow-x: auto; scrollbar-width: none; padding-left: 8px; }
 .folder-list::-webkit-scrollbar { display: none; }
 .folder {
-  position: relative; flex: none; display: inline-flex; align-items: center; gap: 6px; max-width: 170px; padding: 9px 10px 10px; cursor: pointer;
+  position: relative; flex: none; display: inline-flex; align-items: center; gap: 8px; max-width: 170px; padding: 8px 12px 12px; cursor: pointer;
   color: var(--ink-2); font-size: 0.8438rem; font-weight: 600;
   -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
 }
@@ -160,38 +212,38 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .folder-count { min-width: 18px; padding: 0 5px; border-radius: 9px; background: var(--line); color: var(--ink-2); font-size: 0.6875rem; font-weight: 700; line-height: 18px; text-align: center; font-variant-numeric: tabular-nums; }
 .folder[aria-selected="true"] .folder-count { background: var(--blue); color: var(--on-blue); }
 .folder input { width: 92px; padding: 0; border: 0; border-bottom: 2px solid currentColor; background: transparent; outline: none; font: inherit; color: inherit; -webkit-user-select: text; user-select: text; }
-.folder-add { flex: none; align-self: center; display: grid; place-items: center; width: 28px; height: 28px; margin-left: 2px; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); }
-.folder-add:hover { background: var(--panel); color: var(--ink); }
 
 .list { contain: layout style; flex: 1; overflow-y: auto; padding-bottom: 64px; }
-.item { position: relative; content-visibility: auto; contain-intrinsic-size: auto 66px; }
+.item { position: relative; content-visibility: auto; contain-intrinsic-size: auto 64px; }
 .item::after { content: ""; position: absolute; left: 72px; right: 0; bottom: 0; height: 1px; background: var(--line); }
 .row {
-  width: 100%; display: grid; grid-template-columns: 48px minmax(0, 1fr); column-gap: 12px; align-items: center; padding: 9px 14px 9px 12px;
+  width: 100%; display: grid; grid-template-columns: 48px minmax(0, 1fr); column-gap: 12px; align-items: center; padding: 8px 16px 8px 12px;
   border: 0; background: transparent; text-align: left; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
 }
 .row:hover { background: var(--panel); }
-.row[aria-current="true"] { background: color-mix(in srgb, var(--nc) 20%, var(--surface)); }
-.row-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.row[aria-current="true"] { background: var(--panel); }
+.row-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .row-top, .row-bot { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .row-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; font-size: 0.9375rem; }
 .row-time { flex: none; font-size: 0.75rem; color: var(--grey); font-variant-numeric: tabular-nums; }
 .row-snip { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-2); font-size: 0.8438rem; }
 .row-snip b { color: var(--ink); font-weight: 600; }
-.pin { flex: none; color: var(--grey); }
+.pin { flex: none; color: var(--blue); }
 .badge { flex: none; min-width: 20px; padding: 0 6px; border-radius: 10px; background: var(--grey); color: var(--surface); font-size: 0.6875rem; font-weight: 700; line-height: 20px; text-align: center; font-variant-numeric: tabular-nums; }
+.badge { background: var(--blue); color: var(--on-blue); }
 .badge.done { background: var(--line); color: var(--ink-2); }
+.stats .warm b { color: var(--blue); }
 .av-btn { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); display: block; width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; background: transparent; }
 .av-btn:hover .av, .av-btn:focus-visible .av { filter: brightness(1.15); }
 .av-btn:focus-visible, #edAvatar:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 #edAvatar { display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; }
 #edAvatar:hover .av { filter: brightness(1.15); }
-.empty-list { padding: 34px 20px; text-align: center; color: var(--ink-2); font-size: 0.8125rem; }
+.empty-list { padding: 36px 20px; text-align: center; color: var(--ink-2); font-size: 0.8125rem; }
 .empty-list strong { display: block; margin-bottom: 4px; font-family: var(--font-display); font-size: 1rem; color: var(--ink); }
-.empty-list .btn { margin-top: 14px; padding: 6px 14px; font-size: 0.8125rem; }
+.empty-list .btn { margin-top: 16px; padding: 8px 16px; font-size: 0.8125rem; }
 
-.stats { flex: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border-top: 1px solid var(--line); }
-.stats div { display: flex; flex-direction: column; min-width: 0; padding: 6px 10px; background: var(--panel); }
+.stats { flex: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; background: var(--line); border-top: 1px solid var(--line); }
+.stats div { display: flex; flex-direction: column; min-width: 0; padding: 6px 8px; background: var(--panel); }
 .stats b { font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
 .stats span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.6875rem; color: var(--grey); }
 
@@ -207,12 +259,12 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
   /* --nc is the open note's accent colour and --on-nc is the text colour that reads on it. Set from the note in script. */
   --nc: var(--blue); --on-nc: var(--on-blue);
   display: flex; flex-direction: column;
-  background: color-mix(in srgb, var(--nc) 7%, var(--surface));
+  background: var(--surface);
 }
 .editor ::selection { background: color-mix(in srgb, var(--nc) 38%, transparent); }
-.ed-top { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-bottom: 2px solid color-mix(in srgb, var(--nc) 55%, var(--line)); }
-.back { display: none; padding: 4px 10px 4px 0; border: 0; background: transparent; color: var(--nc); line-height: 1; }
-.ed-head { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.ed-top { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-bottom: 2px solid var(--nc); }
+.back { display: none; padding: 4px 12px 4px 0; border: 0; background: transparent; color: var(--nc); line-height: 1; }
+.ed-head { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 .title {
   flex: 1; min-width: 0; width: 100%; margin: 0; padding: 0; border: 0; border-bottom: 2px solid transparent; outline: none; background: transparent; color: var(--ink);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-display); font-weight: 700; font-size: 1.0625rem; line-height: 1.2; letter-spacing: -0.01em;
@@ -220,25 +272,25 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 }
 .title::placeholder { color: var(--grey); }
 .title:focus { border-bottom-color: var(--nc); }
-.ed-scroll { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 14px 0 8px; scrollbar-color: color-mix(in srgb, var(--nc) 60%, var(--line)) transparent; }
+.ed-scroll { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 16px 0 8px; scrollbar-color: var(--nc) transparent; }
 /* The writing area is as wide as the pane. Text keeps its centred column (48rem, at least 18px from each side) through --px,
    which lets a page break run from the left edge to the right edge. */
-.ed-inner { --px: max(var(--edge, 18px), calc((100cqw - 48rem) / 2)); container-type: inline-size; flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; gap: 9px; }
+.ed-inner { --px: max(var(--edge, 16px), calc((100cqw - 48rem) / 2)); container-type: inline-size; flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; gap: 9px; }
 .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0 var(--px); padding: 4px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--panel); }
-.tool { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border: 1px solid transparent; border-radius: calc(var(--r-md) - 4px); background: transparent; color: var(--ink-2); font-size: 0.75rem; font-weight: 500; }
+.tool { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border: 1px solid transparent; border-radius: calc(var(--r-md) - 4px); background: transparent; color: var(--ink-2); font-size: 0.75rem; font-weight: 500; }
 .tool:hover { background: var(--surface); color: var(--ink); }
-.tool.icon { justify-content: center; min-width: 2.1rem; padding: 3px 0; }
+.tool.icon { justify-content: center; min-width: 2.1rem; padding: 4px 0; }
 .tool.icon svg { width: 16px; height: 16px; }
 .tool[aria-pressed="true"] { background: var(--nc); border-color: var(--nc); color: var(--on-nc); }
 .tool[data-cmd="typewriter"] { margin-left: auto; }
+/* Normal writing: the toolbar stays at the top. Typewriter mode: the text sits at the bottom, so the toolbar goes down there with it. */
+.ed-inner:has(.body.typewriter) .tools { order: 2; }
 .tool:disabled { opacity: 0.35; cursor: default; }
 .tool:disabled:hover { border-color: var(--line); color: var(--ink-2); }
 .tool-sep { align-self: stretch; width: 1px; margin: 3px 2px; background: var(--line); }
 .tool[data-cmd="right"] .i-right, .tool[data-cmd="right"][aria-pressed="true"] .i-left { display: none; }
 .tool[data-cmd="right"][aria-pressed="true"] .i-right { display: block; }
-.ed-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 14px; padding: 6px 14px; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 0.6875rem; color: var(--grey); font-variant-numeric: tabular-nums; }
-#saved { flex: none; display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--grey); }
-#saved:hover { background: var(--panel); }
+.ed-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; padding: 8px 16px; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 0.6875rem; color: var(--grey); font-variant-numeric: tabular-nums; }
 #saved.warn { color: var(--red); }
 #saved.busy { color: var(--ink-2); }
 #saved.ok { color: var(--green); }
@@ -268,10 +320,10 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .ql-editor h1:first-child, .ql-editor h2:first-child, .ql-editor h3:first-child { margin-top: 0; }
 .ql-editor li { position: relative; padding-left: 1.5em; list-style-type: none; }
 .ql-editor li > .ql-ui { position: absolute; left: 0; top: 0; width: 1.5em; color: var(--nc); }
-/* Every line is a 97% wide block, and the writing always starts at the left of its block and runs left to right.
-   Left lines: the block sits against the left edge. Right lines: the block sits against the right edge (a 3% gap on the left). */
-.ql-editor > :not(ol), .ql-editor li { width: 97%; text-align: left; }
-.ql-editor .ql-align-right { margin-left: auto; }
+/* Alignment is Quill's own: the editor's align format puts a class on the line, and these classes do the rest. */
+.ql-editor .ql-align-right { text-align: right; }
+.ql-editor li.ql-align-right { padding-left: 0; padding-right: 1.5em; }
+.ql-editor li.ql-align-right > .ql-ui { left: auto; right: 0; }
 /* Page break: ends the page above and starts a new one, shown as its own divider box. */
 /* Page break: a line from edge to edge with a shadow under it, so the page above ends and the one below starts apart from it. */
 .ql-editor > hr.pagebreak { display: block; box-sizing: border-box; width: auto; height: 18px; margin: 1.2rem calc(-1 * var(--px)) 0.9rem; padding: 0; border: 0; border-top: 2px solid var(--nc); border-radius: 0; cursor: default;
@@ -286,110 +338,120 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .ql-editor li[data-list="ordered"] > .ql-ui::before { content: counter(list-0, decimal) ". "; }
 
 /* ---------- Options menu (notes and folders) ---------- */
-.menu { position: fixed; z-index: 30; width: max(232px, 15rem); display: flex; flex-direction: column; gap: 2px; padding: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
-.mh { margin-bottom: 4px; padding: 4px 8px 6px; border-bottom: 1px solid var(--line); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); font-size: 0.6875rem; color: var(--grey); }
-.mhead { display: flex; align-items: center; gap: 10px; padding: 4px 4px 8px; }
+.menu { position: fixed; z-index: 30; width: max(232px, 15rem); display: flex; flex-direction: column; gap: 2px; padding: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
+.mh { margin-bottom: 4px; padding: 4px 8px 8px; border-bottom: 1px solid var(--line); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); font-size: 0.6875rem; color: var(--grey); }
+.mhead { display: flex; align-items: center; gap: 12px; padding: 4px 4px 8px; }
 .mav { flex: none; display: block; }
 .mtitle { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .mtitle b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9062rem; }
 .mtitle span { font-size: 0.75rem; color: var(--ink-2); }
-.mpin { flex: none; display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--grey); }
-.mpin:hover { background: var(--panel); color: var(--ink); }
-.mpin[aria-pressed="true"] { color: var(--red); }
-.mdel { flex: none; margin-left: -6px; display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--grey); }
-.mdel:hover { background: var(--panel); color: var(--red); }
-.mi { padding: 7px 8px; border: 0; border-radius: 6px; background: transparent; text-align: left; font-size: 0.8438rem; }
+.mpin[aria-pressed="true"] { color: var(--blue); }
+.mi { padding: 8px 8px; border: 0; border-radius: 6px; background: transparent; text-align: left; font-size: 0.8438rem; }
 .mi:hover { background: var(--panel); }
 .mi.danger { color: var(--red); }
-.ml { padding: 8px 8px 3px; font-family: var(--font-mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--grey); }
+.ml { padding: 8px 8px 4px; font-family: var(--font-mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--grey); }
 .mnote { padding: 2px 8px 4px; font-size: 0.7812rem; color: var(--ink-2); }
-.msep { height: 1px; margin: 6px 0 2px; background: var(--line); }
+.msep { height: 1px; margin: 8px 0 2px; background: var(--line); }
 /* Colours: one row of round swatches, a tick on the chosen one. */
-.mcolors { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); justify-items: center; gap: 0; padding: 2px 2px 4px; }
-.sw { position: relative; width: 25px; height: 25px; padding: 0; border: 0; border-radius: 50%; }
+.mcolors { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); justify-items: center; gap: 0; padding: 2px 2px 4px; }
+.sw { position: relative; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 50%; }
 .sw:hover { filter: brightness(1.15); }
 .sw[aria-checked="true"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--ink); }
 .sw[aria-checked="true"]::after { content: ""; position: absolute; left: 50%; top: 46%; width: 5px; height: 10px; margin: -6px 0 0 -2.5px; border: solid var(--ink); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); mix-blend-mode: normal; }
-.mfolders { display: flex; flex-wrap: wrap; gap: 5px; padding: 2px 8px 6px; }
-.mchip { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 3px 11px; border: 1px solid var(--line); border-radius: var(--r-pill); background: transparent; color: var(--ink-2); font-size: 0.7812rem; }
+.mfolders { display: flex; flex-wrap: wrap; gap: 4px; padding: 2px 8px 8px; }
+.mchip { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 4px 12px; border: 1px solid var(--line); border-radius: var(--r-pill); background: transparent; color: var(--ink-2); font-size: 0.7812rem; }
 .mchip:hover { border-color: var(--grey); color: var(--ink); }
 .mchip[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: var(--on-blue); font-weight: 700; }
-.mrow { display: flex; gap: 6px; padding: 4px 6px 6px; }
+.mrow { display: flex; gap: 8px; padding: 4px 8px 8px; }
 
 /* ---------- Settings dialog ---------- */
+/* One floating panel for every screen. Each setting is a tile with its own colour; tiles open in place and nothing moves except the arrow. */
 .dlg { position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(10, 14, 22, 0.5); }
-.dlg-panel { width: min(26rem, 100%); max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5); }
-.dlg-panel h2 { margin: 0; font-family: var(--font-display); font-size: 1.1rem; letter-spacing: -0.01em; }
-.dlg-sub { margin: 0; font-size: 0.78rem; color: var(--ink-2); }
-.set-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.78rem; color: var(--ink-2); }
-.switch { flex: none; position: relative; width: 34px; height: 20px; padding: 0; border: 0; border-radius: var(--r-pill); background: var(--grey); }
-.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; }
-.switch[aria-checked="true"] { background: var(--blue); }
-.switch[aria-checked="true"]::after { transform: translateX(14px); }
-.krow { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px; padding: 7px 0; border-top: 1px solid var(--line); font-size: 0.85rem; }
-.krow.rec kbd { border-color: var(--blue); color: var(--blue); }
-.kmsg { min-height: 1.3em; font-size: 0.78rem; color: var(--red); }
-.dlg-foot { display: flex; justify-content: space-between; gap: 8px; }
-.sync-box input { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); font: inherit; font-size: 0.8438rem; }
-.sync-box input:focus { outline: none; border-color: var(--blue); }
-.sync-state { font-size: 0.78rem; color: var(--grey); }
-.adv { display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
-.adv > summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; list-style: none; cursor: pointer; font-size: 0.875rem; color: var(--ink); }
-.adv > summary::-webkit-details-marker { display: none; }
-.adv > summary::after { content: ""; flex: none; width: 7px; height: 7px; margin-left: 4px; border-right: 2px solid var(--grey); border-bottom: 2px solid var(--grey); transform: rotate(45deg); }
-.adv[open] > summary::after { transform: rotate(-135deg); }
-.adv > summary .sync-state { margin-left: auto; }
+.dlg-panel { width: min(24rem, 100%); max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5); }
+.dlg-panel h2 { margin: 0; font-family: var(--font-display); font-size: 1.25rem; letter-spacing: -0.01em; }
+.dlg-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 4px; }
+.dlg-x { margin-right: -8px; }
+.dlg-sub { margin: 0; font-size: 0.8125rem; color: var(--ink-2); }
+.card { --tc: var(--blue); --on-tc: var(--on-blue); border: 1px solid var(--line); border-radius: var(--r-md); background: var(--panel); transition: border-color var(--t-fast) var(--ease); }
+.card[open] { border-color: var(--tc); }
+.card > summary { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 12px; list-style: none; cursor: pointer; }
+.card > summary::-webkit-details-marker { display: none; }
+.card > summary::after { content: ""; flex: none; width: 7px; height: 7px; margin-left: 4px; border-right: 2px solid var(--grey); border-bottom: 2px solid var(--grey); transform: rotate(45deg); }
+.card[open] > summary::after { transform: rotate(-135deg); border-color: var(--tc); }
+.card > summary b { flex: 1; min-width: 0; font-size: 0.9375rem; font-weight: 600; }
+.chip { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--tc); color: var(--on-tc); }
+.sync-state { font-size: 0.75rem; color: var(--grey); white-space: nowrap; }
 .sync-state.ok { color: var(--green); }
 .sync-state.bad { color: var(--red); }
-.sync-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.card-body { display: flex; flex-direction: column; gap: 8px; padding: 0 12px 12px; }
+#syncForm { display: flex; flex-direction: column; gap: 8px; }
+#syncForm[hidden] { display: none; }
+.card-body input { width: 100%; height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--bg); color: var(--ink); font: inherit; font-size: 0.875rem; }
+.card-body input:focus { outline: none; border-color: var(--tc); }
+.btn.wide { width: 100%; min-height: 48px; font-size: 1rem; }
+.set-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.875rem; color: var(--ink-2); }
+.switch { flex: none; position: relative; width: 36px; height: 20px; padding: 0; border: 0; border-radius: var(--r-pill); background: var(--grey); }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; }
+.switch[aria-checked="true"] { background: var(--tc, var(--blue)); }
+.switch[aria-checked="true"]::after { transform: translateX(16px); }
+.krow { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; font-size: 0.875rem; color: var(--ink-2); }
+#krows { display: flex; flex-direction: column; }
+.krow .kbtn { flex: none; width: 9.5rem; height: 36px; padding: 0 8px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--bg); color: var(--ink); font-family: var(--font-mono); font-size: 0.75rem; text-align: center; cursor: text; }
+.krow .kbtn:hover { border-color: var(--grey); }
+.krow .kbtn:focus { outline: none; border-color: var(--tc); color: var(--tc); }
+.kmsg { min-height: 1.3em; font-size: 0.8125rem; color: var(--red); }
 
 /* ---------- Fingers and controllers: bigger things to hit ---------- */
 @media (pointer: coarse) {
   .tool { min-height: 40px; padding: 4px 12px; }
-  .tool.icon { min-width: 35px; padding: 4px 0; }
+  .tool.icon { min-width: 36px; padding: 4px 0; }
   .tools { gap: 4px; }
   #saved { -webkit-tap-highlight-color: transparent; }
-  .folder-add, .mpin, .mdel, #saved { width: 40px; height: 40px; }
-  .mi { padding: 12px 10px; }
-  .mchip { padding: 8px 14px; }
-  .sw { width: 30px; height: 30px; }
+    .mi { padding: 12px 12px; }
+  .mchip { padding: 8px 16px; }
+  .sw { width: 32px; height: 32px; }
   .btn { min-height: 40px; }
-  .icon-btn { width: 40px; height: 40px; }
+  .icon-btn, .folder-add, #saved, .mpin, .mdel { width: 44px; height: 44px; }
 }
 
 /* ---------- Phones and narrow windows: list first, then editor ---------- */
 @media (max-width: 900px) {
   body { padding-block: max(5px, env(safe-area-inset-top, 0px)) max(7px, env(safe-area-inset-bottom, 0px)); padding-left: max(6px, env(safe-area-inset-left, 0px)); padding-right: max(6px, env(safe-area-inset-right, 0px)); }
-  .search, .title, .folder input, .sync-box input { font-size: 16px; }
-  .body .ql-editor { font-size: 20px; }
+  .search, .title, .folder input,   .body .ql-editor { font-size: 20px; }
   .panes { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
   .listpane { border-right: 0; }
   .cal-soon, .date-long { display: none; }
   .date-short { display: inline; }
-  .stats { display: flex; overflow-x: auto; }
-  .stats div { flex: none; min-width: 5.5rem; }
   .back { display: inline-flex; }
   .ed-scroll { padding: 12px 0 8px; }
-  .ed-inner { --edge: 14px; }
+  .ed-inner { --edge: 16px; }
   .fab { bottom: 64px; }
   .editor { position: absolute; inset: 0; z-index: 6; transform: translateX(100%); visibility: hidden; box-shadow: -12px 0 24px rgba(0, 0, 0, 0.35); }
   .app[data-view="editor"] .editor { transform: none; visibility: visible; }
 }
+/* ---------- Message at the top after an action ---------- */
+.toast { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 72px); z-index: 60; max-width: min(92vw, 26rem); padding: 9px 16px; border-radius: var(--r-md); background: var(--panel); border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); color: var(--ink); font-size: 0.8438rem; font-weight: 600; text-align: center; pointer-events: none; opacity: 0; visibility: hidden; transform: translate(-50%, 0); }
+.toast.show { opacity: 1; visibility: visible; }
 @media (prefers-reduced-motion: no-preference) {
-  .row, .folder, .folder-count, .btn, .tool, .fab, .folder-add, .av-btn { transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease, filter 0.12s ease, transform 0.12s ease; }
-  .row:active { background: color-mix(in srgb, var(--nc) 14%, var(--surface)); }
-  .av-btn:active, .fab:active, .tool:active { transform: scale(0.94); }
-  .folder::after { transition: opacity 0.18s ease; }
-  .menu:not([hidden]) { animation: pop 0.14s cubic-bezier(0.2, 0.8, 0.2, 1); transform-origin: top left; }
-  .dlg:not([hidden]) { animation: fade 0.16s ease; }
-  .dlg:not([hidden]) .dlg-panel { animation: rise 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  /* Every control answers a touch the same way: a quick colour change, and a dim while pressed. */
+  .row, .folder, .folder-count, .btn, .tool, .fab, .folder-add, .av-btn, .icon-btn, .mchip, .sw { transition: background-color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), filter var(--t-fast) var(--ease); }
+  /* One press feedback for everything: whatever you touch gets a little lighter, in its own shape, and fades back. */
+  :is(.folder, .icon-btn, .folder-add, .tool, .mchip, .btn, .row):active { box-shadow: inset 0 0 0 999px var(--press); }
+  .fab:active { box-shadow: inset 0 0 0 999px var(--press), 0 4px 14px rgba(0, 0, 0, 0.45); }
+  :is(.av-btn, .sw):active { filter: brightness(1.2); }
+  .folder::after { transition: opacity var(--t-base) var(--ease); }
+  /* Everything that appears or disappears fades, at the same speed. */
+  .toast { transition: opacity var(--t-base) var(--ease), visibility 0s linear var(--t-base); }
+  .toast.show { transition-delay: 0s; }
+  .menu:not([hidden]), .dlg:not([hidden]), .dlg:not([hidden]) .dlg-panel { animation: fade var(--t-base) var(--ease); }
+  .dlg.closing, .dlg.closing .dlg-panel, .menu.closing { animation: fadeOut var(--t-fast) var(--ease) forwards; pointer-events: none; }
+  /* Screens are the only thing that moves. */
   @media (max-width: 900px) {
-    .editor { transition: transform 0.28s cubic-bezier(0.22, 0.8, 0.2, 1), visibility 0s linear 0.28s; }
-    .app[data-view="editor"] .editor { transition: transform 0.28s cubic-bezier(0.22, 0.8, 0.2, 1), visibility 0s; }
+    .editor { transition: transform var(--t-slow) var(--ease), visibility 0s linear var(--t-slow); }
+    .app[data-view="editor"] .editor { transition: transform var(--t-slow) var(--ease), visibility 0s; }
   }
-  @keyframes pop { from { opacity: 0; transform: scale(0.96) translateY(-4px); } }
   @keyframes fade { from { opacity: 0; } }
-  @keyframes rise { from { opacity: 0; transform: translateY(10px) scale(0.98); } }
+  @keyframes fadeOut { to { opacity: 0; } }
 }
 </style>
 
@@ -452,7 +514,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
             <button class="tool icon" type="button" data-cmd="bold" aria-pressed="false" aria-label="Bold"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 2h3.6a2.3 2.3 0 0 1 0 4.6H3.5zM3.5 6.6h4.2a2.7 2.7 0 0 1 0 5.4H3.5z" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linejoin="round"/></svg></button>
             <button class="tool icon" type="button" data-cmd="bullet" aria-pressed="false" aria-label="Bullet"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="2.5" cy="3.5" r="1.2" fill="currentColor"/><circle cx="2.5" cy="7" r="1.2" fill="currentColor"/><circle cx="2.5" cy="10.5" r="1.2" fill="currentColor"/><path d="M6 3.5h6.5M6 7h6.5M6 10.5h6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></button>
             <button class="tool icon" type="button" data-cmd="check" aria-pressed="false" aria-label="Checklist"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.5" y="1.5" width="11" height="11" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M4.5 7.2l1.8 1.8 3.2-3.6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-            <button class="tool icon" type="button" data-cmd="right" aria-pressed="false" aria-label="Right"><svg class="i-left" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 3h10M2 6.3h6.5M2 9.7h10M2 13h6.5" transform="translate(0 -1)" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg><svg class="i-right" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 3h10M5.5 6.3H12M2 9.7h10M5.5 13H12" transform="translate(0 -1)" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></button>
+            <button class="tool icon" type="button" data-cmd="right" aria-pressed="false" aria-label="Align"><svg class="i-left" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 3h10M2 6.3h6.5M2 9.7h10M2 13h6.5" transform="translate(0 -1)" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg><svg class="i-right" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 3h10M5.5 6.3H12M2 9.7h10M5.5 13H12" transform="translate(0 -1)" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></button>
             <button class="tool icon" type="button" data-cmd="pagebreak" aria-pressed="false" aria-label="Page break"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 5.5V2h7v3.5M3.5 8.5V12h7V8.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 7h2.2M5.9 7h2.2M10.8 7H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
             <button class="tool" type="button" data-cmd="typewriter" aria-pressed="false" title="Keep the line you are typing at the bottom"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 9.5V2.5M4 5.5l3-3 3 3M2.5 12h9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Typewriter</button>
           </div>
@@ -470,31 +532,47 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 </div>
 
 <div class="menu" id="menu" role="menu" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <div class="dlg" id="dlg" hidden>
   <div class="dlg-panel" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
-    <h2 id="dlgTitle">Settings</h2>
-    <details class="adv sync-box" id="syncDet">
-      <summary><span>Cloud sync with Google Drive</span><span class="sync-state" id="syncState">Off</span></summary>
-      <div id="syncForm">
-        <input id="syncUrl" type="url" placeholder="Web app URL from the setup script" autocomplete="off" spellcheck="false" aria-label="Sync web app URL">
-        <input id="syncSecret" type="password" placeholder="Secret key" autocomplete="off" spellcheck="false" aria-label="Sync secret key" style="margin-top:8px">
-        <div class="sync-btns" style="margin-top:8px"><button class="btn solid" type="button" id="syncConnect">Connect</button></div>
-      </div>
-      <div id="syncOn" hidden>
-        <p class="dlg-sub" id="syncInfo"></p>
-        <div class="sync-btns" style="margin-top:8px"><button class="btn" type="button" id="syncNow">Sync now</button><button class="btn danger" type="button" id="syncOff">Disconnect</button></div>
+    <div class="dlg-head"><h2 id="dlgTitle">Settings</h2><button class="icon-btn dlg-x" type="button" id="kDone" aria-label="Close settings" title="Close"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg></button></div>
+
+    <details class="card sync-box" id="syncDet" style="--tc:var(--blue);--on-tc:var(--on-blue)">
+      <summary><span class="chip"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.2 13.5a3.2 3.2 0 0 1-.4-6.4 4.4 4.4 0 0 1 8.5 1.1 2.7 2.7 0 0 1-.3 5.3z"/></svg></span><b>Sync</b><span class="sync-state" id="syncState">Off</span></summary>
+      <div class="card-body">
+        <div id="syncForm">
+          <input id="syncUrl" type="url" placeholder="Link" aria-label="Link from your setup" autocomplete="off" spellcheck="false">
+          <input id="syncSecret" type="password" placeholder="Secret key" aria-label="Secret key" autocomplete="off" spellcheck="false">
+          <button class="btn solid wide" type="button" id="syncConnect"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.2 13.5a3.2 3.2 0 0 1-.4-6.4 4.4 4.4 0 0 1 8.5 1.1 2.7 2.7 0 0 1-.3 5.3z"/></svg>Connect</button>
+        </div>
+        <div id="syncOn" hidden>
+          <p class="dlg-sub" id="syncInfo"></p>
+          <button class="btn solid wide" type="button" id="syncNow"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 9a6 6 0 0 1-10.4 4M3 9a6 6 0 0 1 10.4-4M13.5 2v3.2h-3.2M4.5 16v-3.2h3.2"/></svg>Sync now</button>
+          <button class="btn wide danger" type="button" id="syncOff">Disconnect to change account</button>
+        </div>
       </div>
     </details>
-    <details class="adv">
-      <summary><span>Keyboard shortcuts</span><span class="sync-state">For PC</span></summary>
-      <div class="set-row"><span id="scLabel">Use shortcuts</span><button class="switch" type="button" role="switch" id="scSwitch" aria-checked="true" aria-labelledby="scLabel"></button></div>
-      <p class="dlg-sub">Press Change, then the keys you want. Each shortcut needs Ctrl or ⌘.</p>
-      <div id="krows"></div>
-      <div class="kmsg" id="kmsg" role="status"></div>
-      <button class="btn" type="button" id="kReset">Reset to defaults</button>
+
+    <details class="card" style="--tc:var(--green);--on-tc:var(--on-green)">
+      <summary><span class="chip"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1.8" y="4.5" width="14.4" height="9" rx="2"/><path d="M5 8h.01M8 8h.01M11 8h.01M14 8h.01M5.5 11h7"/></svg></span><b>Shortcuts</b><span class="sync-state">Tap keys to edit</span></summary>
+      <div class="card-body">
+        <div class="set-row"><span id="scLabel">Use shortcuts</span><button class="switch" type="button" role="switch" id="scSwitch" aria-checked="true" aria-labelledby="scLabel"></button></div>
+        <div id="krows"></div>
+        <div class="kmsg" id="kmsg" role="status"></div>
+        <button class="btn" type="button" id="kReset">Reset to defaults</button>
+      </div>
     </details>
-    <div class="dlg-foot" style="justify-content:flex-end"><button class="btn solid" type="button" id="kDone">Done</button></div>
+
+    <details class="card" style="--tc:var(--yellow);--on-tc:var(--on-yellow)">
+      <summary><span class="chip"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="2.5" width="5.5" height="7" rx="1.2"/><rect x="10" y="2.5" width="5.5" height="4" rx="1.2"/><rect x="10" y="8.5" width="5.5" height="7" rx="1.2"/><rect x="2.5" y="11.5" width="5.5" height="4" rx="1.2"/></svg></span><b>Presets</b><span class="sync-state">Coming soon</span></summary>
+      <div class="card-body"><p class="dlg-sub">Ready-made notes with pages and layouts already set up. Coming soon.</p></div>
+    </details>
+
+    <details class="card" style="--tc:var(--pink);--on-tc:var(--on-pink)">
+      <summary><span class="chip"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="6.8"/><path d="M9 8.2v4.1M9 5.7v.1"/></svg></span><b>About</b><span class="sync-state">Version 1.2</span></summary>
+      <div class="card-body"><p class="dlg-sub">Daybook, version 1.2</p><p class="dlg-sub">Made by faicalcanwork</p></div>
+    </details>
   </div>
 </div>
 
@@ -515,11 +593,21 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 
   /* ================= Constants ================= */
   const STORE_KEY = 'daybook:v3';
-  const COLORS = ['blue', 'red', 'orange', 'yellow', 'green', 'purple', 'pink', 'grey'];   // in this order in the colour picker
+  const COLORS = ['blue', 'red', 'yellow', 'green', 'pink', 'grey'];   // in this order in the colour picker
   const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
   const ALL = 'all';                                   // id of the built-in folder that shows every note
   const PIN_PATH = 'M9.5 1.5l5 5-2 .8-2.6 2.6.3 3.1-1 1-3.1-3.1L2.5 14l-.5-.5 3.6-3.6L2.5 6.8l1-1 3.1.3 2.6-2.6z';
   const TRASH_SVG = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.6 9.2c0 .5.4.8.9.8h5c.5 0 .9-.3.9-.8L12 4M6.5 7v4.5M9.5 7v4.5"/></svg>`;
+  let toastTimer = 0;
+  /* The same speeds and curve as the CSS, for the few things done in script. A changed row gets a soft wash of its own colour that fades out. */
+  const MOTION = { base: 200, slow: 280, wash: 900, ease: 'cubic-bezier(0.2, 0.8, 0.2, 1)' };
+  const WASH = [{ backgroundColor: 'color-mix(in srgb, var(--nc) 30%, transparent)' }, { backgroundColor: 'transparent' }];
+  /* A short message at the top for every major action, so you always see that something happened. */
+  function toast(msg) {
+    const t = document.getElementById('toast'); if (!t) return;
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
   const PIN_SVG = `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="${PIN_PATH}" fill="currentColor"/></svg>`;
   const PIN_ICON = '<svg class="pin" width="14" height="14" viewBox="0 0 16 16" aria-label="Pinned"><path d="M9.5 1.5l5 5-2 .8-2.6 2.6.3 3.1-1 1-3.1-3.1L2.5 14l-.5-.5 3.6-3.6L2.5 6.8l1-1 3.1.3 2.6-2.6z" fill="currentColor"/></svg>';
   const IS_MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || '');
@@ -788,11 +876,11 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 
   /* One list of commands drives the toolbar buttons and the keyboard shortcuts. */
   const COMMANDS = {
-    bold:       { label: 'Bold',      def: { code: 'KeyB' },                isOn: () => fmt.bold === true,                    run: bold },
     heading:    { label: 'Heading',   def: { code: 'Digit1', alt: true },   isOn: isHeading,                                    run: () => lineFormat('header', 1, (f) => typeof f.header === 'number') },
+    bold:       { label: 'Bold',      def: { code: 'KeyB' },                isOn: () => fmt.bold === true,                    run: bold },
     bullet:     { label: 'Bullet',    def: { code: 'KeyL', shift: true },   isOn: () => fmt.list === 'bullet',                  run: () => lineFormat('list', 'bullet', (f) => f.list === 'bullet') },
     check:      { label: 'Checklist', def: { code: 'Digit9', shift: true }, isOn: () => fmt.list === 'checked' || fmt.list === 'unchecked', run: () => lineFormat('list', 'unchecked', (f) => f.list === 'checked' || f.list === 'unchecked') },
-    right:      { label: 'Right',     def: { code: 'KeyR', alt: true },   isOn: isRight,                                       run: toggleRight },
+    right:      { label: 'Align',     def: { code: 'KeyR', alt: true },   isOn: isRight,                                       run: toggleRight },
     pagebreak:  { label: 'Page break', def: { code: 'Enter' },             isOn: () => false,                                run: pageBreak },
     typewriter: { label: 'Typewriter',                                      isOn: typewriterOn,                                 run: toggleTypewriter }
   };
@@ -848,17 +936,19 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     if (ui.renaming) { const input = $('folderInput'); if (input && document.activeElement !== input) { input.focus(); input.select(); } }
   }
 
+  /* Overview under the list: follows the folder that is open. "Edited" means the text was written in (not a colour, pin or folder change). */
   function renderStats() {
     const today = dayKey(Date.now()), weekAgo = Date.now() - 7 * 864e5;
-    let open = 0, words = 0, madeToday = 0, madeThisWeek = 0;
+    let open = 0, words = 0, newToday = 0, editedToday = 0, editedWeek = 0;
     for (const n of state.notes) {
+      if (ui.folder !== ALL && !n.folders?.includes(ui.folder)) continue;
       const i = info(n); open += i.total - i.done; words += i.words;
-      if (dayKey(n.created) === today) madeToday++;
-      if (n.created >= weekAgo) madeThisWeek++;
+      if (dayKey(n.created) === today) newToday++;
+      if (dayKey(n.updated) === today) editedToday++;
+      if (n.updated >= weekAgo) editedWeek++;
     }
     const cell = (v, label) => `<div><b>${v}</b><span>${label}</span></div>`;
-    const shtml = cell(state.notes.length, 'Notes') + cell(state.folders.length + 1, 'Folders') + cell(madeToday, 'Today') +
-      cell(madeThisWeek, 'Last 7 days') + cell(open, 'Open tasks') + cell(words.toLocaleString(), 'Words');
+    const shtml = cell(newToday, 'New') + cell(editedToday, 'Edited') + cell(editedWeek, '7 days') + cell(open, 'Tasks').replace('<div>', open ? '<div class="warm">' : '<div>') + cell(words.toLocaleString(), 'Words');
     if (el.stats._h !== shtml) { el.stats.innerHTML = shtml; el.stats._h = shtml; }
   }
 
@@ -888,7 +978,10 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     if (!el.list.firstElementChild?.dataset.nid) el.list.textContent = '';
     const have = new Map();
     for (const li of el.list.children) have.set(li.dataset.nid, li);
-    const smooth = motionOK() && have.size > 0 && have.size <= 300;
+    /* Rows only glide when the order changes or a row is added, so a redraw that changes nothing never forces the browser to measure every row. */
+    let sameOrder = have.size === notes.length;
+    if (sameOrder) { let k = 0; for (const n of notes) { if (el.list.children[k++]?.dataset.nid !== n.id) { sameOrder = false; break; } } }
+    const smooth = motionOK() && have.size > 0 && have.size <= 300 && !sameOrder;
     const before = smooth ? new Map([...have].map(([id, li]) => [id, li.offsetTop])) : null;
     const tpl = document.createElement('template');
     const next = [], fresh = new Set();
@@ -897,7 +990,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
       const folder = ui.folder === ALL && n.folders ? n.folders.map(folderLabel).join(', ') : '';
       const badge = i.total ? `<span class="badge${i.done === i.total ? ' done' : ''}" title="${i.done} of ${i.total} tasks done">${i.done}/${i.total}</span>` : '';
       const name = n.title || 'Untitled note';
-      const html = `<li class="item" data-nid="${n.id}" style="--nc:var(--${n.color})"><button class="row" type="button" data-id="${n.id}" aria-current="${n.id === ui.activeId}"><span class="av-gap"></span><span class="row-main">` +
+      const html = `<li class="item" data-nid="${n.id}" style="--nc:var(--${n.color});--on-nc:var(--on-${n.color})"><button class="row" type="button" data-id="${n.id}" aria-current="${n.id === ui.activeId}"><span class="av-gap"></span><span class="row-main">` +
         `<span class="row-top"><span class="row-title">${esc(name)}</span><span class="row-time">${esc(rowTime(n))}</span></span>` +
         `<span class="row-bot"><span class="row-snip">${folder ? `<b>${esc(folder)}</b> ` : ''}${esc(snippet(n))}</span>${badge}${n.pinned ? PIN_ICON : ''}</span></span></button>` +
         `<button class="av-btn" type="button" data-more="${n.id}" aria-label="Options for ${esc(name)}" title="Options">${avatar(n, 48)}</button></li>`;
@@ -907,6 +1000,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
         const made = tpl.content.firstElementChild; made._h = html;
         if (li) li.replaceWith(made); else if (have.size) fresh.add(n.id);
         li = made;
+        if (ui.pulse === n.id && motionOK()) { ui.pulse = null; requestAnimationFrame(() => li.animate(WASH, { duration: MOTION.wash, easing: MOTION.ease })); }
       }
       next.push(li);
     }
@@ -916,10 +1010,10 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     if (smooth) {
       const lh = el.list.clientHeight;
       for (const li of next) {
-        if (fresh.has(li.dataset.nid)) { li.animate([{ opacity: 0, transform: 'translateY(-8px)' }, { opacity: 1, transform: 'none' }], { duration: 220, easing: 'ease-out' }); continue; }
+        if (fresh.has(li.dataset.nid)) { li.animate([{ opacity: 0 }, { opacity: 1 }], { duration: MOTION.base, easing: MOTION.ease }); continue; }
         const was = before.get(li.dataset.nid); if (was === undefined) continue;
         const d = was - li.offsetTop;
-        if (d && Math.abs(d) < lh * 1.5) li.animate([{ transform: `translateY(${d}px)` }, { transform: 'none' }], { duration: 260, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' });
+        if (d && Math.abs(d) < lh * 1.5) li.animate([{ transform: `translateY(${d}px)` }, { transform: 'none' }], { duration: MOTION.slow, easing: MOTION.ease });
       }
     }
   }
@@ -1014,9 +1108,12 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     const n = layers.length - i; layers.length = i;
     try { pendingBack++; history.go(-n); clearTimeout(backTimer); backTimer = setTimeout(flush, 400); } catch { pendingBack = 0; }
   }
+  /* Installed app on a touch phone only: the first Back on the list asks the app to close. If the phone refuses, Back goes through as before. */
+  const phoneApp = () => phoneMQ.matches && matchMedia('(pointer: coarse)').matches && (matchMedia('(display-mode: standalone)').matches || navigator.standalone === true);
   function closeLayerUi(kind) {
-    if (kind === 'ed') { applyView('list'); if (!phoneMQ.matches && ui.activeId) { ui.activeId = null; renderEditor(); renderList(); } }   // on a wide screen, Back also closes the open note
-    else if (kind === 'dlg') { el.dlg.hidden = true; recording = null; }
+    if (kind === 'home') { try { window.close(); } catch { /* refused */ } setTimeout(() => { try { history.back(); } catch { /* nothing */ } }, 300); }
+    else if (kind === 'ed') { applyView('list'); if (!phoneMQ.matches && ui.activeId) { ui.activeId = null; renderEditor(); renderList(); } }   // on a wide screen, Back also closes the open note
+    else if (kind === 'dlg') hideDlg();
     else if (kind === 'menu') hideMenu();
   }
   function setView(v) {
@@ -1030,6 +1127,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     if (!pendingBack) flush();
   });
   if (history.state?.n) { try { pendingBack++; history.go(-history.state.n); backTimer = setTimeout(flush, 400); } catch { pendingBack = 0; } }   // a reload inside a note: step back to the list's own entry
+  if (phoneApp()) pushLayer('home');
   phoneMQ.addEventListener('change', () => applyView(el.app.dataset.view));
   applyView(el.app.dataset.view);
 
@@ -1043,7 +1141,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
   }
   /* Call after a change to a note's title, colour, pin or folders. It does not count as writing, so the note keeps its place in the list. */
   function touchMeta(n) {
-    n.meta = Date.now();
+    n.meta = Date.now(); ui.pulse = n.id;
     if (n.id === ui.activeId) renderNoteHeader(n);
     store.saveSoon();
     refreshLists();
@@ -1051,11 +1149,22 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
   /* Call after a change that must be saved at once (create, delete, move). */
   function commit() { store.save(); refreshAll(); }
 
+  /* Opening a note only moves the highlight from one row to another, so it does not redraw the whole list (that used to cost 80 to 220 ms before the slide started). */
+  function markRow(id, on) {
+    const b = id && el.list.querySelector(`[data-nid="${CSS.escape(id)}"] .row`); if (!b) return false;
+    b.setAttribute('aria-current', String(on));
+    const li = b.parentElement; if (li._h) li._h = li._h.replace(/aria-current="(true|false)"/, `aria-current="${on}"`);
+    return true;
+  }
   function openNote(id) {
+    const prev = ui.activeId;
     ui.activeId = id;
-    renderEditor(); renderList(); setView('editor');
+    renderEditor();
+    const found = markRow(id, true); if (prev && prev !== id) markRow(prev, false);
+    if (!found) renderList();
+    setView('editor');
     applyTypewriter(true);
-    if (motionOK()) $('edScroll').animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180, easing: 'ease-out' });
+    if (motionOK()) $('edScroll').animate([{ opacity: 0 }, { opacity: 1 }], { duration: MOTION.base, easing: MOTION.ease });
   }
   /* A random accent for each new note, never the same as the newest note's, so neighbours in the list look different. */
   function randomColor() {
@@ -1074,17 +1183,20 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
   function deleteNote(id) {
     state.gone[id] = Date.now();
     state.notes = state.notes.filter((n) => n.id !== id);
-    commit();
+    commit(); toast('Note deleted');
     if (id === ui.activeId) { ui.activeId = null; renderEditor(); renderList(); setView('list'); }
   }
   /* A note opens only when you tap it or create it, and it stays open when you switch folders or search. Deleting it closes the editor. */
 
   /* ================= Folders ================= */
-  function selectFolder(id) { ui.folder = id; renderFolders(); renderList(); }
+  function selectFolder(id) {
+    ui.folder = id; renderFolders(); renderStats(); renderList();
+    if (motionOK()) el.list.animate([{ opacity: 0.4 }, { opacity: 1 }], { duration: MOTION.base, easing: MOTION.ease });
+  }
   function startRename(id) { ui.renaming = id; renderFolders(); }
   function newFolder() {
     const f = { id: uid(), name: 'New folder', updated: Date.now() };
-    state.folders.push(f); store.save();
+    state.folders.push(f); store.save(); toast('Folder created');
     ui.folder = f.id; ui.renaming = f.id;
     refreshAll();
     $('folders').querySelector(`[data-folder="${f.id}"]`)?.scrollIntoView?.({ inline: 'nearest', block: 'nearest' });
@@ -1093,7 +1205,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     const id = ui.renaming; if (!id) return;
     const name = $('folderInput')?.value.trim() ?? '';
     ui.renaming = null;
-    if (save && name) { if (id === ALL) state.allName = name; else { const f = findFolder(id); if (f) { f.name = name; f.updated = Date.now(); } } store.save(); }
+    if (save && name) { if (id === ALL) state.allName = name; else { const f = findFolder(id); if (f) { f.name = name; f.updated = Date.now(); } } store.save(); toast('Renamed'); }
     renderFolders(); renderList();
   }
   function deleteFolder(id) {
@@ -1102,7 +1214,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     state.folders = state.folders.filter((f) => f.id !== id);
     store.save();
     if (ui.folder === id) selectFolder(ALL);
-    refreshAll();
+    refreshAll(); toast('Folder deleted');
   }
 
   /* ================= Keyboard shortcuts ================= */
@@ -1127,27 +1239,35 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
   /* ================= Settings dialog ================= */
   let recording = null;                              // id of the command whose shortcut is being recorded
   const say = (t) => { $('kmsg').textContent = t || ''; };
+  const keyText = (id) => shortcutText(shortcutFor(id)).replace(/ \+ /g, '+');
+  function paintKeys() { $('krows').querySelectorAll('[data-rec]').forEach((i) => { i.value = recording === i.dataset.rec ? 'Press keys…' : keyText(i.dataset.rec); }); }
   function renderDialog() {
-    $('krows').innerHTML = SHORTCUT_IDS.map((id) => {
-      const rec = recording === id;
-      return `<div class="krow${rec ? ' rec' : ''}"><span>${esc(COMMANDS[id].label)}</span><kbd>${rec ? 'Press new keys…' : esc(shortcutText(shortcutFor(id)))}</kbd>` +
-        `<button class="btn" type="button" data-rec="${id}">${rec ? 'Cancel' : 'Change'}</button></div>`;
-    }).join('');
+    $('krows').innerHTML = SHORTCUT_IDS.map((id) => `<label class="krow"><span>${esc(COMMANDS[id].label)}</span><input class="kbtn" type="text" readonly data-rec="${id}" autocomplete="off" aria-label="Shortcut for ${esc(COMMANDS[id].label)}"></label>`).join('');
+    paintKeys();
   }
-  function openDialog() { recording = null; say(''); renderDialog(); renderSync(); $('syncDet').open = !!sync.cfg; el.dlg.hidden = false; pushLayer('dlg'); $('kDone').focus(); }
-  function closeDialog() { el.dlg.hidden = true; recording = null; dropLayer('dlg'); $('settingsBtn').focus(); }
-  function focusRecButton(id) { $('krows').querySelector(`[data-rec="${id}"]`)?.focus(); }
-
+  function openDialog() { recording = null; say(''); renderDialog(); renderSync(); clearTimeout(dlgTimer); el.dlg.classList.remove('closing'); el.dlg.hidden = false; pushLayer('dlg'); $('kDone').focus(); }
+  /* Settings and the note menu fade out for a moment instead of vanishing. */
+  let dlgTimer = 0, menuTimer = 0;
+  function hideDlg() {
+    recording = null;
+    if (el.dlg.hidden || el.dlg.classList.contains('closing')) return;
+    if (!motionOK()) { el.dlg.hidden = true; return; }
+    el.dlg.classList.add('closing');
+    clearTimeout(dlgTimer); dlgTimer = setTimeout(() => { el.dlg.hidden = true; el.dlg.classList.remove('closing'); }, 120);
+  }
+  function closeDialog() { hideDlg(); dropLayer('dlg'); $('settingsBtn').focus(); }
+  
   function recordKey(e) {
+    if (e.key === 'Tab' && !e.ctrlKey && !e.metaKey) return;               // Tab still moves on
     e.preventDefault(); e.stopPropagation();
-    if (e.key === 'Escape') { recording = null; say(''); renderDialog(); return; }
+    if (e.key === 'Escape') { recording = null; say(''); paintKeys(); document.activeElement.blur(); return; }
     if (/^(Control|Shift|Alt|Meta)(Left|Right)$/.test(e.code)) return;
     if (!(e.ctrlKey || e.metaKey)) { say(`Include ${IS_MAC ? '⌘' : 'Ctrl'} in the shortcut.`); return; }
     const keys = { code: e.code, ...(e.altKey && { alt: true }), ...(e.shiftKey && { shift: true }) };
     const clash = SHORTCUT_IDS.find((id) => id !== recording && sameKeys(shortcutFor(id), keys));
     if (clash) { say(`${shortcutText(keys)} is already used by ${COMMANDS[clash].label}.`); return; }
     settings.shortcuts[recording] = keys; store.save();
-    const done = recording; recording = null; say(''); renderDialog(); renderShortcutHints(); focusRecButton(done);
+    recording = null; say(''); paintKeys(); renderShortcutHints(); document.activeElement.blur();
   }
 
   /* ================= Options menu: tap a note's avatar (folders: right-click or long-press) ================= */
@@ -1179,6 +1299,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
       ? `<div class="mfolders">${state.folders.map((f) => `<button type="button" class="mchip" data-act="folder" data-v="${f.id}" aria-pressed="${!!n.folders?.includes(f.id)}">${esc(f.name)}</button>`).join('')}</div>`
       : '<div class="mnote">Add a folder with + to organise notes.</div>';
     const pinLabel = n.pinned ? 'Unpin' : 'Pin to top';
+    m.style.setProperty('--nc', `var(--${n.color})`); m.style.setProperty('--on-nc', `var(--on-${n.color})`);
     m.innerHTML = `<div class="mhead"><span class="mav" style="--nc:var(--${n.color})">${avatar(n, 36)}</span><div class="mtitle"><b>${esc(n.title || 'Untitled note')}</b><span id="mcolor">${cap(n.color)}</span></div>` +
       `<button class="mpin" type="button" data-act="pin" aria-pressed="${!!n.pinned}" aria-label="${pinLabel}" title="${pinLabel}">${PIN_SVG}</button><button class="mdel" type="button" data-act="ask" aria-label="Delete note" title="Delete note">${TRASH_SVG}</button></div>` +
       `<div class="ml">Colour</div><div class="mcolors" role="radiogroup" aria-label="Note colour">${swatches}</div>` +
@@ -1188,6 +1309,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
   function setNoteColor(n, c) {
     if (n.color === c) return;
     n.color = c; touchMeta(n);
+    el.menu.style.setProperty('--nc', `var(--${c})`); el.menu.style.setProperty('--on-nc', `var(--on-${c})`);
     const head = el.menu.querySelector('.mav'); if (head) { head.style.setProperty('--nc', `var(--${c})`); head.innerHTML = avatar(n, 36); }
     const label = document.getElementById('mcolor'); if (label) label.textContent = cap(c);
     el.menu.querySelectorAll('.sw').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.v === c)));
@@ -1196,13 +1318,19 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     if (kind === 'note' ? !findNote(id) : folderLabel(id) === undefined) return;
     Object.assign(menu, { kind, id, confirm: false });
     renderMenu();
-    const m = el.menu; m.hidden = false; pushLayer('menu');
+    const m = el.menu; clearTimeout(menuTimer); m.classList.remove('closing'); m.hidden = false; pushLayer('menu');
     const vw = document.documentElement.clientWidth, vh = window.innerHeight;
     m.style.left = `${Math.max(8, Math.min(x, vw - m.offsetWidth - 8))}px`;
     m.style.top = `${Math.max(8, Math.min(y, vh - m.offsetHeight - 8))}px`;
     m.querySelector('button')?.focus({ preventScroll: true });
   }
-  function hideMenu() { el.menu.hidden = true; Object.assign(menu, { kind: null, id: null, confirm: false }); }
+  function hideMenu() {
+    Object.assign(menu, { kind: null, id: null, confirm: false });
+    if (el.menu.hidden || el.menu.classList.contains('closing')) return;
+    if (!motionOK()) { el.menu.hidden = true; return; }
+    el.menu.classList.add('closing');
+    clearTimeout(menuTimer); menuTimer = setTimeout(() => { el.menu.hidden = true; el.menu.classList.remove('closing'); }, 120);
+  }
   function closeMenu() { hideMenu(); dropLayer('menu'); }
 
   const menuActions = {
@@ -1211,12 +1339,12 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     keep:            () => { menu.confirm = false; renderMenu(); },
     'delete-folder': () => { const id = menu.id; closeMenu(); deleteFolder(id); },
     'delete-note':   () => { const id = menu.id; closeMenu(); deleteNote(id); },
-    pin:             (n) => { n.pinned = !n.pinned; touchMeta(n); closeMenu(); },
+    pin:             (n) => { n.pinned = !n.pinned; touchMeta(n); closeMenu(); toast(n.pinned ? 'Pinned to top' : 'Unpinned'); },
     color:           (n, v) => setNoteColor(n, v),
     folder:          (n, v, b) => {                                              // a note can be in any number of folders
       const set = new Set(n.folders || []); set.has(v) ? set.delete(v) : set.add(v);
       if (set.size) n.folders = state.folders.map((f) => f.id).filter((id) => set.has(id)); else delete n.folders;
-      touchMeta(n); b.setAttribute('aria-pressed', String(set.has(v)));
+      touchMeta(n); b.setAttribute('aria-pressed', String(set.has(v))); toast(set.has(v) ? `Added to ${folderLabel(v)}` : `Removed from ${folderLabel(v)}`);
     }
   };
 
@@ -1314,10 +1442,9 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
   el.dlg.addEventListener('click', (e) => { if (e.target === el.dlg) closeDialog(); });
   $('scSwitch').addEventListener('click', () => { settings.shortcutsOn = !settings.shortcutsOn; store.save(); renderShortcutHints(); });
   $('kReset').addEventListener('click', () => { settings.shortcuts = {}; recording = null; say(''); store.save(); renderDialog(); renderShortcutHints(); });
-  $('krows').addEventListener('click', (e) => {
-    const b = e.target.closest('[data-rec]'); if (!b) return;
-    const id = b.dataset.rec; recording = recording === id ? null : id; say(''); renderDialog(); focusRecButton(id);
-  });
+  /* A shortcut box is a text box: click into it, press the keys you want, done. */
+  $('krows').addEventListener('focusin', (e) => { const i = e.target.closest('[data-rec]'); if (!i) return; recording = i.dataset.rec; say(''); paintKeys(); });
+  $('krows').addEventListener('focusout', (e) => { if (e.target.closest('[data-rec]') && recording === e.target.dataset.rec) { recording = null; paintKeys(); } });
   document.addEventListener('keydown', (e) => {                                  // Escape closes the dialog or the menu; recording takes every key
     if (!el.dlg.hidden) { if (recording) recordKey(e); else if (e.key === 'Escape') closeDialog(); return; }
     if (e.key === 'Escape' && !el.menu.hidden) closeMenu();
@@ -1387,7 +1514,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     let j; try { j = await r.json(); } catch { throw new Error('the web app did not answer. Check the URL'); }
     return j;
   }
-  function setSync(status, err = '') { sync.status = status; sync.err = err; paintSaved(); renderSync(); }
+  function setSync(status, err = '') { const was = sync.status; sync.status = status; sync.err = err; paintSaved(); renderSync(); if (status === 'error' && was !== 'error' && !sync.connecting) toast('Could not sync. Your notes are safe on this device.'); }
   async function runSync() {
     if (!sync.cfg) return;
     if (sync.busy) { sync.again = true; return; }
@@ -1444,13 +1571,14 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
     if (!/^https:\/\/script\.google\.com\/.+\/exec/.test(url)) return bad('Check the URL');
     if (!key) return bad('Enter the key');
     sync.cfg = { url, key, last: 0 }; saveSyncCfg();
-    await runSync();
+    sync.connecting = true;
+    try { await runSync(); } finally { sync.connecting = false; }
     if (sync.status === 'error' || sync.status === 'offline') { const msg = sync.status === 'offline' ? 'you are offline' : sync.err; sync.cfg = null; saveSyncCfg(); setSync('idle'); bad(`Failed: ${msg}`); }
-    else { $('syncSecret').value = ''; }
+    else { $('syncSecret').value = ''; toast('Sync connected'); }
   }
-  function disconnectSync() { clearTimeout(sync.timer); sync.cfg = null; saveSyncCfg(); sync.status = 'idle'; paintSaved(); renderSync(); }
+  function disconnectSync() { clearTimeout(sync.timer); sync.cfg = null; saveSyncCfg(); sync.status = 'idle'; paintSaved(); renderSync(); toast('Sync disconnected'); }
   $('syncConnect').addEventListener('click', connectSync);
-  $('syncNow').addEventListener('click', runSync);
+  $('syncNow').addEventListener('click', async () => { await runSync(); if (sync.status === 'synced') toast('Synced'); else if (sync.status === 'offline') toast('You are offline'); });
   $('syncOff').addEventListener('click', disconnectSync);
   $('saved').addEventListener('click', () => { if (sync.cfg) runSync(); });
   window.addEventListener('online', () => runSync());
