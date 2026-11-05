@@ -114,6 +114,12 @@
 
 
 
+
+
+
+
+
+
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Fonts are embedded (Latin letters, numbers and punctuation), so the page needs no internet. Other scripts use the system font. */
@@ -366,8 +372,8 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .ql-editor .ql-align-right { text-align: right; }
 .ql-editor li.ql-align-right { padding-left: 0; padding-right: 1.5em; }
 .ql-editor li.ql-align-right > .ql-ui { left: auto; right: 0; }
-/* Page break: two thin lines in the note's colour, edge to edge, with a small gap between them. */
-.ql-editor > hr.pagebreak { display: block; box-sizing: border-box; width: auto; height: 7px; margin: 1.3rem calc(-1 * var(--px)); padding: 0; border: 0; border-top: 1px solid var(--nc); border-bottom: 1px solid var(--nc); border-radius: 0; background: var(--panel); cursor: default; }
+/* Page break: one line with a thin note-colour line above and below and the selected-note grey between, edge to edge. */
+.ql-editor > div.dv { box-sizing: border-box; margin: 0 calc(-1 * var(--px)); padding: 0 var(--px); border-top: 1px solid var(--nc); border-bottom: 1px solid var(--nc); background: var(--panel); }
 .ql-editor li > .ql-ui::before { display: inline-block; width: 1.2em; margin: 0 0.3em 0 0; text-align: right; white-space: nowrap; font-size: 1.1em; }
 .ql-editor li[data-list="bullet"] > .ql-ui::before { content: "\2022"; }
 .ql-editor li[data-list="unchecked"] > .ql-ui::before { content: "\2610"; }
@@ -765,7 +771,7 @@ ${Nn(this.code(t,r))}
 
   /* The editor needs its content to end with a new line. */
   function cleanContent(v) {
-    const ops = Array.isArray(v) ? v.filter((op) => isObj(op) && (typeof op.insert === 'string' || (isObj(op.insert) && op.insert.pagebreak === true))).map((op) => (typeof op.insert === 'string' ? op : { insert: { pagebreak: true } })) : [];
+    const ops = Array.isArray(v) ? v.filter((op) => isObj(op) && typeof op.insert === 'string') : [];
     const last = ops[ops.length - 1];
     if (!last || typeof last.insert !== 'string' || !last.insert.endsWith('\n')) ops.push({ insert: '\n' });
     return ops;
@@ -881,18 +887,13 @@ ${Nn(this.code(t,r))}
   /* ================= The editor ================= */
   /* Quill does the writing: bold, headings, bullet and checklist items, Enter, Backspace, Undo, paste.
      Typing "# ", "- ", "[ ] " or "1. " at the start of a line starts a heading or list, the way other note apps do. */
-  const BlockEmbed = Quill.import('blots/block/embed');
-  class PageBreak extends BlockEmbed {
-    static blotName = 'pagebreak';
-    static tagName = 'hr';                       // a plain <hr> is how Quill's own divider example does it; it has no inside for the cursor to land in
-    static className = 'pagebreak';
-    static create() { const n = super.create(); n.setAttribute('title', 'Page break'); return n; }
-    static value() { return true; }
-  }
-  Quill.register(PageBreak);
+  /* A page break is a normal line with a note-colour line above and below it (see the CSS), so the cursor, Backspace and selection all behave as on any line. */
+  const Block = Quill.import('blots/block');
+  class Divider extends Block { static blotName = 'divider'; static tagName = 'div'; static className = 'dv'; }
+  Quill.register(Divider);
   const quill = new Quill('#body', {
     placeholder: 'Start writing…',
-    formats: ['bold', 'header', 'list', 'align', 'pagebreak'],
+    formats: ['bold', 'header', 'list', 'align', 'divider'],
     modules: {
       toolbar: false,
       history: { userOnly: true, delay: 800 },
@@ -922,6 +923,31 @@ ${Nn(this.code(t,r))}
     return true;
   });
   quill.keyboard.bindings.Enter.unshift(quill.keyboard.bindings.Enter.pop());
+
+  /* Page break lines: Backspace or Delete next to one removes it, and Enter on one starts an ordinary line below. */
+  const isDivider = (line) => !!line && line.statics.blotName === 'divider';
+  const dropLine = (line) => { quill.history.cutoff(); quill.deleteText(quill.getIndex(line), line.length(), USER); quill.history.cutoff(); };
+  const first = (key) => quill.keyboard.bindings[key].unshift(quill.keyboard.bindings[key].pop());
+  quill.keyboard.addBinding({ key: 'Backspace', collapsed: true, offset: 0 }, (range) => {
+    const [line] = quill.getLine(range.index);
+    if (isDivider(line)) { if (line.length() <= 1) dropLine(line); else quill.formatLine(range.index, 1, 'divider', false, USER); return false; }
+    const [prev] = range.index ? quill.getLine(range.index - 1) : [null];
+    if (!isDivider(prev)) return true;
+    const n = prev.length(); dropLine(prev); quill.setSelection(range.index - n, 0, USER); return false;
+  });
+  first('Backspace');
+  quill.keyboard.addBinding({ key: 'Delete', collapsed: true, suffix: /^$/ }, (range) => {
+    const [line] = quill.getLine(range.index);
+    if (isDivider(line) && line.length() <= 1) { dropLine(line); return false; }
+    const [next] = quill.getLine(range.index + 1);
+    if (!isDivider(next) || next === line) return true;
+    dropLine(next); return false;
+  });
+  first('Delete');
+  quill.keyboard.addBinding({ key: 'Enter', collapsed: true, format: ['divider'] }, (range) => {
+    quill.insertText(range.index, '\n', USER); quill.formatLine(range.index + 1, 1, 'divider', false, USER); quill.setSelection(range.index + 1, 0, USER); return false;
+  });
+  first('Enter');
 
   /* Safety net: if the browser ever refuses a cursor position (IndexSizeError), keep going instead of throwing. */
   const setNativeRange = quill.selection.setNativeRange.bind(quill.selection);
@@ -955,22 +981,14 @@ ${Nn(this.code(t,r))}
     quill.formatLine(r.index, r.length, 'align', off ? false : 'right', USER);
     syncTools();
   }
-  /* Page break: ends this page and starts a new one below. The cursor lands on the first line of the new page. */
+  /* Page break: puts a divider line at the cursor and moves on to the line below it. */
   function pageBreak() {
     const r = quill.getSelection(true);
     quill.history.cutoff();
     if (r.length) quill.deleteText(r.index, r.length, USER);
-    /* Spaces next to the cut belong to neither page, so they are dropped. Otherwise a space would end up on one side or the other depending on where the cursor was. */
-    const [line, off] = quill.getLine(r.index);
-    const at = r.index - off, txt = quill.getText(at, line.length() - 1);
-    let from = off, to = off;
-    while (from > 0 && /[ \t]/.test(txt[from - 1])) from--;
-    while (to < txt.length && /[ \t]/.test(txt[to])) to++;
-    if (to > from) quill.deleteText(at + from, to - from, USER);
-    r.index = at + from;
-    const len = quill.getLength();
-    quill.insertEmbed(r.index, 'pagebreak', true, USER);
-    quill.setSelection(r.index + (quill.getLength() - len), 0, USER);   // a break inside a line also splits the line, so it adds two positions, not one
+    quill.insertText(r.index, '\n\n', USER);
+    quill.formatLine(r.index + 1, 1, 'divider', true, USER);
+    quill.setSelection(r.index + 2, 0, USER);
     quill.history.cutoff();
     syncTools(); followEnd();
   }
