@@ -120,6 +120,8 @@
 
 
 
+
+
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Fonts are embedded (Latin letters, numbers and punctuation), so the page needs no internet. Other scripts use the system font. */
@@ -292,10 +294,10 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .stats span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.6875rem; color: var(--grey); }
 
 .fab {
-  position: absolute; right: 16px; bottom: 40px; z-index: 5; display: inline-flex; align-items: center; gap: 7px;
-  border: 0; border-radius: var(--r-pill); padding: 9px 16px 9px 13px; background: var(--blue); color: var(--on-blue);
-  font-weight: 700; font-size: 0.8438rem; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  position: absolute; right: 16px; bottom: 40px; z-index: 5; display: grid; place-items: center; width: 52px; height: 52px; padding: 0;
+  border: 0; border-radius: 50%; background: var(--blue); color: var(--on-blue); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
+.fab.open { visibility: hidden; }   /* the button turns into the menu while it is open */
 .fab:hover { filter: brightness(1.08); }
 /* On a wide screen the New note button sits in the list column, so it never covers the writing or the toolbar. */
 @media (min-width: 901px) { .fab { right: auto; left: 284px; transform: translateX(-100%); bottom: 64px; } }
@@ -394,6 +396,14 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .mpin[aria-pressed="true"] { color: var(--blue); }
 .mi { padding: 8px 8px; border: 0; border-radius: 6px; background: transparent; text-align: left; font-size: 0.8438rem; }
 .mi:hover { background: var(--panel); }
+.menu[data-kind="new"] { width: auto; min-width: 11rem; padding: 6px; border-radius: 24px; }
+.mi.preset { display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; border-radius: var(--r-pill); }
+.mi.preset b { flex: 1; font-size: 0.875rem; font-weight: 600; }
+.pk { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; }
+.pk svg { width: 16px; height: 16px; }
+.pk-tag { font-family: var(--font-mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey); }
+.mi.preset:disabled { opacity: 0.55; cursor: not-allowed; }
+.mi.preset:disabled:hover { background: transparent; }
 .mi.danger { color: var(--coral); }
 .ml { padding: 8px 8px 4px; font-family: var(--font-mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--grey); }
 .mnote { padding: 2px 8px 4px; font-size: 0.7812rem; color: var(--ink-2); }
@@ -441,6 +451,7 @@ label.arow { cursor: text; }
 .pill.solid { background: var(--blue); border-color: var(--blue); color: var(--on-blue); }
 .pill.danger { color: var(--coral); }
 .pill[aria-checked="true"] { background: var(--line); color: var(--ink); }
+.pill:disabled { opacity: 0.4; cursor: not-allowed; }
 .set-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; font-size: 0.8125rem; color: var(--ink-2); }
 .switch { flex: none; position: relative; width: 36px; height: 20px; padding: 0; border: 0; border-radius: var(--r-pill); background: var(--grey); }
 .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; }
@@ -580,9 +591,8 @@ label.arow { cursor: text; }
     </main>
   </div>
 
-  <button class="fab" type="button" id="newNote" aria-label="New note">
-    <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.5v11M1.5 7h11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-    New note
+  <button class="fab" type="button" id="newNote" aria-label="New note" title="New note (hold for more)" aria-haspopup="menu">
+    <svg width="22" height="22" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.5v11M1.5 7h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
   </button>
 </div>
 
@@ -629,8 +639,12 @@ label.arow { cursor: text; }
     </details>
 
     <details class="card" style="--tc:var(--amber);--on-tc:var(--on-amber)">
-      <summary><span class="chip"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="2.5" width="5.5" height="7" rx="1.2"/><rect x="10" y="2.5" width="5.5" height="4" rx="1.2"/><rect x="10" y="8.5" width="5.5" height="7" rx="1.2"/><rect x="2.5" y="11.5" width="5.5" height="4" rx="1.2"/></svg></span><b>Presets</b><span class="sync-state">Coming soon</span></summary>
-      <div class="card-body"><p class="dlg-sub">Ready-made notes with pages and layouts already set up. Coming soon.</p></div>
+      <summary><span class="chip"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v12M3 9h12"/></svg></span><b>New note</b><span class="sync-state" id="dkState"></span></summary>
+      <div class="card-body">
+        <div class="pills" id="dkSeg" role="radiogroup" aria-label="Kind of note the + button makes">
+          <button class="pill" type="button" role="radio" data-dk="notes">Notes</button><button class="pill" type="button" role="radio" data-dk="list" disabled>List</button><button class="pill" type="button" role="radio" data-dk="chat" disabled>Chat</button>
+        </div>
+      </div>
     </details>
 
     <details class="card" style="--tc:var(--violet);--on-tc:var(--on-violet)">
@@ -799,7 +813,7 @@ ${Nn(this.code(t,r))}
     return out;
   }
   function load() {
-    const s = { notes: [], folders: [], gone: {}, allName: 'All', settings: { typewriter: true, toolbar: 'typewriter', shortcutsOn: true, shortcuts: {} } };
+    const s = { notes: [], folders: [], gone: {}, allName: 'All', settings: { typewriter: true, toolbar: 'typewriter', defaultKind: 'notes', shortcutsOn: true, shortcuts: {} } };
     let raw = null;
     try { raw = JSON.parse(localStorage.getItem(STORE_KEY)); }
     catch (e) { if (!(e instanceof SyntaxError)) store.ok = false; }
@@ -811,6 +825,7 @@ ${Nn(this.code(t,r))}
     if (Array.isArray(raw.notes)) s.notes = raw.notes.map((n) => cleanNote(n, folderIds)).filter(Boolean);
     if (isObj(raw.settings)) {
       s.settings.typewriter = raw.settings.typewriter !== false;
+      if (['notes', 'list', 'chat'].includes(raw.settings.defaultKind)) s.settings.defaultKind = raw.settings.defaultKind;
       if (['top', 'bottom', 'typewriter'].includes(raw.settings.toolbar)) s.settings.toolbar = raw.settings.toolbar;
       s.settings.shortcutsOn = raw.settings.shortcutsOn !== false;
       s.settings.shortcuts = cleanShortcuts(raw.settings.shortcuts);
@@ -1017,9 +1032,14 @@ ${Nn(this.code(t,r))}
   const atEnd = () => { const r = quill.getSelection(); return !r || r.index + r.length >= quill.getLength() - 1; };
   const toEnd = () => { root.scrollTop = root.scrollHeight; };
   const TB_NAME = { top: 'Top', bottom: 'Bottom', typewriter: 'Typewriter' };
+  const DK_NAME = { notes: 'Notes', list: 'List', chat: 'Chat' };
+  function applyDefaultKind() {
+    $('dkState').textContent = DK_NAME[settings.defaultKind];
+    $('dkSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.dk === settings.defaultKind)));
+  }
   function applyToolbar() {
     el.editor.dataset.tb = settings.toolbar === 'bottom' || (settings.toolbar === 'typewriter' && typewriterOn()) ? 'bottom' : 'top';
-    $('tbState').textContent = TB_NAME[settings.toolbar];
+    $('tbState').textContent = TB_NAME[settings.toolbar]; applyDefaultKind();
     $('tbSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.tb === settings.toolbar)));
   }
   function applyTypewriter(jumpToEnd) {
@@ -1298,7 +1318,7 @@ ${Nn(this.code(t,r))}
     const choices = COLORS.filter((c) => c !== state.notes[0]?.color);
     return choices[Math.floor(Math.random() * choices.length)];
   }
-  function newNote() {
+  function newNote(kind) {   // kind is for List and Chat, which are wired next; every kind is a plain note until then
     const now = Date.now();
     const n = { id: uid(), title: '', content: [{ insert: '\n' }], color: randomColor(), pinned: false, created: now, updated: now };
     if (ui.folder !== ALL) n.folders = [ui.folder];
@@ -1412,8 +1432,21 @@ ${Nn(this.code(t,r))}
   /* ================= Options menu: tap a note's avatar (folders: right-click or long-press) ================= */
   const menu = { kind: null, id: null, confirm: false };
   const button = (cls, act, label, extra = '') => `<button class="${cls}" type="button" data-act="${act}"${extra}>${label}</button>`;
+  /* New note kinds. Notes is the plain page; List and Chat arrive next and stay greyed out until then. */
+  const KINDS = [
+    ['notes', 'Notes', 'blue',  true,  '<rect x="4" y="2.5" width="10" height="13" rx="2"/><path d="M7 6.5h4M7 9h4"/>'],
+    ['list',  'List',  'green', false, '<rect x="3" y="3" width="12" height="12" rx="3"/><path d="M6 9.2l2.3 2.3L12 7"/>'],
+    ['chat',  'Chat',  'grey',  false, '<path d="M3 4.5A2 2 0 0 1 5 2.5h8a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H8l-3.5 3v-3H5a2 2 0 0 1-2-2z"/>']
+  ];
+  const kindIcon = (c, svg) => `<span class="pk" style="background:var(--${c});color:var(--on-${c})"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${svg}</svg></span>`;
   function renderMenu() {
     const m = el.menu;
+    m.dataset.kind = menu.kind || '';
+    if (menu.kind === 'new') {
+      m.innerHTML = KINDS.map(([id, name, c, on, svg]) =>
+        `<button class="mi preset" type="button" data-act="make" data-v="${id}" role="menuitem"${on ? '' : ' disabled'}>${kindIcon(c, svg)}<b>${name}</b>${on ? '' : '<span class="pk-tag">Soon</span>'}</button>`).join('');
+      return;
+    }
     if (menu.kind === 'folder') {
       const name = folderLabel(menu.id);
       if (name === undefined) return closeMenu();
@@ -1454,16 +1487,18 @@ ${Nn(this.code(t,r))}
     el.menu.querySelectorAll('.sw').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.v === c)));
   }
   function openMenu(kind, id, x, y) {
-    if (kind === 'note' ? !findNote(id) : folderLabel(id) === undefined) return;
+    if (kind === 'note' ? !findNote(id) : kind !== 'new' && folderLabel(id) === undefined) return;
     Object.assign(menu, { kind, id, confirm: false });
     renderMenu();
     const m = el.menu; clearTimeout(menuTimer); m.classList.remove('closing'); m.hidden = false; pushLayer('menu');
     const vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    if (kind === 'new') { const f = $('newNote'); f.classList.add('open'); const b = f.getBoundingClientRect(); x = b.right - m.offsetWidth; y = b.bottom - m.offsetHeight; }   // grows out of the button, same corner
     m.style.left = `${Math.max(8, Math.min(x, vw - m.offsetWidth - 8))}px`;
     m.style.top = `${Math.max(8, Math.min(y, vh - m.offsetHeight - 8))}px`;
     m.querySelector('button')?.focus({ preventScroll: true });
   }
   function hideMenu() {
+    $('newNote').classList.remove('open');
     Object.assign(menu, { kind: null, id: null, confirm: false });
     if (el.menu.hidden || el.menu.classList.contains('closing')) return;
     if (!motionOK()) { el.menu.hidden = true; return; }
@@ -1473,6 +1508,7 @@ ${Nn(this.code(t,r))}
   function closeMenu() { hideMenu(); dropLayer('menu'); }
 
   const menuActions = {
+    make:            (n, v) => { closeMenu(); newNote(v); },
     rename:          () => { const id = menu.id; closeMenu(); startRename(id); },
     ask:             () => { menu.confirm = true; renderMenu(); },
     keep:            () => { menu.confirm = false; renderMenu(); },
@@ -1511,7 +1547,8 @@ ${Nn(this.code(t,r))}
   const swallowPressTap = () => { if (press.fired) { press.fired = false; return true; } return false; };
 
   /* ================= Wiring ================= */
-  $('newNote').addEventListener('click', newNote);
+  $('newNote').addEventListener('click', () => { if (!swallowPressTap()) newNote(settings.defaultKind); });
+  bindMenu($('newNote'), 'new', () => 'new');                                    // hold (or right-click) turns the button into the kind menu
   $('back').addEventListener('click', () => setView('list'));
   el.search.addEventListener('input', (e) => { ui.query = e.target.value; renderList(); });
 
@@ -1571,7 +1608,7 @@ ${Nn(this.code(t,r))}
   el.menu.addEventListener('click', (e) => {
     const b = e.target.closest('[data-act]'); if (!b) return;
     const n = findNote(menu.id), run = menuActions[b.dataset.act];
-    if (run && (n || menu.kind === 'folder')) run(n, b.dataset.v, b);
+    if (run && (n || menu.kind === 'folder' || menu.kind === 'new')) run(n, b.dataset.v, b);
   });
   document.addEventListener('pointerdown', (e) => { if (!el.menu.hidden && !e.target.closest('#menu')) closeMenu(); }, true);
   window.addEventListener('resize', closeMenu);
@@ -1579,6 +1616,7 @@ ${Nn(this.code(t,r))}
   $('settingsBtn').addEventListener('click', openDialog);
   $('kDone').addEventListener('click', closeDialog);
   el.dlg.addEventListener('click', (e) => { if (e.target === el.dlg) closeDialog(); });
+  $('dkSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-dk]'); if (!b || b.disabled) return; settings.defaultKind = b.dataset.dk; store.save(); applyDefaultKind(); });
   $('tbSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-tb]'); if (!b) return; settings.toolbar = b.dataset.tb; store.save(); applyToolbar(); });
   $('scSwitch').addEventListener('click', () => { settings.shortcutsOn = !settings.shortcutsOn; store.save(); renderShortcutHints(); });
   $('kReset').addEventListener('click', () => { settings.shortcuts = {}; recording = null; say(''); store.save(); renderDialog(); renderShortcutHints(); });
