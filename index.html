@@ -581,7 +581,7 @@ label.arow { cursor: text; }
     </main>
   </div>
 
-  <button class="fab" type="button" id="newNote" aria-label="New note" title="New note (hold for more)" aria-haspopup="menu">
+  <button class="fab" type="button" id="newNote" aria-label="New note" title="New note (hold or right-click for more)" aria-haspopup="menu">
     <svg width="22" height="22" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.5v11M1.5 7h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
   </button>
 </div>
@@ -632,7 +632,7 @@ label.arow { cursor: text; }
       <summary><span class="chip"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v12M3 9h12"/></svg></span><b>New note</b><span class="sync-state" id="dkState"></span></summary>
       <div class="card-body">
         <div class="pills" id="dkSeg" role="radiogroup" aria-label="Kind of note the + button makes">
-          <button class="pill" type="button" role="radio" data-dk="notes">Notes</button><button class="pill" type="button" role="radio" data-dk="list" disabled>List</button><button class="pill" type="button" role="radio" data-dk="chat" disabled>Chat</button>
+          <button class="pill" type="button" role="radio" data-dk="notes">Note</button><button class="pill" type="button" role="radio" data-dk="list">List</button><button class="pill" type="button" role="radio" data-dk="chat" disabled>Chat</button>
         </div>
       </div>
     </details>
@@ -840,6 +840,7 @@ ${Nn(this.code(t,r))}
       id: raw.id, title: str(raw.title), content: cleanContent(raw.content),
       color: COLORS.includes(raw.color) ? raw.color : 'blue',
       pinned: raw.pinned === true,
+      ...(raw.kind === 'list' && { kind: 'list' }),     // 'list' notes only hold bullet and checklist lines; anything else is a plain note
       created: isNum(raw.created) ? raw.created : updated,
       updated,
       meta: isNum(raw.meta) ? raw.meta : updated
@@ -868,7 +869,7 @@ ${Nn(this.code(t,r))}
     if (Array.isArray(raw.notes)) s.notes = raw.notes.map((n) => cleanNote(n, folderIds)).filter(Boolean);
     if (isObj(raw.settings)) {
       s.settings.typewriter = raw.settings.typewriter !== false;
-      if (['notes', 'list', 'chat'].includes(raw.settings.defaultKind)) s.settings.defaultKind = raw.settings.defaultKind;
+      if (['notes', 'list'].includes(raw.settings.defaultKind)) s.settings.defaultKind = raw.settings.defaultKind;
       if (['top', 'bottom', 'typewriter'].includes(raw.settings.toolbar)) s.settings.toolbar = raw.settings.toolbar;
       s.settings.shortcutsOn = raw.settings.shortcutsOn !== false;
       s.settings.shortcuts = cleanShortcuts(raw.settings.shortcuts);
@@ -990,6 +991,7 @@ ${Nn(this.code(t,r))}
     const [line] = quill.getLine(range.index);
     if (isDivider(line)) { if (line.length() <= 1) dropLine(line); else quill.formatLine(range.index, 1, 'divider', false, USER); return false; }
     const [prev] = range.index ? quill.getLine(range.index - 1) : [null];
+    if (isListNote() && !isDivider(prev)) return listBackspace(range, prev);
     if (!isDivider(prev)) return true;
     const n = prev.length(); dropLine(prev); quill.setSelection(range.index - n, 0, USER); return false;
   });
@@ -1002,6 +1004,49 @@ ${Nn(this.code(t,r))}
     dropLine(next); return false;
   });
   first('Delete');
+  /* List notes: every line is a bullet or a checklist item (or a page break), and it can never be switched off. */
+  const isListNote = () => activeNote()?.kind === 'list';
+  const LIST_OK = new Set(['bullet', 'check', 'pagebreak']);               // the only tools that stay on in a list note
+  let enforcing = false;
+  /* Any line that is not a list item or a page break becomes one (after paste, undo, or text from another device). It takes the type of the line above. */
+  function enforceList(source) {
+    const todo = []; let type = 'unchecked';
+    for (const line of quill.getLines()) {
+      if (isDivider(line)) continue;
+      const i = quill.getIndex(line), cur = quill.getFormat(i, 0).list;
+      if (cur === 'bullet' || cur === 'checked' || cur === 'unchecked') type = cur === 'bullet' ? 'bullet' : 'unchecked';
+      else todo.push([i, type]);
+    }
+    enforcing = true;
+    try { for (const [i, t] of todo) quill.formatLine(i, 1, 'list', t, source); } finally { enforcing = false; }
+    return todo.length > 0;
+  }
+  /* Bullet and Checklist in a list note switch the line between the two. Pressing the active one does nothing, so a line can never lose its list. */
+  function setListType(value) {
+    const r = quill.getSelection(true);
+    quill.history.cutoff();
+    const at = quill.getLines(r.index, r.length || 1).filter((l) => !isDivider(l)).map((l) => quill.getIndex(l));
+    for (const i of at) {
+      const cur = quill.getFormat(i, 0).list;
+      if (value === 'bullet' ? cur !== 'bullet' : (cur !== 'checked' && cur !== 'unchecked')) quill.formatLine(i, 1, 'list', value, USER);
+    }
+    quill.history.cutoff();
+    syncTools();
+  }
+  /* Backspace at the start of a list item joins it onto the item above (an empty item simply disappears); the item above keeps its own type. The first item stays. */
+  function listBackspace(range, prev) {
+    if (!prev) return false;
+    quill.history.cutoff();
+    const keep = quill.getFormat(quill.getIndex(prev), 0).list;
+    const at = quill.getIndex(prev) + prev.length() - 1;
+    quill.deleteText(at, 1, USER);
+    quill.formatLine(at, 1, 'list', keep, USER);
+    quill.setSelection(at, 0, USER);
+    quill.history.cutoff();
+    return false;
+  }
+  quill.keyboard.addBinding({ key: 'Enter', collapsed: true, empty: true, format: ['list'] }, () => !isListNote());   // Enter on an empty item does nothing in a list note (it would normally end the list)
+  first('Enter');
   quill.keyboard.addBinding({ key: 'Enter', collapsed: true, format: ['divider'] }, (range) => {
     quill.insertText(range.index, '\n', USER); quill.formatLine(range.index + 1, 1, 'divider', false, USER); quill.setSelection(range.index + 1, 0, USER); return false;
   });
@@ -1050,14 +1095,15 @@ ${Nn(this.code(t,r))}
     quill.history.cutoff();
     syncTools(); followEnd();
   }
+  const runCommand = (id) => { if (isListNote() && !LIST_OK.has(id)) return; COMMANDS[id].run(); };   // the greyed-out tools also ignore their shortcuts
   function toggleTypewriter() { settings.typewriter = !settings.typewriter; store.save(); syncTools(); applyTypewriter(true); }
 
   /* One list of commands drives the toolbar buttons and the keyboard shortcuts. */
   const COMMANDS = {
     heading:    { label: 'Heading',   def: { code: 'Digit1', alt: true },   isOn: isHeading,                                    run: () => lineFormat('header', 1, (f) => typeof f.header === 'number') },
     bold:       { label: 'Bold',      def: { code: 'KeyB' },                isOn: () => fmt.bold === true,                    run: bold },
-    bullet:     { label: 'Bullet',    def: { code: 'KeyL', shift: true },   isOn: () => fmt.list === 'bullet',                  run: () => lineFormat('list', 'bullet', (f) => f.list === 'bullet') },
-    check:      { label: 'Checklist', def: { code: 'Digit9', shift: true }, isOn: () => fmt.list === 'checked' || fmt.list === 'unchecked', run: () => lineFormat('list', 'unchecked', (f) => f.list === 'checked' || f.list === 'unchecked') },
+    bullet:     { label: 'Bullet',    def: { code: 'KeyL', shift: true },   isOn: () => fmt.list === 'bullet',                  run: () => (isListNote() ? setListType('bullet') : lineFormat('list', 'bullet', (f) => f.list === 'bullet')) },
+    check:      { label: 'Checklist', def: { code: 'Digit9', shift: true }, isOn: () => fmt.list === 'checked' || fmt.list === 'unchecked', run: () => (isListNote() ? setListType('unchecked') : lineFormat('list', 'unchecked', (f) => f.list === 'checked' || f.list === 'unchecked')) },
     right:      { label: 'Align',     def: { code: 'KeyR', alt: true },   isOn: isRight,                                       run: toggleRight },
     pagebreak:  { label: 'Page break', def: { code: 'Enter' },             isOn: () => false,                                run: pageBreak },
     typewriter: { label: 'Typewriter',                                      isOn: typewriterOn,                                 run: toggleTypewriter }
@@ -1067,7 +1113,11 @@ ${Nn(this.code(t,r))}
   function syncTools() {
     const r = quill.getSelection();
     if (r) fmt = quill.getFormat(r.index, r.length);
-    $('tools').querySelectorAll('[data-cmd]').forEach((b) => b.setAttribute('aria-pressed', String(COMMANDS[b.dataset.cmd].isOn())));
+    const list = activeNote()?.kind === 'list';
+    $('tools').querySelectorAll('[data-cmd]').forEach((b) => {
+      b.setAttribute('aria-pressed', String(COMMANDS[b.dataset.cmd].isOn()));
+      b.disabled = list && !LIST_OK.has(b.dataset.cmd);                      // list notes: everything but Bullet, Checklist and Page break is greyed out
+    });
   }
 
   /* Typewriter is mostly layout (see the CSS). The one job left for script: once the page is full and scrolls, keep the line being written
@@ -1075,7 +1125,7 @@ ${Nn(this.code(t,r))}
   const atEnd = () => { const r = quill.getSelection(); return !r || r.index + r.length >= quill.getLength() - 1; };
   const toEnd = () => { root.scrollTop = root.scrollHeight; };
   const TB_NAME = { top: 'Top', bottom: 'Bottom', typewriter: 'Typewriter' };
-  const DK_NAME = { notes: 'Notes', list: 'List', chat: 'Chat' };
+  const DK_NAME = { notes: 'Note', list: 'List', chat: 'Chat' };
   function applyDefaultKind() {
     $('dkState').textContent = DK_NAME[settings.defaultKind];
     $('dkSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.dk === settings.defaultKind)));
@@ -1093,8 +1143,9 @@ ${Nn(this.code(t,r))}
   const followEnd = () => requestAnimationFrame(() => { if (typewriterOn() && atEnd()) toEnd(); });   // after the browser has moved the cursor
 
   quill.on('text-change', (delta, old, source) => {
-    if (source === SILENT) return;
+    if (source === SILENT || enforcing) return;
     const n = activeNote(); if (!n) return;
+    if (n.kind === 'list') enforceList(Quill.sources.API);
     n.content = quill.getContents().ops;
     touch(n); syncTools(); followEnd();
   });
@@ -1179,7 +1230,7 @@ ${Nn(this.code(t,r))}
       const i = info(n);
       const folder = ui.folder === ALL && n.folders ? n.folders.map(folderLabel).join(', ') : '';
       const badge = i.total ? `<span class="badge${i.done === i.total ? ' done' : ''}" title="${i.done} of ${i.total} tasks done">${i.done}/${i.total}</span>` : '';
-      const name = n.title || 'Untitled note';
+      const name = n.title || untitled(n);
       const html = `<li class="item" data-nid="${n.id}" style="--nc:var(--${n.color});--on-nc:var(--on-${n.color})"><button class="row" type="button" data-id="${n.id}" aria-current="${n.id === ui.activeId}"><span class="av-gap"></span><span class="row-main">` +
         `<span class="row-top"><span class="row-title">${esc(name)}</span><span class="row-time">${esc(rowTime(n))}</span></span>` +
         `<span class="row-bot"><span class="row-snip">${folder ? `<b>${esc(folder)}</b> ` : ''}${esc(snippet(n))}</span>${badge}${n.pinned ? PIN_ICON : ''}</span></span></button>` +
@@ -1243,6 +1294,7 @@ ${Nn(this.code(t,r))}
     paintSaved();
   }
 
+  const untitled = (n) => (n.kind === 'list' ? 'Untitled list' : 'Untitled note');   // what an empty title shows
   function renderEditor() {
     const n = activeNote();
     el.blank.hidden = !!n;
@@ -1254,7 +1306,9 @@ ${Nn(this.code(t,r))}
       return;
     }
     el.title.value = n.title;
+    el.title.placeholder = untitled(n);
     quill.setContents(n.content, SILENT);
+    if (n.kind === 'list') enforceList(SILENT);
     quill.history.clear();
     fmt = {};
     renderNoteHeader(n);
@@ -1361,9 +1415,11 @@ ${Nn(this.code(t,r))}
     const choices = COLORS.filter((c) => c !== state.notes[0]?.color);
     return choices[Math.floor(Math.random() * choices.length)];
   }
-  function newNote(kind) {   // kind is for List and Chat, which are wired next; every kind is a plain note until then
+  function newNote(kind) {   // 'notes' (a plain page) or 'list' (only bullet and checklist lines); no kind means the one chosen in Settings
     const now = Date.now();
-    const n = { id: uid(), title: '', content: [{ insert: '\n' }], color: randomColor(), pinned: false, created: now, updated: now };
+    const list = (kind === 'notes' || kind === 'list' ? kind : settings.defaultKind) === 'list';
+    const n = { id: uid(), title: '', content: list ? [{ insert: '\n', attributes: { list: 'unchecked' } }] : [{ insert: '\n' }], color: randomColor(), pinned: false, created: now, updated: now };
+    if (list) n.kind = 'list';
     if (ui.folder !== ALL) n.folders = [ui.folder];
     state.notes.unshift(n);
     ui.query = ''; el.search.value = '';
@@ -1475,10 +1531,10 @@ ${Nn(this.code(t,r))}
   /* ================= Options menu: tap a note's avatar (folders: right-click or long-press) ================= */
   const menu = { kind: null, id: null, confirm: false };
   const button = (cls, act, label, extra = '') => `<button class="${cls}" type="button" data-act="${act}"${extra}>${label}</button>`;
-  /* New note kinds. Notes is the plain page; List and Chat arrive next and stay greyed out until then. */
+  /* New note kinds: Note is the plain page; List holds only bullet and checklist lines; Chat is a greyed-out placeholder until it is built. */
   const KINDS = [
-    ['notes', 'Notes', 'blue',  true,  '<rect x="4" y="2.5" width="10" height="13" rx="2"/><path d="M7 6.5h4M7 9h4"/>'],
-    ['list',  'List',  'green', false, '<rect x="3" y="3" width="12" height="12" rx="3"/><path d="M6 9.2l2.3 2.3L12 7"/>'],
+    ['notes', 'Note',  'blue',  true,  '<rect x="4" y="2.5" width="10" height="13" rx="2"/><path d="M7 6.5h4M7 9h4"/>'],
+    ['list',  'List',  'green', true,  '<rect x="3" y="3" width="12" height="12" rx="3"/><path d="M6 9.2l2.3 2.3L12 7"/>'],,
     ['chat',  'Chat',  'grey',  false, '<path d="M3 4.5A2 2 0 0 1 5 2.5h8a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H8l-3.5 3v-3H5a2 2 0 0 1-2-2z"/>']
   ];
   const kindIcon = (c, svg) => `<span class="pk" style="background:var(--${c});color:var(--on-${c})"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${svg}</svg></span>`;
@@ -1515,7 +1571,7 @@ ${Nn(this.code(t,r))}
       : '<div class="mnote">Add a folder with + to organise notes.</div>';
     const pinLabel = n.pinned ? 'Unpin' : 'Pin to top';
     m.style.setProperty('--nc', `var(--${n.color})`); m.style.setProperty('--on-nc', `var(--on-${n.color})`);
-    m.innerHTML = `<div class="mhead"><span class="mav" style="--nc:var(--${n.color})">${avatar(n, 36)}</span><div class="mtitle"><b>${esc(n.title || 'Untitled note')}</b><span id="mcolor">${cap(n.color)}</span></div>` +
+    m.innerHTML = `<div class="mhead"><span class="mav" style="--nc:var(--${n.color})">${avatar(n, 36)}</span><div class="mtitle"><b>${esc(n.title || untitled(n))}</b><span id="mcolor">${cap(n.color)}</span></div>` +
       `<button class="mpin" type="button" data-act="pin" aria-pressed="${!!n.pinned}" aria-label="${pinLabel}" title="${pinLabel}">${PIN_SVG}</button><button class="mdel" type="button" data-act="ask" aria-label="Delete note" title="Delete note">${TRASH_SVG}</button></div>` +
       `<div class="ml">Colour</div><div class="mcolors" role="radiogroup" aria-label="Note colour">${swatches}</div>` +
       `<div class="ml">Folders</div>${folders}`;
@@ -1615,11 +1671,11 @@ ${Nn(this.code(t,r))}
     if (e.isComposing || !settings.shortcutsOn || !(e.ctrlKey || e.metaKey)) return;
     const keys = { code: e.code, alt: e.altKey, shift: e.shiftKey };
     const id = SHORTCUT_IDS.find((i) => sameKeys(shortcutFor(i), keys));
-    if (id) { e.preventDefault(); e.stopImmediatePropagation(); COMMANDS[id].run(); }
+    if (id) { e.preventDefault(); e.stopImmediatePropagation(); runCommand(id); }
   }, true);
 
   el.tools.addEventListener('mousedown', (e) => e.preventDefault());             // keep the cursor in the text
-  el.tools.addEventListener('click', (e) => { const b = e.target.closest('[data-cmd]'); if (b) COMMANDS[b.dataset.cmd].run(); });
+  el.tools.addEventListener('click', (e) => { const b = e.target.closest('[data-cmd]'); if (b) runCommand(b.dataset.cmd); });
 
   $('folderAdd').addEventListener('click', newFolder);
   /* Up and Down move through the note list, so it works with arrow keys or a controller. */
@@ -1682,7 +1738,7 @@ ${Nn(this.code(t,r))}
   const localData = () => ({ notes: state.notes, folders: state.folders, gone: state.gone });
   /* A comparable form that ignores key order, so equal data always matches. */
   const sig = (d) => JSON.stringify([
-    [...d.notes].sort(byId).map((n) => [n.id, n.title, n.content, n.color, n.pinned, n.created, n.updated, n.meta, n.folders || []]),
+    [...d.notes].sort(byId).map((n) => [n.id, n.title, n.content, n.color, n.pinned, n.created, n.updated, n.meta, n.folders || [], n.kind || 'notes']),
     [...d.folders].sort(byId).map((f) => [f.id, f.name, f.updated || 0]),
     Object.entries(d.gone).sort()
   ]);
