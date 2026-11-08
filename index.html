@@ -453,6 +453,26 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .card-body { display: flex; flex-direction: column; gap: 8px; padding: 0 12px 12px; font-size: 0.8125rem; }
 .aval::placeholder { color: var(--grey); font-weight: 400; }
 label.arow { cursor: text; }
+/* New-note setting: one rounded row per kind, with pills for what it gives you. */
+.dk { display: grid; gap: 0; padding-top: 4px; }
+.dk-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 28px; background: transparent; color: var(--ink-2); font: inherit; text-align: left; cursor: pointer; }
+.dk-row[aria-checked="true"] { background: var(--panel); border-color: var(--kc); color: var(--ink); }
+/* Joined into one block: shared edges, only the outer corners are round. */
+.dk-row { border-radius: 0; margin-top: -1.5px; position: relative; }
+.dk-row:first-child { border-radius: 28px 28px 0 0; margin-top: 0; }
+.dk-row:last-child { border-radius: 0 0 28px 28px; }
+.dk-row[aria-checked="true"] { z-index: 1; }
+.dk-row:disabled { opacity: 0.45; cursor: not-allowed; }
+.dk-ic { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: var(--panel); border: 1px solid var(--line); }
+.dk-row[aria-checked="true"] .dk-ic { background: var(--kc); border-color: var(--kc); color: var(--on-kc); }
+.dk-t { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.dk-t b { font-size: 0.9375rem; font-weight: 700; }
+.dk-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.dk-tags i { font-style: normal; font-size: 0.6875rem; font-weight: 600; padding: 2px 10px; border: 1px solid var(--line); border-radius: var(--r-pill); color: var(--grey); }
+.dk-row[aria-checked="true"] .dk-tags i { color: var(--kc); border-color: var(--kc); }
+.dk-rd { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; }
+.dk-row[aria-checked="true"] .dk-rd { border-color: var(--kc); }
+.dk-row[aria-checked="true"] .dk-rd::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--kc); }
 .pills { display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px; }
 .set-row .pills { padding-top: 0; flex-wrap: nowrap; }
 @media (max-width: 360px) { .set-row { gap: 6px; } .set-row .pills { gap: 3px; } .set-row .pill { padding: 0 7px; font-size: 0.75rem; } } /* very narrow phones: keep the label and the buttons on one line */
@@ -658,10 +678,11 @@ label.arow { cursor: text; }
     <details class="card" style="--tc:var(--amber);--on-tc:var(--on-amber)">
       <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M435.5-128.6Q427-137.2 427-150v-165q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v53h323q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H487v52q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM150-202q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h187q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm165.5-174.6Q307-385.2 307-398v-52H150q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h157v-54q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v166q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM457-450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h353q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H457Zm144.5-173.6Q593-632.2 593-645v-165q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v52h157q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H653v53q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM150-698q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h353q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg></span><b>Preset</b><span class="sync-state" id="dkState"></span></summary>
       <div class="card-body">
-        <div class="set-row"><span>Default</span>
-        <div class="pills" id="dkSeg" role="radiogroup" aria-label="Kind of note the + button makes">
-          <button class="pill" type="button" role="radio" data-dk="notes">Note</button><button class="pill" type="button" role="radio" data-dk="list">List</button><button class="pill" type="button" role="radio" data-dk="chat" disabled>Chat</button>
-        </div></div>
+        <div class="dk" id="dkSeg" role="radiogroup" aria-label="Kind of note the + button makes">
+          <button class="dk-row" type="button" role="radio" data-dk="notes" style="--kc:var(--blue);--on-kc:var(--on-blue)"><span class="dk-ic"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520Z"/></svg></span><span class="dk-t"><b>Notes</b><span class="dk-tags"><i>Everything</i></span></span><span class="dk-rd"></span></button>
+          <button class="dk-row" type="button" role="radio" data-dk="list" style="--kc:var(--green);--on-kc:var(--on-green)"><span class="dk-ic"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm230-120 200-200-56-57-144 144-64-64-57 57 121 120Z"/></svg></span><span class="dk-t"><b>List</b><span class="dk-tags"><i>Checklist</i><i>Bullet</i><i>Page break</i></span></span><span class="dk-rd"></span></button>
+          <button class="dk-row" type="button" role="radio" data-dk="chat" style="--kc:var(--grey);--on-kc:var(--on-grey)" disabled><span class="dk-ic"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M240-400h480v-80H240v80Zm0-120h480v-80H240v80Zm0-120h480v-80H240v80ZM80-80v-720q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240L80-80Z"/></svg></span><span class="dk-t"><b>Chat</b><span class="dk-tags"><i>Soon</i></span></span><span class="dk-rd"></span></button>
+        </div>
       </div>
     </details>
 
@@ -1169,7 +1190,7 @@ ${Nn(this.code(t,r))}
   const atEnd = () => { const r = quill.getSelection(); return !r || r.index + r.length >= quill.getLength() - 1; };
   const toEnd = () => { root.scrollTop = root.scrollHeight; };
   const TB_NAME = { top: 'Top', bottom: 'Bottom', typewriter: 'Follow' };
-  const DK_NAME = { notes: 'Note', list: 'List', chat: 'Chat' };
+  const DK_NAME = { notes: 'Notes', list: 'List', chat: 'Chat' };
   function applyDefaultKind() {
     $('dkState').textContent = DK_NAME[settings.defaultKind];
     $('dkSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.dk === settings.defaultKind)));
