@@ -207,7 +207,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .topbar-right { margin-left: auto; flex: none; display: flex; align-items: center; gap: 12px; }
 .today { font-size: 0.8125rem; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 .date-short { display: none; }
-.cal-soon { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: var(--r-sm); background: transparent; color: var(--ink-2); padding: 4px 8px; font-size: 0.7812rem; font-weight: 500; cursor: not-allowed; }
+.cal-soon { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: var(--r-pill); background: transparent; color: var(--ink-2); padding: 4px 8px; font-size: 0.7812rem; font-weight: 500; cursor: not-allowed; }
 .soon { font-family: var(--font-mono); font-size: 0.5938rem; text-transform: uppercase; letter-spacing: 0.06em; background: var(--blue); color: var(--on-blue); padding: 0 4px; border-radius: 3px; }
 .panes { flex: 1; min-height: 0; display: grid; grid-template-columns: 300px minmax(0, 1fr); border-top: 1px solid var(--line); }
 .panes > * { min-width: 0; min-height: 0; }
@@ -218,7 +218,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .listhead { display: flex; flex-direction: column; gap: 0; }
 .searchrow { padding: 12px 12px 8px; }
 .searchbox { position: relative; display: flex; align-items: center; min-width: 0; }
-.searchbox > svg { position: absolute; left: 16px; width: 16px; height: 16px; color: var(--grey); pointer-events: none; transition: color var(--t-fast) var(--ease); }
+.searchbox > svg { position: absolute; left: 16px; width: 20px; height: 20px; color: var(--grey); pointer-events: none; transition: color var(--t-fast) var(--ease); }
 .searchbox:focus-within > svg { color: var(--blue); }
 /* Search: a quiet field with a thin border that turns blue while you type. */
 .search { flex: 1; min-width: 0; height: 40px; border: 1px solid var(--line); background: var(--panel); border-radius: var(--r-pill); padding: 0 40px 0 40px; font-size: 0.875rem; outline: none; transition: border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease); }
@@ -315,21 +315,35 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
    which lets a page break run from the left edge to the right edge. */
 .ed-inner { --px: max(var(--edge, 16px), calc((100cqw - 48rem) / 2)); container-type: inline-size; flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; gap: 9px; }
 .tools { order: 1; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 4px 12px; border-bottom: 1px solid var(--line); background: var(--bg); }
-.tool { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border: 1px solid transparent; border-radius: calc(var(--r-md) - 4px); background: transparent; color: var(--ink-2); font-size: 0.75rem; font-weight: 500; }
+.tool { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border: 1px solid transparent; border-radius: var(--r-pill); background: transparent; color: var(--ink-2); font-size: 0.75rem; font-weight: 500; }
 .tool:hover { background: var(--surface); color: var(--ink); }
-.tool.icon { justify-content: center; min-width: 2.1rem; padding: 4px 0; }
-.tool.icon svg { width: 16px; height: 16px; }
+/* Icon buttons, and their pressed state, are circles. Follow is a pill. */
+.tool.icon { justify-content: center; width: 36px; height: 36px; min-width: 0; min-height: 0; padding: 0; border-radius: 50%; }
+.tool:not(.icon) { min-height: 36px; padding: 0 14px; border-radius: var(--r-pill); }
+.tool:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+/* Groups: Text (Heading, Bold, Align), Blocks (Bullet, Checklist, Page break), then Follow on the right. */
+.tgroup { display: flex; align-items: center; gap: 2px; }
+.tsep { flex: none; width: 1px; height: 20px; margin: 0 6px; background: var(--line); }
+@media (max-width: 360px) { .tools { padding-inline: 8px; } .tsep { margin: 0 4px; } }   /* very narrow phones: still one row */
+.tool.icon svg { width: 22px; height: 22px; }
 .tool[aria-pressed="true"] { background: var(--nc); border-color: var(--nc); color: var(--on-nc); }
 .tool[data-cmd="typewriter"] { margin-left: auto; }
-/* One slim row on a narrow screen: Typewriter shows as its icon. */
-@media (max-width: 520px) { .tw-label { display: none; } .tool[data-cmd="typewriter"] { min-width: 2.1rem; justify-content: center; padding-inline: 0; } }
-/* The Toolbar setting: top, bottom, or follow Typewriter (top while writing normally, bottom in Typewriter mode, where the text sits at the bottom). */
+/* One slim row on a narrow screen: Follow shows as its icon. */
+@media (max-width: 520px) { .tw-label { display: none; } .tool[data-cmd="typewriter"] { width: 36px; height: 36px; min-height: 0; padding: 0; justify-content: center; border-radius: 50%; } }
+/* The Toolbar setting: top, bottom, or Follow (bottom while Follow is on, where the text sits at the bottom, top otherwise). */
 .ed-top { order: 0; } .ed-scroll { order: 2; } .ed-foot { order: 4; }
 .editor[data-tb="bottom"] .tools { order: 3; border-bottom: 0; border-top: 1px solid var(--line); }
 .tool:disabled { opacity: 0.35; cursor: default; }
 .tool:disabled:hover { border-color: var(--line); color: var(--ink-2); }
 .tool[data-cmd="right"] .i-right, .tool[data-cmd="right"][aria-pressed="true"] .i-left { display: none; }
 .tool[data-cmd="right"][aria-pressed="true"] .i-right { display: block; }
+/* Round keys sit together on the left, Follow on the right; the pressed one is a filled circle. */
+.tools { flex-wrap: nowrap; justify-content: flex-start; gap: 6px; }
+.tgroup { display: contents; }
+.tsep { display: none; }
+.tool.icon svg { width: 24px; height: 24px; }
+.tool[data-cmd="pagebreak"] { margin-left: auto; }
+.tool[data-cmd="typewriter"] { margin-left: 0; }
 .ed-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; padding: 8px 16px; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 0.6875rem; color: var(--grey); font-variant-numeric: tabular-nums; }
 #saved.warn { color: var(--coral); }
 #saved.busy { color: var(--ink-2); }
@@ -390,7 +404,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .mi.preset { display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; border-radius: var(--r-pill); }
 .mi.preset b { flex: 1; font-size: 0.875rem; font-weight: 600; }
 .pk { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; }
-.pk svg { width: 16px; height: 16px; }
+.pk svg { width: 20px; height: 20px; }
 .pk-tag { font-family: var(--font-mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey); }
 .mi.preset:disabled { opacity: 0.55; cursor: not-allowed; }
 .mi.preset:disabled:hover { background: transparent; }
@@ -421,11 +435,11 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .card[open] { border-color: var(--tc); }
 .card > summary { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 8px 12px; list-style: none; cursor: pointer; }
 .card > summary::-webkit-details-marker { display: none; }
-.card > summary::after { content: ""; flex: none; width: 7px; height: 7px; margin-left: 4px; border-right: 2px solid var(--grey); border-bottom: 2px solid var(--grey); transform: rotate(45deg); }
-.card[open] > summary::after { transform: rotate(-135deg); border-color: var(--tc); }
+.card > summary::after { content: ""; flex: none; width: 22px; height: 22px; background: var(--grey); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M469-358q-5-2-10-7L261-563q-9-9-8.5-21.5T262-606q9-9 21.5-9t21.5 9l175 176 176-176q9-9 21-8.5t21 9.5q9 9 9 21.5t-9 21.5L501-365q-5 5-10 7t-11 2q-6 0-11-2Z'/%3E%3C/svg%3E") center / 22px 22px no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M469-358q-5-2-10-7L261-563q-9-9-8.5-21.5T262-606q9-9 21.5-9t21.5 9l175 176 176-176q9-9 21-8.5t21 9.5q9 9 9 21.5t-9 21.5L501-365q-5 5-10 7t-11 2q-6 0-11-2Z'/%3E%3C/svg%3E") center / 22px 22px no-repeat; }
+.card[open] > summary::after { transform: rotate(180deg); background: var(--tc); }
 .card > summary b { flex: 1; min-width: 0; font-size: 0.875rem; font-weight: 600; }
-.chip svg { width: 16px; height: 16px; }
-.chip { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: var(--tc); color: var(--on-tc); }
+.chip svg { width: 20px; height: 20px; }
+.chip { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--tc); color: var(--on-tc); }
 .sync-state { font-size: 0.75rem; color: var(--grey); white-space: nowrap; }
 .sync-state.ok { color: var(--green); }
 .sync-state.bad { color: var(--coral); }
@@ -436,8 +450,10 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .aval::placeholder { color: var(--grey); font-weight: 400; }
 label.arow { cursor: text; }
 .pills { display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px; }
+.set-row .pills { padding-top: 0; flex-wrap: nowrap; }
+@media (max-width: 360px) { .set-row { gap: 6px; } .set-row .pills { gap: 3px; } .set-row .pill { padding: 0 7px; font-size: 0.75rem; } } /* very narrow phones: keep the label and the buttons on one line */
 .pill { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; padding: 0 16px; border: 1px solid var(--line); border-radius: var(--r-pill); background: transparent; color: var(--ink-2); font: inherit; font-size: 0.8125rem; font-weight: 600; }
-.pill svg { width: 16px; height: 16px; }
+.pill svg { width: 20px; height: 20px; }
 .pill.solid { background: var(--blue); border-color: var(--blue); color: var(--on-blue); }
 .pill.danger { color: var(--coral); }
 .pill[aria-checked="true"] { background: var(--line); color: var(--ink); }
@@ -449,7 +465,7 @@ label.arow { cursor: text; }
 .switch[aria-checked="true"]::after { transform: translateX(16px); }
 .krow { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0; border-top: 1px solid var(--line); color: var(--ink-2); }
 #krows { display: flex; flex-direction: column; }
-.krow .kbtn, .aval { flex: none; width: 9.5rem; height: 32px; padding: 0 10px 0 28px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%238E98AB' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.2 1.6l2.2 2.2L4 10.2 1.4 10.6l.4-2.6z'/%3E%3C/svg%3E") no-repeat 10px center; color: var(--ink); font: inherit; font-weight: 600; text-align: right; cursor: text; }
+.krow .kbtn, .aval { flex: none; width: 9.5rem; height: 32px; padding: 0 10px 0 32px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238E98AB'%3E%3Cpath d='M180-180h44l472-471-44-44-472 471v44Zm-30 60q-13 0-21.5-8.5T120-150v-73q0-12 5-23.5t13-19.5l557-556q8-8 19-12.5t23-4.5q11 0 22 4.5t20 12.5l44 44q9 9 13 20t4 22q0 11-4.5 22.5T823-694L266-138q-8 8-19.5 13t-23.5 5h-73Zm629-617-41-41 41 41Zm-105 64-22-22 44 44-22-22Z'/%3E%3C/svg%3E") no-repeat 8px center / 18px 18px; color: var(--ink); font: inherit; font-weight: 600; text-align: right; cursor: text; }
 .krow .kbtn:hover, .aval:hover { border-color: var(--grey); }
 .krow .kbtn:focus, .aval:focus { outline: none; border-color: var(--tc); color: var(--tc); }
 .reset { align-self: flex-end; min-height: 28px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r-pill); background: transparent; color: var(--ink-2); font: inherit; font-size: 0.75rem; font-weight: 600; }
@@ -460,7 +476,7 @@ label.arow { cursor: text; }
 /* ---------- Fingers and controllers: bigger things to hit ---------- */
 @media (pointer: coarse) {
   .tool { min-height: 40px; padding: 4px 12px; }
-  .tool.icon { min-width: 36px; padding: 4px 0; }
+  .tool.icon { min-width: 0; min-height: 0; padding: 0; }
   .tools { gap: 4px; }
   #saved { -webkit-tap-highlight-color: transparent; }
     .mi { padding: 12px 12px; }
@@ -519,12 +535,12 @@ label.arow { cursor: text; }
     </div>
     <div class="topbar-right">
       <button class="cal-soon" type="button" disabled title="Calendar comes after notes">
-        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.5" y="3" width="11" height="9.5" rx="2.5" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M1.5 6.2h11M4.5 1.5v3M9.5 1.5v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>
+        <svg width="18" height="18" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-28q0-13.6 9-22.8 9-9.2 23-9.2t23.5 9.2Q310-861.6 310-848v28h340v-28q0-13.6 9-22.8 9-9.2 23-9.2t23.5 9.2Q715-861.6 715-848v28h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Z"/></svg>
         Calendar <span class="soon">next</span>
       </button>
       <span class="today" id="today"></span>
       <button class="icon-btn" type="button" id="settingsBtn" aria-label="Settings" title="Settings">
-        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.00 2.00L12.17 2.00L12.35 2.01L12.52 2.03L12.70 2.05L12.87 2.09L13.03 2.16L13.20 2.25L13.35 2.40L13.48 2.63L13.60 2.95L13.68 3.36L13.75 3.78L13.81 4.16L13.89 4.43L13.98 4.63L14.08 4.76L14.19 4.85L14.30 4.92L14.42 4.98L14.53 5.04L14.65 5.09L14.77 5.14L14.89 5.19L15.01 5.24L15.13 5.28L15.25 5.33L15.38 5.37L15.51 5.40L15.65 5.41L15.82 5.39L16.02 5.32L16.27 5.17L16.57 4.96L16.92 4.70L17.27 4.48L17.58 4.32L17.83 4.26L18.05 4.26L18.23 4.31L18.39 4.38L18.54 4.48L18.68 4.58L18.82 4.69L18.95 4.81L19.07 4.93L19.19 5.05L19.31 5.18L19.42 5.32L19.52 5.46L19.62 5.61L19.69 5.77L19.74 5.95L19.74 6.17L19.68 6.42L19.52 6.73L19.30 7.08L19.04 7.43L18.83 7.73L18.68 7.98L18.61 8.18L18.59 8.35L18.60 8.49L18.63 8.62L18.67 8.75L18.72 8.87L18.76 8.99L18.81 9.11L18.86 9.23L18.91 9.35L18.96 9.47L19.02 9.58L19.08 9.70L19.15 9.81L19.24 9.92L19.37 10.02L19.57 10.11L19.84 10.19L20.22 10.25L20.64 10.32L21.05 10.40L21.37 10.52L21.60 10.65L21.75 10.80L21.84 10.97L21.91 11.13L21.95 11.30L21.97 11.48L21.99 11.65L22.00 11.83L22.00 12.00L22.00 12.17L21.99 12.35L21.97 12.52L21.95 12.70L21.91 12.87L21.84 13.03L21.75 13.20L21.60 13.35L21.37 13.48L21.05 13.60L20.64 13.68L20.22 13.75L19.84 13.81L19.57 13.89L19.37 13.98L19.24 14.08L19.15 14.19L19.08 14.30L19.02 14.42L18.96 14.53L18.91 14.65L18.86 14.77L18.81 14.89L18.76 15.01L18.72 15.13L18.67 15.25L18.63 15.38L18.60 15.51L18.59 15.65L18.61 15.82L18.68 16.02L18.83 16.27L19.04 16.57L19.30 16.92L19.52 17.27L19.68 17.58L19.74 17.83L19.74 18.05L19.69 18.23L19.62 18.39L19.52 18.54L19.42 18.68L19.31 18.82L19.19 18.95L19.07 19.07L18.95 19.19L18.82 19.31L18.68 19.42L18.54 19.52L18.39 19.62L18.23 19.69L18.05 19.74L17.83 19.74L17.58 19.68L17.27 19.52L16.92 19.30L16.57 19.04L16.27 18.83L16.02 18.68L15.82 18.61L15.65 18.59L15.51 18.60L15.38 18.63L15.25 18.67L15.13 18.72L15.01 18.76L14.89 18.81L14.77 18.86L14.65 18.91L14.53 18.96L14.42 19.02L14.30 19.08L14.19 19.15L14.08 19.24L13.98 19.37L13.89 19.57L13.81 19.84L13.75 20.22L13.68 20.64L13.60 21.05L13.48 21.37L13.35 21.60L13.20 21.75L13.03 21.84L12.87 21.91L12.70 21.95L12.52 21.97L12.35 21.99L12.17 22.00L12.00 22.00L11.83 22.00L11.65 21.99L11.48 21.97L11.30 21.95L11.13 21.91L10.97 21.84L10.80 21.75L10.65 21.60L10.52 21.37L10.40 21.05L10.32 20.64L10.25 20.22L10.19 19.84L10.11 19.57L10.02 19.37L9.92 19.24L9.81 19.15L9.70 19.08L9.58 19.02L9.47 18.96L9.35 18.91L9.23 18.86L9.11 18.81L8.99 18.76L8.87 18.72L8.75 18.67L8.62 18.63L8.49 18.60L8.35 18.59L8.18 18.61L7.98 18.68L7.73 18.83L7.43 19.04L7.08 19.30L6.73 19.52L6.42 19.68L6.17 19.74L5.95 19.74L5.77 19.69L5.61 19.62L5.46 19.52L5.32 19.42L5.18 19.31L5.05 19.19L4.93 19.07L4.81 18.95L4.69 18.82L4.58 18.68L4.48 18.54L4.38 18.39L4.31 18.23L4.26 18.05L4.26 17.83L4.32 17.58L4.48 17.27L4.70 16.92L4.96 16.57L5.17 16.27L5.32 16.02L5.39 15.82L5.41 15.65L5.40 15.51L5.37 15.38L5.33 15.25L5.28 15.13L5.24 15.01L5.19 14.89L5.14 14.77L5.09 14.65L5.04 14.53L4.98 14.42L4.92 14.30L4.85 14.19L4.76 14.08L4.63 13.98L4.43 13.89L4.16 13.81L3.78 13.75L3.36 13.68L2.95 13.60L2.63 13.48L2.40 13.35L2.25 13.20L2.16 13.03L2.09 12.87L2.05 12.70L2.03 12.52L2.01 12.35L2.00 12.17L2.00 12.00L2.00 11.83L2.01 11.65L2.03 11.48L2.05 11.30L2.09 11.13L2.16 10.97L2.25 10.80L2.40 10.65L2.63 10.52L2.95 10.40L3.36 10.32L3.78 10.25L4.16 10.19L4.43 10.11L4.63 10.02L4.76 9.92L4.85 9.81L4.92 9.70L4.98 9.58L5.04 9.47L5.09 9.35L5.14 9.23L5.19 9.11L5.24 8.99L5.28 8.87L5.33 8.75L5.37 8.62L5.40 8.49L5.41 8.35L5.39 8.18L5.32 7.98L5.17 7.73L4.96 7.43L4.70 7.08L4.48 6.73L4.32 6.42L4.26 6.17L4.26 5.95L4.31 5.77L4.38 5.61L4.48 5.46L4.58 5.32L4.69 5.18L4.81 5.05L4.93 4.93L5.05 4.81L5.18 4.69L5.32 4.58L5.46 4.48L5.61 4.38L5.77 4.31L5.95 4.26L6.17 4.26L6.42 4.32L6.73 4.48L7.08 4.70L7.43 4.96L7.73 5.17L7.98 5.32L8.18 5.39L8.35 5.41L8.49 5.40L8.62 5.37L8.75 5.33L8.87 5.28L8.99 5.24L9.11 5.19L9.23 5.14L9.35 5.09L9.47 5.04L9.58 4.98L9.70 4.92L9.81 4.85L9.92 4.76L10.02 4.63L10.11 4.43L10.19 4.16L10.25 3.78L10.32 3.36L10.40 2.95L10.52 2.63L10.65 2.40L10.80 2.25L10.97 2.16L11.13 2.09L11.30 2.05L11.48 2.03L11.65 2.01L11.83 2.00L12.00 2.00ZM15 12a3 3 0 1 0 -6 0a3 3 0 1 0 6 0Z" fill="currentColor" fill-rule="evenodd" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/></svg>
+        <svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M421-80q-14 0-25-9t-13-23l-15-94q-19-7-40-19t-37-25l-86 40q-14 6-28 1.5T155-226L97-330q-8-13-4.5-27t15.5-23l80-59q-2-9-2.5-20.5T185-480q0-9 0.5-20.5T188-521l-80-59q-12-9-15.5-23t4.5-27l58-104q8-13 22-17.5t28 1.5l86 40q16-13 37-25t40-18l15-95q2-14 13-23t25-9h118q14 0 25 9t13 23l15 94q19 7 40.5 18.5T669-710l86-40q14-6 27.5-1.5T804-734l59 104q8 13 4.5 27.5T852-580l-80 57q2 10 2.5 21.5t0.5 21.5q0 10-0.5 21t-2.5 21l80 58q12 8 15.5 22.5T863-330l-58 104q-8 13-22 17.5t-28-1.5l-86-40q-16 13-36.5 25.5T592-206l-15 94q-2 14-13 23t-25 9H421Zm15-60h88l14-112q33-8 62.5-25t53.5-41l106 46 40-72-94-69q4-17 6.5-33.5T715-480q0-17-2-33.5t-7-33.5l94-69-40-72-106 46q-23-26-52-43.5T538-708l-14-112h-88l-14 112q-34 7-63.5 24T306-642l-106-46-40 72 94 69q-4 17-6.5 33.5T245-480q0 17 2.5 33.5T254-413l-94 69 40 72 106-46q24 24 53.5 41t62.5 25l14 112Zm44-210q54 0 92-38t38-92q0-54-38-92t-92-38q-54 0-92 38t-38 92q0 54 38 92t92 38Zm0-130Z"/></svg>
       </button>
     </div>
   </header>
@@ -534,15 +550,15 @@ label.arow { cursor: text; }
       <div class="listhead">
         <div class="searchrow">
           <div class="searchbox">
-            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="6" cy="6" r="4.2" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M9.3 9.3L12.5 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <svg width="18" height="18" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M378-329q-108.2 0-183.1-75Q120-479 120-585t75-181q75-75 181.5-75t181 75Q632-691 632-584.9 632-542 618-502q-14 40-42 75l242 240q9 8.6 9 21.8T818-143q-9 9-22.2 9-13.2 0-21.8-9L533-384q-30 26-70 40.5Q423.1-329 378-329Zm-1-60q81.2 0 138.1-57.5Q572-504 572-585t-56.9-138.5Q458.2-781 377-781q-82.1 0-139.5 57.5Q180-666 180-585t57.5 138.5Q294.9-389 377-389Z"/></svg>
             <input class="search" id="search" type="search" placeholder="Search your notes" autocomplete="off" aria-label="Search notes">
-            <button class="search-clear" type="button" id="searchClear" aria-label="Clear search" hidden><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 2l6 6M8 2L2 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+            <button class="search-clear" type="button" id="searchClear" aria-label="Clear search" hidden><svg width="16" height="16" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-438 270-228q-9 9-21 9t-21-9q-9-9-9-21t9-21l210-210-210-210q-9-9-9-21t9-21q9-9 21-9t21 9l210 210 210-210q9-9 21-9t21 9q9 9 9 21t-9 21L522-480l210 210q9 9 9 21t-9 21q-9 9-21 9t-21-9L480-438Z"/></svg></button>
           </div>
         </div>
         <div class="folder-bar">
           <div class="folder-list" id="folders" role="tablist" aria-label="Note folders"></div>
           <button class="folder-add" type="button" id="folderAdd" aria-label="New folder" title="New folder">
-            <svg width="12" height="12" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.5v11M1.5 7h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg width="16" height="16" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M450-450H230q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h220v-220q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v220h220q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H510v220q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-220Z"/></svg>
           </button>
         </div>
       </div>
@@ -556,21 +572,27 @@ label.arow { cursor: text; }
         <p id="blankText"></p>
       </div>
       <div class="ed-top" id="edTop">
-        <button class="back" type="button" id="back" aria-label="Back to notes"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3.5L5.5 9l5.5 5.5" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="back" type="button" id="back" aria-label="Back to notes"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m406-481 177 177q9 9 8.5 21t-9.5 21q-9 9-21.5 9t-21.5-9L341-460q-5-5-7-10t-2-11q0-6 2-11t7-10l199-199q9-9 21.5-9t21.5 9q9 9 9 21.5t-9 21.5L406-481Z"/></svg></button>
         <div class="ed-head" id="edHead">
           <button id="edAvatar" type="button" aria-label="Note options" title="Note options"></button>
           <input class="title" id="title" type="text" placeholder="Untitled note" aria-label="Note title" autocomplete="off">
         </div>
         <button id="saved" type="button"></button>
       </div>
-      <div class="tools" id="tools">
-        <button class="tool icon" type="button" data-cmd="heading" aria-pressed="false" aria-label="Heading"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 2.5v9M11 2.5v9M3 7h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg></button>
-        <button class="tool icon" type="button" data-cmd="bold" aria-pressed="false" aria-label="Bold"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 2h3.6a2.3 2.3 0 0 1 0 4.6H3.5zM3.5 6.6h4.2a2.7 2.7 0 0 1 0 5.4H3.5z" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linejoin="round"/></svg></button>
-        <button class="tool icon" type="button" data-cmd="bullet" aria-pressed="false" aria-label="Bullet"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="2.5" cy="3.5" r="1.2" fill="currentColor"/><circle cx="2.5" cy="7" r="1.2" fill="currentColor"/><circle cx="2.5" cy="10.5" r="1.2" fill="currentColor"/><path d="M6 3.5h6.5M6 7h6.5M6 10.5h6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></button>
-        <button class="tool icon" type="button" data-cmd="check" aria-pressed="false" aria-label="Checklist"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="1.5" y="1.5" width="11" height="11" rx="3" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M4.5 7.2l1.8 1.8 3.2-3.6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <button class="tool icon" type="button" data-cmd="right" aria-pressed="false" aria-label="Align"><svg class="i-left" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 3h10M2 6.3h6.5M2 9.7h10M2 13h6.5" transform="translate(0 -1)" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg><svg class="i-right" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 3h10M5.5 6.3H12M2 9.7h10M5.5 13H12" transform="translate(0 -1)" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></button>
-        <button class="tool icon" type="button" data-cmd="pagebreak" aria-pressed="false" aria-label="Page break"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 5.5V2h7v3.5M3.5 8.5V12h7V8.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 7h2.2M5.9 7h2.2M10.8 7H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-        <button class="tool" type="button" data-cmd="typewriter" aria-pressed="false" aria-label="Typewriter" title="Keep the line you are typing at the bottom"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 9.5V2.5M4 5.5l3-3 3 3M2.5 12h9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg><span class="tw-label">Typewriter</span></button>
+      <!-- Icons: Material Symbols (Rounded) by Google, https://fonts.google.com/icons, licensed under the Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0). -->
+      <div class="tools" id="tools" role="toolbar" aria-label="Formatting">
+        <div class="tgroup" role="group" aria-label="Text">
+          <button class="tool icon" type="button" data-cmd="heading" aria-pressed="false" aria-label="Heading"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M208.5-288.6Q200-297.2 200-310v-340q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v140h180v-140q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v340q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-140H260v140q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6Zm500 0Q700-297.2 700-310v-310h-50q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h80q12.8 0 21.4 8.6Q760-662.8 760-650v340q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6Z"/></svg></button>
+          <button class="tool icon" type="button" data-cmd="bold" aria-pressed="false" aria-label="Bold"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M335-200q-25 0-42.5-17.5T275-260v-440q0-25 17.5-42.5T335-760h168q66 0 114.5 42T666-612q0 38-21 70t-56 49v6q43 14 69.5 50t26.5 81q0 68-52.5 112T510-200H335Zm26-76h144q38 0 66-25t28-63q0-37-28-62t-66-25H361v175Zm0-247h136q35 0 60.5-23t25.5-58q0-35-25.5-58.5T497-686H361v163Z"/></svg></button>
+          <button class="tool icon" type="button" data-cmd="right" aria-pressed="false" aria-label="Align"><svg class="i-left" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg><svg class="i-right" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-780q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg></button>
+        </div>
+        <span class="tsep" aria-hidden="true"></span>
+        <div class="tgroup" role="group" aria-label="Blocks">
+          <button class="tool icon" type="button" data-cmd="bullet" aria-pressed="false" aria-label="Bullet"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M407-198q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407Zm0-252q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407Zm0-253q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407ZM189-161q-28.1 0-48-19Q121-199 121-227.5t19.5-48q19.5-19.5 48-19.5t47.5 20q19 20 19 48 0 27.2-19.4 46.6Q216.2-161 189-161Zm0-252q-28.1 0-48-19.5Q121-452 121-480t20-47.5Q160.9-547 189-547q27.2 0 46.6 19.5Q255-508 255-480t-19.4 47.5Q216.2-413 189-413Zm-48.5-272.5Q121-705 121-733t19.5-47.5Q160-800 188-800t47.5 19.5Q255-761 255-733t-19.5 47.5Q216-666 188-666t-47.5-19.5Z"/></svg></button>
+          <button class="tool icon" type="button" data-cmd="check" aria-pressed="false" aria-label="Checklist"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m222-299 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-235q-9 9-21 9t-21-9L101-335q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm0-320 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-555q-9 9-21 9t-21-9L101-655q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm328 329q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Zm0-320q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Z"/></svg></button>
+        </div>
+        <button class="tool icon" type="button" data-cmd="pagebreak" aria-pressed="false" aria-label="Page break"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M220-80q-24.8 0-42.4-17.6Q160-115.2 160-140v-140q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v140h520v-140q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v140q0 24.8-17.6 42.4Q764.8-80 740-80H220Zm-60-740q0-24.8 17.6-42.4Q195.2-880 220-880h336q12.4 0 23.7 5T599-862l183 183q8 8 13 19.3 5 11.3 5 23.7v116q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-114H581q-12.8 0-21.4-8.6Q551-651.2 551-664v-156H220v300q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-300Zm220 450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h200q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H380Zm320 0q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h190q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H700Zm-630 0q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3Q57.2-430 70-430h190q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H70Zm410-120Zm0 180Z"/></svg></button>
+        <button class="tool" type="button" data-cmd="typewriter" aria-pressed="false" aria-label="Follow" title="Follow: keep the line you are typing at the bottom"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M190-120q-13 0-21.5-8.5T160-150q0-13 8.5-21.5T190-180h580q13 0 21.5 8.5T800-150q0 13-8.5 21.5T770-120H190Zm279-134q-5-2-10-7L307-413q-9-9-8.5-21.5T308-456q9-9 21.5-9t21.5 9l99 100v-454q0-13 8.5-21.5T480-840q13 0 21.5 8.5T510-810v454l96-96q9-9 21-8.5t21 9.5q9 9 9 21.5t-9 21.5L501-261q-5 5-10 7t-11 2q-6 0-11-2Z"/></svg><span class="tw-label">Follow</span></button>
       </div>
       <div class="ed-scroll" id="edScroll">
         <div class="ed-inner">
@@ -582,7 +604,7 @@ label.arow { cursor: text; }
   </div>
 
   <button class="fab" type="button" id="newNote" aria-label="New note" title="New note (hold or right-click for more)" aria-haspopup="menu">
-    <svg width="22" height="22" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.5v11M1.5 7h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <svg width="26" height="26" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M450-450H230q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h220v-220q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v220h220q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H510v220q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-220Z"/></svg>
   </button>
 </div>
 
@@ -591,36 +613,36 @@ label.arow { cursor: text; }
 
 <div class="dlg" id="dlg" hidden>
   <div class="dlg-panel" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
-    <div class="dlg-head"><h2 id="dlgTitle">Settings</h2><button class="icon-btn dlg-x" type="button" id="kDone" aria-label="Close settings" title="Close"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg></button></div>
+    <div class="dlg-head"><h2 id="dlgTitle">Settings</h2><button class="icon-btn dlg-x" type="button" id="kDone" aria-label="Close settings" title="Close"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-438 270-228q-9 9-21 9t-21-9q-9-9-9-21t9-21l210-210-210-210q-9-9-9-21t9-21q9-9 21-9t21 9l210 210 210-210q9-9 21-9t21 9q9 9 9 21t-9 21L522-480l210 210q9 9 9 21t-9 21q-9 9-21 9t-21-9L480-438Z"/></svg></button></div>
 
     <details class="card" id="syncDet" style="--tc:var(--blue);--on-tc:var(--on-blue)">
-      <summary><span class="chip"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.2 13.5a3.2 3.2 0 0 1-.4-6.4 4.4 4.4 0 0 1 8.5 1.1 2.7 2.7 0 0 1-.3 5.3z"/></svg></span><b>Sync</b><span class="sync-state" id="syncState">Off</span></summary>
+      <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M251-160q-88 0-149.5-61.5T40-371q0-78 50-137t127-71q20-97 94-158.5T482-799q112 0 189 81.5T748-522v24q72-2 122 46.5T920-329q0 69-50 119t-119 50H251Zm0-60h500q45 0 77-32t32-77q0-45-32-77t-77-32h-63v-84q0-91-61-154t-149-63q-88 0-149.5 63T267-522h-19q-62 0-105 43.5T100-371q0 63 44 107t107 44Zm229-260Z"/></svg></span><b>Sync</b><span class="sync-state" id="syncState">Off</span></summary>
       <div class="card-body">
         <div id="syncForm">
           <label class="arow"><span>Link</span><input id="syncUrl" class="aval" type="url" placeholder="Tap to paste" aria-label="Link from your setup" autocomplete="off" spellcheck="false"></label>
           <label class="arow"><span>Secret key</span><input id="syncSecret" class="aval" type="password" placeholder="Tap to paste" aria-label="Secret key" autocomplete="off" spellcheck="false"></label>
-          <div class="pills"><button class="pill solid" type="button" id="syncConnect"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.2 13.5a3.2 3.2 0 0 1-.4-6.4 4.4 4.4 0 0 1 8.5 1.1 2.7 2.7 0 0 1-.3 5.3z"/></svg>Connect</button></div>
+          <div class="pills"><button class="pill solid" type="button" id="syncConnect"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M251-160q-88 0-149.5-61.5T40-371q0-78 50-137t127-71q20-97 94-158.5T482-799q112 0 189 81.5T748-522v24q72-2 122 46.5T920-329q0 69-50 119t-119 50H251Zm0-60h500q45 0 77-32t32-77q0-45-32-77t-77-32h-63v-84q0-91-61-154t-149-63q-88 0-149.5 63T267-522h-19q-62 0-105 43.5T100-371q0 63 44 107t107 44Zm229-260Z"/></svg>Connect</button></div>
         </div>
         <div id="syncOn" hidden>
           <div class="arow"><span>Status</span><b id="syncStatusVal"></b></div>
           <div class="arow"><span>Last synced</span><b id="syncLastVal"></b></div>
-          <div class="pills"><button class="pill danger" type="button" id="syncOff">Disconnect</button><button class="pill solid" type="button" id="syncNow"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 9a6 6 0 0 1-10.4 4M3 9a6 6 0 0 1 10.4-4M13.5 2v3.2h-3.2M4.5 16v-3.2h3.2"/></svg>Sync now</button></div>
+          <div class="pills"><button class="pill danger" type="button" id="syncOff">Disconnect</button><button class="pill solid" type="button" id="syncNow"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M220-477q0 63 23.5 109.5T307-287l30 21v-94q0-13 8.5-21.5T367-390q13 0 21.5 8.5T397-360v170q0 13-8.5 21.5T367-160H197q-13 0-21.5-8.5T167-190q0-13 8.5-21.5T197-220h100l-15-12q-64-51-93-111t-29-134q0-94 49.5-171.5T342-766q11-5 21 0t14 16q5 11 0 22.5T361-710q-64 34-102.5 96.5T220-477Zm520-6q0-48-23.5-97.5T655-668l-29-26v94q0 13-8.5 21.5T596-570q-13 0-21.5-8.5T566-600v-170q0-13 8.5-21.5T596-800h170q13 0 21.5 8.5T796-770q0 13-8.5 21.5T766-740H665l15 14q60 56 90 120t30 123q0 93-48 169.5T623-195q-11 6-22.5 1.5T584-210q-5-11 0-22.5t16-17.5q65-33 102.5-96T740-483Z"/></svg>Sync now</button></div>
         </div>
       </div>
     </details>
 
     <details class="card" style="--tc:var(--coral);--on-tc:var(--on-coral)">
-      <summary><span class="chip"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2.5" width="14" height="13" rx="2.5"/><path d="M2 7h14"/></svg></span><b>Toolbar</b><span class="sync-state" id="tbState"></span></summary>
+      <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h600q24 0 42 18t18 42v600q0 24-18 42t-42 18H180Zm0-513h600v-147H180v147Zm600 60H180v393h600v-393Zm-600-60v60-60Zm0 0v-147 147Zm0 60v393-393Z"/></svg></span><b>Toolbar</b><span class="sync-state" id="tbState"></span></summary>
       <div class="card-body">
-        <div class="set-row"><span>Position</span></div>
+        <div class="set-row"><span>Position</span>
         <div class="pills" id="tbSeg" role="radiogroup" aria-label="Toolbar position">
-          <button class="pill" type="button" role="radio" data-tb="top">Top</button><button class="pill" type="button" role="radio" data-tb="bottom">Bottom</button><button class="pill" type="button" role="radio" data-tb="typewriter">Typewriter</button>
-        </div>
+          <button class="pill" type="button" role="radio" data-tb="top">Top</button><button class="pill" type="button" role="radio" data-tb="bottom">Bottom</button><button class="pill" type="button" role="radio" data-tb="typewriter">Follow</button>
+        </div></div>
       </div>
     </details>
 
     <details class="card" style="--tc:var(--green);--on-tc:var(--on-green)">
-      <summary><span class="chip"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1.8" y="4.5" width="14.4" height="9" rx="2"/><path d="M5 8h.01M8 8h.01M11 8h.01M14 8h.01M5.5 11h7"/></svg></span><b>Shortcuts</b><span class="sync-state">Tap keys to edit</span></summary>
+      <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M140-200q-24 0-42-18.5T80-260v-440q0-24 18-42t42-18h680q24 0 42 18t18 42v440q0 23-18 41.5T820-200H140Zm0-60h680v-440H140v440Zm190-65h300q12.8 0 21.4-8.7 8.6-8.7 8.6-21.5 0-12.8-8.6-21.3-8.6-8.5-21.4-8.5H330q-12.8 0-21.4 8.7-8.6 8.7-8.6 21.5 0 12.8 8.6 21.3 8.6 8.5 21.4 8.5Zm-190 65v-440 440Zm114.5-323.7q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm124 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm123 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm124 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm123 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm-494 125q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm124 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm123 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm124 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm123 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Z"/></svg></span><b>Shortcuts</b><span class="sync-state">Tap keys to edit</span></summary>
       <div class="card-body">
         <div class="set-row"><span id="scLabel">Use shortcuts</span><button class="switch" type="button" role="switch" id="scSwitch" aria-checked="true" aria-labelledby="scLabel"></button></div>
         <div id="krows"></div>
@@ -630,22 +652,23 @@ label.arow { cursor: text; }
     </details>
 
     <details class="card" style="--tc:var(--amber);--on-tc:var(--on-amber)">
-      <summary><span class="chip"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v12M3 9h12"/></svg></span><b>Preset</b><span class="sync-state" id="dkState"></span></summary>
+      <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M435.5-128.6Q427-137.2 427-150v-165q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v53h323q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H487v52q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM150-202q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h187q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm165.5-174.6Q307-385.2 307-398v-52H150q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h157v-54q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v166q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM457-450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h353q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H457Zm144.5-173.6Q593-632.2 593-645v-165q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v52h157q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H653v53q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM150-698q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h353q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg></span><b>Preset</b><span class="sync-state" id="dkState"></span></summary>
       <div class="card-body">
-        <div class="set-row"><span>Default</span></div>
+        <div class="set-row"><span>Default</span>
         <div class="pills" id="dkSeg" role="radiogroup" aria-label="Kind of note the + button makes">
           <button class="pill" type="button" role="radio" data-dk="notes">Note</button><button class="pill" type="button" role="radio" data-dk="list">List</button><button class="pill" type="button" role="radio" data-dk="chat" disabled>Chat</button>
-        </div>
+        </div></div>
       </div>
     </details>
 
     <details class="card" style="--tc:var(--violet);--on-tc:var(--on-violet)">
-      <summary><span class="chip"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="6.8"/><path d="M9 8.2v4.1M9 5.7v.1"/></svg></span><b>About</b><span class="sync-state" id="aboutVer"></span></summary>
+      <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M504.5-288.6q8.5-8.6 8.5-21.4v-180q0-12.8-8.7-21.4-8.7-8.6-21.5-8.6-12.8 0-21.3 8.6-8.5 8.6-8.5 21.4v180q0 12.8 8.7 21.4 8.7 8.6 21.5 8.6 12.8 0 21.3-8.6Zm-1-314.6q9.5-9.2 9.5-22.8 0-14.4-9.5-24.2-9.5-9.8-23.5-9.8t-23.5 9.8Q447-640.5 447-626q0 13.6 9.5 22.8 9.5 9.2 23.5 9.2t23.5-9.2ZM480.3-80q-82.7 0-155.5-31.5Q252-143 197.5-197.5t-86-127.3Q80-397.7 80-480.5t31.5-155.7Q143-709 197.5-763t127.3-85.5Q397.7-880 480.5-880t155.7 31.5Q709-817 763-763t85.5 127Q880-563 880-480.3q0 82.7-31.5 155.5Q817-252 763-197.7q-54 54.3-127 86Q563-80 480.3-80Zm0.2-60Q622-140 721-239.5t99-241Q820-622 721.2-721T480-820q-141 0-240.5 98.8T140-480q0 141 99.5 240.5t241 99.5Zm-0.5-340Z"/></svg></span><b>About</b><span class="sync-state" id="aboutVer"></span></summary>
       <div class="card-body" id="aboutBody">
         <div class="arow"><span>Version</span><b id="aboutVerRow"></b></div>
         <div class="arow"><span>Made by</span><b>faicalcanwork</b></div>
         <div class="arow"><span>Stored on this device</span><b id="aboutSize"></b></div>
         <div class="arow"><span>Editor</span><b>Quill 2.0.3 (BSD-3)</b></div>
+        <div class="arow"><span>Icons</span><b>Material Symbols (Apache 2.0)</b></div>
       </div>
     </details>
   </div>
@@ -709,8 +732,7 @@ ${Nn(this.code(t,r))}
   const COLORS = ['blue', 'coral', 'amber', 'green', 'violet', 'grey'];   // in this order in the colour picker
   const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
   const ALL = 'all';                                   // id of the built-in folder that shows every note
-  const PIN_PATH = 'M9.5 1.5l5 5-2 .8-2.6 2.6.3 3.1-1 1-3.1-3.1L2.5 14l-.5-.5 3.6-3.6L2.5 6.8l1-1 3.1.3 2.6-2.6z';
-  const TRASH_SVG = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.6 9.2c0 .5.4.8.9.8h5c.5 0 .9-.3.9-.8L12 4M6.5 7v4.5M9.5 7v4.5"/></svg>`;
+  const TRASH_SVG = `<svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M261-120q-24.8 0-42.4-17.6Q201-155.2 201-180v-570h-11q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h158q0-13 8.6-21.5 8.6-8.5 21.4-8.5h204q12.8 0 21.4 8.6Q612-822.8 612-810h158q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5h-11v570q0 24.8-17.6 42.4Q723.8-120 699-120H261Zm438-630H261v570h438v-570ZM418.5-274.6q8.5-8.6 8.5-21.4v-339q0-12.8-8.7-21.4-8.7-8.6-21.5-8.6-12.8 0-21.3 8.6-8.5 8.6-8.5 21.4v339q0 12.8 8.7 21.4 8.7 8.6 21.5 8.6 12.8 0 21.3-8.6Zm166 0q8.5-8.6 8.5-21.4v-339q0-12.8-8.7-21.4-8.7-8.6-21.5-8.6-12.8 0-21.3 8.6-8.5 8.6-8.5 21.4v339q0 12.8 8.7 21.4 8.7 8.6 21.5 8.6 12.8 0 21.3-8.6ZM261-750v570-570Z"/></svg>`;
   let toastTimer = 0;
   /* The same speeds and curve as the CSS, for the few things done in script. A changed row gets a soft wash of its own colour that fades out. */
   const MOTION = { base: 200, slow: 280, wash: 900, ease: 'cubic-bezier(0.2, 0.8, 0.2, 1)' };
@@ -721,8 +743,8 @@ ${Nn(this.code(t,r))}
     t.textContent = msg; t.classList.add('show');
     clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
   }
-  const PIN_SVG = `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="${PIN_PATH}" fill="currentColor"/></svg>`;
-  const PIN_ICON = '<svg class="pin" width="14" height="14" viewBox="0 0 16 16" aria-label="Pinned"><path d="M9.5 1.5l5 5-2 .8-2.6 2.6.3 3.1-1 1-3.1-3.1L2.5 14l-.5-.5 3.6-3.6L2.5 6.8l1-1 3.1.3 2.6-2.6z" fill="currentColor"/></svg>';
+  const PIN_SVG = `<svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M634-780v332l77 68q5 5 7 10.6 2 5.6 2 11.6v17.2q0 12.7-8.6 21.2-8.6 8.5-21.4 8.5H510v236q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6Q450-62.2 450-75v-236H270q-12.8 0-21.4-8.6-8.6-8.6-8.6-21.3v-17.2q0-6 2-11.5 2-5.5 7-10.5l71-68v-332h-20q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h354q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5h-20ZM321-371h312l-59-55v-354H380v354l-59 55Zm156 0Z"/></svg>`;
+  const PIN_ICON = '<svg class="pin" width="18" height="18" viewBox="0 -960 960 960" fill="currentColor" aria-label="Pinned"><path d="M634-780v332l77 68q5 5 7 10.6 2 5.6 2 11.6v17.2q0 12.7-8.6 21.2-8.6 8.5-21.4 8.5H510v236q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6Q450-62.2 450-75v-236H270q-12.8 0-21.4-8.6-8.6-8.6-8.6-21.3v-17.2q0-6 2-11.5 2-5.5 7-10.5l71-68v-332h-20q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h354q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5h-20Z"/></svg>';
   const IS_MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || '');
   const USER = Quill.sources.USER, SILENT = Quill.sources.SILENT;
 
@@ -1025,7 +1047,7 @@ ${Nn(this.code(t,r))}
   }
   /* Bullet and Checklist in a list note switch the line between the two. Pressing the active one does nothing, so a line can never lose its list. */
   function setListType(value) {
-    const r = quill.getSelection(true);
+    const r = curRange();
     quill.history.cutoff();
     const at = quill.getLines(r.index, r.length || 1).filter((l) => !isDivider(l)).map((l) => quill.getIndex(l));
     for (const i of at) {
@@ -1056,23 +1078,33 @@ ${Nn(this.code(t,r))}
 
   /* Safety net: if the browser ever refuses a cursor position (IndexSizeError), keep going instead of throwing. */
   const setNativeRange = quill.selection.setNativeRange.bind(quill.selection);
-  quill.selection.setNativeRange = (...args) => { try { return setNativeRange(...args); } catch (e) { if (e instanceof DOMException) return undefined; throw e; } };
+  let noFocus = false;   // while true, Quill may not move the cursor into the text (that would focus it, and a phone would open the keyboard)
+  quill.selection.setNativeRange = (...args) => { if (noFocus) return undefined; try { return setNativeRange(...args); } catch (e) { if (e instanceof DOMException) return undefined; throw e; } };
 
   /* Formatting at the cursor, kept for the toolbar. It is read again after every selection or content change. */
   let fmt = {};
+  /* The toolbar works on the last place the cursor was and never moves focus into the text. On a phone, focusing the text opens the keyboard,
+     so a toolbar tap must not do it: with the keyboard closed the keyboard stays closed, and with it open it stays open. */
+  let lastSel = { index: 0, length: 0 };
+  const curRange = () => {
+    const r = quill.getSelection() || lastSel, max = Math.max(0, quill.getLength() - 1), index = Math.min(r.index, max);
+    return { index, length: Math.min(r.length, max - index) };
+  };
   const isHeading = () => typeof fmt.header === 'number';
   const typewriterOn = () => settings.typewriter;
 
   function bold() {
-    const r = quill.getSelection(true);
+    const r = curRange();
     quill.history.cutoff();                              // each button press is its own step in Undo
-    quill.format('bold', quill.getFormat(r.index, r.length).bold !== true, USER);
+    const on = quill.getFormat(r.index, r.length).bold !== true;
+    if (r.length) quill.formatText(r.index, r.length, 'bold', on, USER);
+    else if (quill.hasFocus()) quill.format('bold', on, USER);                 // with only a cursor, bold applies to what you type next, which needs the cursor in the text
     syncTools();
   }
   /* Heading, Bullet, Checklist: a property of the whole line. The same button again takes it off.
      With several lines selected, it is "on" only when every line has it, so a mixed selection gets it on all lines first. */
   function lineFormat(name, value, isOn) {
-    const r = quill.getSelection(true);
+    const r = curRange();
     quill.history.cutoff();
     quill.formatLine(r.index, r.length, name, isOn(quill.getFormat(r.index, r.length)) ? false : value, USER);
     syncTools();
@@ -1080,7 +1112,7 @@ ${Nn(this.code(t,r))}
   /* Right: the line is attached to the right edge (writing still runs left to right). Same button again takes it off. Like Heading and Bullet, it is "on" only when every selected line has it. */
   const isRight = () => fmt.align === 'right';
   function toggleRight() {
-    const r = quill.getSelection(true);
+    const r = curRange();
     quill.history.cutoff();
     const off = quill.getFormat(r.index, r.length).align === 'right';
     quill.formatLine(r.index, r.length, 'align', off ? false : 'right', USER);
@@ -1088,33 +1120,39 @@ ${Nn(this.code(t,r))}
   }
   /* Page break: puts a divider line at the cursor and moves on to the line below it. */
   function pageBreak() {
-    const r = quill.getSelection(true);
+    const r = curRange();
     quill.history.cutoff();
     const at = r.index + r.length;                       // with text selected, the break goes right after the selection and the text is kept
     quill.insertText(at, '\n\n', USER);
     quill.formatLine(at + 1, 1, 'divider', true, USER);
-    quill.setSelection(at + 2, 0, USER);
+    if (quill.hasFocus()) quill.setSelection(at + 2, 0, USER); else lastSel = { index: at + 2, length: 0 };   // no focus: remember the place, do not open the keyboard
     quill.history.cutoff();
     syncTools(); followEnd();
   }
-  const runCommand = (id) => { if (isListNote() && !LIST_OK.has(id)) return; COMMANDS[id].run(); };   // the greyed-out tools also ignore their shortcuts
+  /* Toolbar and shortcut commands. If the text is not focused (keyboard closed on a phone) they still work, on the last cursor place, without focusing it. */
+  const runCommand = (id) => {
+    if (isListNote() && !LIST_OK.has(id)) return;
+    if (quill.hasFocus()) return COMMANDS[id].run();
+    noFocus = true;
+    try { COMMANDS[id].run(); } finally { noFocus = false; }
+  };   // the greyed-out tools also ignore their shortcuts
   function toggleTypewriter() { settings.typewriter = !settings.typewriter; store.save(); syncTools(); applyTypewriter(true); }
 
   /* One list of commands drives the toolbar buttons and the keyboard shortcuts. */
   const COMMANDS = {
     heading:    { label: 'Heading',   def: { code: 'Digit1', alt: true },   isOn: isHeading,                                    run: () => lineFormat('header', 1, (f) => typeof f.header === 'number') },
     bold:       { label: 'Bold',      def: { code: 'KeyB' },                isOn: () => fmt.bold === true,                    run: bold },
+    right:      { label: 'Align',     def: { code: 'KeyR', alt: true },   isOn: isRight,                                       run: toggleRight },
     bullet:     { label: 'Bullet',    def: { code: 'KeyL', shift: true },   isOn: () => fmt.list === 'bullet',                  run: () => (isListNote() ? setListType('bullet') : lineFormat('list', 'bullet', (f) => f.list === 'bullet')) },
     check:      { label: 'Checklist', def: { code: 'Digit9', shift: true }, isOn: () => fmt.list === 'checked' || fmt.list === 'unchecked', run: () => (isListNote() ? setListType('unchecked') : lineFormat('list', 'unchecked', (f) => f.list === 'checked' || f.list === 'unchecked')) },
-    right:      { label: 'Align',     def: { code: 'KeyR', alt: true },   isOn: isRight,                                       run: toggleRight },
     pagebreak:  { label: 'Page break', def: { code: 'Enter' },             isOn: () => false,                                run: pageBreak },
-    typewriter: { label: 'Typewriter',                                      isOn: typewriterOn,                                 run: toggleTypewriter }
+    typewriter: { label: 'Follow',                                          isOn: typewriterOn,                                 run: toggleTypewriter }
   };
   const SHORTCUT_IDS = Object.keys(COMMANDS).filter((id) => COMMANDS[id].def);
 
   function syncTools() {
-    const r = quill.getSelection();
-    if (r) fmt = quill.getFormat(r.index, r.length);
+    const r = curRange();
+    fmt = quill.getFormat(r.index, r.length);
     const list = activeNote()?.kind === 'list';
     $('tools').querySelectorAll('[data-cmd]').forEach((b) => {
       b.setAttribute('aria-pressed', String(COMMANDS[b.dataset.cmd].isOn()));
@@ -1126,7 +1164,7 @@ ${Nn(this.code(t,r))}
      at the bottom. It only follows when the cursor is at the end, so editing older text works like a normal editor. */
   const atEnd = () => { const r = quill.getSelection(); return !r || r.index + r.length >= quill.getLength() - 1; };
   const toEnd = () => { root.scrollTop = root.scrollHeight; };
-  const TB_NAME = { top: 'Top', bottom: 'Bottom', typewriter: 'Typewriter' };
+  const TB_NAME = { top: 'Top', bottom: 'Bottom', typewriter: 'Follow' };
   const DK_NAME = { notes: 'Note', list: 'List', chat: 'Chat' };
   function applyDefaultKind() {
     $('dkState').textContent = DK_NAME[settings.defaultKind];
@@ -1151,7 +1189,7 @@ ${Nn(this.code(t,r))}
     n.content = quill.getContents().ops;
     touch(n); syncTools(); followEnd();
   });
-  quill.on('selection-change', syncTools);
+  quill.on('selection-change', (range) => { if (range) lastSel = { index: range.index, length: range.length }; syncTools(); });
 
   /* ================= Rendering ================= */
   const el = {
@@ -1313,6 +1351,7 @@ ${Nn(this.code(t,r))}
     if (n.kind === 'list') enforceList(SILENT);
     quill.history.clear();
     fmt = {};
+    lastSel = { index: Math.max(0, quill.getLength() - 1), length: 0 };
     renderNoteHeader(n);
     renderFooter(n);
     applyTypewriter(true);
@@ -1535,11 +1574,11 @@ ${Nn(this.code(t,r))}
   const button = (cls, act, label, extra = '') => `<button class="${cls}" type="button" data-act="${act}"${extra}>${label}</button>`;
   /* New note kinds: Note is the plain page; List holds only bullet and checklist lines; Chat is a greyed-out placeholder until it is built. */
   const KINDS = [
-    ['notes', 'Note',  'blue',  true,  '<rect x="4" y="2.5" width="10" height="13" rx="2"/><path d="M7 6.5h4M7 9h4"/>'],
-    ['list',  'List',  'green', true,  '<rect x="3" y="3" width="12" height="12" rx="3"/><path d="M6 9.2l2.3 2.3L12 7"/>'],,
-    ['chat',  'Chat',  'grey',  false, '<path d="M3 4.5A2 2 0 0 1 5 2.5h8a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H8l-3.5 3v-3H5a2 2 0 0 1-2-2z"/>']
+    ['notes', 'Note',  'blue',  true,  'M180-180h400v-170q0-12.8 8.6-21.4Q597.2-380 610-380h170v-400H180v600Zm0 60q-24.8 0-42.4-17.6Q120-155.2 120-180v-600q0-24.8 17.6-42.4Q155.2-840 180-840h600q24.8 0 42.4 17.6Q840-804.8 840-780v395q0 12.4-5 23.7T822-342L618-138q-8 8-19.3 13-11.3 5-23.7 5H180Zm260-300H330q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h110q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5Zm190-160H330q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5ZM180-180v-600 600Z'],
+    ['list',  'List',  'green', true,  'm222-299 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-235q-9 9-21 9t-21-9L101-335q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm0-320 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-555q-9 9-21 9t-21-9L101-655q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm328 329q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Zm0-320q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Z'],
+    ['chat',  'Chat',  'grey',  false, 'M240-240 131-131q-14 14-32.5 6.3Q80-132.3 80-152v-668q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H240Zm-26-60h606v-520H140v600l74-80Zm-74 0v-520 520Z']
   ];
-  const kindIcon = (c, svg) => `<span class="pk" style="background:var(--${c});color:var(--on-${c})"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${svg}</svg></span>`;
+  const kindIcon = (c, path) => `<span class="pk" style="background:var(--${c});color:var(--on-${c})"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="${path}"/></svg></span>`;
   function renderMenu() {
     const m = el.menu;
     m.dataset.kind = menu.kind || '';
