@@ -310,26 +310,25 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 }
 .title::placeholder { color: var(--grey); }
 .title:focus { border-bottom-color: var(--nc); }
-.ed-scroll { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 16px 0 8px; scrollbar-color: var(--nc) transparent; }
+.ed-scroll { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 0; scrollbar-color: var(--nc) transparent; }
 /* The writing area is as wide as the pane. Text keeps its centred column (48rem, at least 18px from each side) through --px,
    which lets a page break run from the left edge to the right edge. */
-.ed-inner { --px: max(var(--edge, 16px), calc((100cqw - 48rem) / 2)); container-type: inline-size; flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; gap: 9px; }
-.tools { order: 1; flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 4px 12px; border-bottom: 1px solid var(--line); background: var(--bg); }
+.ed-inner { --px: max(var(--edge, 26px), calc((100cqw - 48rem) / 2)); container-type: inline-size; flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; gap: 9px; }
+.tools { order: 1; flex: none; display: flex; flex-wrap: nowrap; align-items: center; gap: 6px; padding: 4px 12px; border-bottom: 1px solid var(--line); background: var(--bg); }
 .tool { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border: 1px solid transparent; border-radius: var(--r-pill); background: transparent; color: var(--ink-2); font-size: 0.75rem; font-weight: 500; }
 .tool:hover { background: var(--surface); color: var(--ink); }
 /* Icon buttons, and their pressed state, are circles. Follow is a pill. */
-.tool.icon { justify-content: center; width: 36px; height: 36px; min-width: 0; min-height: 0; padding: 0; border-radius: 50%; }
-.tool:not(.icon) { min-height: 36px; padding: 0 14px; border-radius: var(--r-pill); }
+.tool.icon { flex: none; justify-content: center; width: 36px; height: 36px; min-width: 0; min-height: 0; padding: 0; border-radius: 50%; }
 .tool:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
-/* Groups: Text (Heading, Bold, Align), Blocks (Bullet, Checklist, Page break), then Follow on the right. */
-.tgroup { display: flex; align-items: center; gap: 2px; }
-.tsep { flex: none; width: 1px; height: 20px; margin: 0 6px; background: var(--line); }
-@media (max-width: 360px) { .tools { padding-inline: 8px; } .tsep { margin: 0 4px; } }   /* very narrow phones: still one row */
-.tool.icon svg { width: 22px; height: 22px; }
+/* Round keys sit together on the left; Page break and Follow go to the right. The pressed one is a filled circle. */
+.tool.icon svg { width: 24px; height: 24px; }
 .tool[aria-pressed="true"] { background: var(--nc); border-color: var(--nc); color: var(--on-nc); }
-.tool[data-cmd="typewriter"] { margin-left: auto; }
-/* One slim row on a narrow screen: Follow shows as its icon. */
-@media (max-width: 520px) { .tw-label { display: none; } .tool[data-cmd="typewriter"] { width: 36px; height: 36px; min-height: 0; padding: 0; justify-content: center; border-radius: 50%; } }
+.tool[data-cmd="pagebreak"] { margin-left: auto; }
+/* The Follow arrow flips when it is on, like Align. */
+.tool[data-cmd="typewriter"][aria-pressed="true"] svg { transform: rotate(180deg); }
+/* The line-style key shows the icon of what the line is now: text, bullet or checklist. */
+.tool[data-cmd="kind"] svg { display: none; }
+.tool[data-cmd="kind"][data-k="text"] .k-bullet, .tool[data-cmd="kind"][data-k="bullet"] .k-bullet, .tool[data-cmd="kind"][data-k="check"] .k-check, .tool[data-cmd="kind"][data-k="number"] .k-number { display: block; }
 /* The Toolbar setting: top, bottom, or Follow (bottom while Follow is on, where the text sits at the bottom, top otherwise). */
 .ed-top { order: 0; } .ed-scroll { order: 2; } .ed-foot { order: 4; }
 .editor[data-tb="bottom"] .tools { order: 3; border-bottom: 0; border-top: 1px solid var(--line); }
@@ -337,17 +336,6 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .tool:disabled:hover { border-color: var(--line); color: var(--ink-2); }
 .tool[data-cmd="right"] .i-right, .tool[data-cmd="right"][aria-pressed="true"] .i-left { display: none; }
 .tool[data-cmd="right"][aria-pressed="true"] .i-right { display: block; }
-/* Round keys sit together on the left, Follow on the right; the pressed one is a filled circle. */
-.tools { flex-wrap: nowrap; justify-content: flex-start; gap: 6px; }
-.tgroup { display: contents; }
-.tsep { display: none; }
-.tool.icon svg { width: 24px; height: 24px; }
-.tool[data-cmd="pagebreak"] { margin-left: auto; }
-.tool[data-cmd="typewriter"] { margin-left: 0; }
-/* Follow is an icon on every screen; the arrow flips when it is on, like Align. */
-.tw-label { display: none; }
-.tool[data-cmd="typewriter"] { width: 36px; height: 36px; min-height: 0; padding: 0; justify-content: center; border-radius: 50%; }
-.tool[data-cmd="typewriter"][aria-pressed="true"] svg { transform: rotate(180deg); }
 .ed-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; padding: 8px 16px; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 0.6875rem; color: var(--grey); font-variant-numeric: tabular-nums; }
 #saved.warn { color: var(--coral); }
 #saved.busy { color: var(--ink-2); }
@@ -363,7 +351,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .body { position: relative; flex: 1; min-height: 200px; display: flex; flex-direction: column; }
 .ql-clipboard { position: absolute; left: -100000px; top: 50%; height: 1px; overflow-y: hidden; }
 .ql-editor { flex: 1; min-height: 0; overflow-y: auto; outline: none; white-space: pre-wrap; overflow-wrap: break-word; tab-size: 4;
-  padding: 0 var(--px); font-size: 1.25rem; line-height: 1.6; caret-color: var(--nc); counter-reset: list-0; scrollbar-width: thin; }
+  padding: 16px var(--px) 8px; font-size: 1.25rem; line-height: 1.6; caret-color: var(--nc); counter-reset: list-0 pg; scrollbar-width: thin; }
 .ql-editor > * { cursor: text; }
 /* Typewriter: a short note sits on the bottom edge of the page, each new line goes in at the bottom and the older lines move up.
    Nothing scrolls until the page is full; after that the page grows and scrolls as usual, following the line you are writing. */
@@ -371,7 +359,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .body.typewriter .ql-editor > * { flex: none; }
 .body.typewriter .ql-editor > :first-child { margin-top: auto; }
 .body.typewriter .ql-editor.ql-blank::before { top: auto; bottom: 1.3rem; }
-.ql-editor.ql-blank::before { content: attr(data-placeholder); position: absolute; left: 0; right: 0; color: var(--grey); pointer-events: none; }
+.ql-editor.ql-blank::before { content: attr(data-placeholder); position: absolute; left: var(--px); right: var(--px); color: var(--grey); pointer-events: none; }
 .ql-editor p, .ql-editor ol, .ql-editor h1, .ql-editor h2, .ql-editor h3 { margin: 0; padding: 0; counter-set: list-0; }
 .ql-editor strong { font-weight: 700; }
 .ql-editor h1, .ql-editor h2, .ql-editor h3 { margin: 0.5em 0 0.1em; font-family: var(--font-body); font-weight: 600; font-size: 1.6875rem; line-height: 1.3; letter-spacing: -0.01em; padding-bottom: 0.15em; border-bottom: 1px solid var(--nc); }
@@ -382,16 +370,46 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .ql-editor .ql-align-right { text-align: right; }
 .ql-editor li.ql-align-right { padding-left: 0; padding-right: 1.5em; }
 .ql-editor li.ql-align-right > .ql-ui { left: auto; right: 0; }
-/* Page break: one line with a thin note-colour line above and below and the selected-note grey between, edge to edge. */
-.ql-editor > div.dv { box-sizing: border-box; margin: 0 calc(-1 * var(--px)); padding: 0 var(--px); border-top: 1px solid var(--nc); border-bottom: 1px solid var(--nc); background: var(--panel); }
+/* Paper: the space outside the margin line is tinted. Each text line carries a piece of margin line (2px, note colour), on the left, or on the right when its page
+   is aligned right. A page is one alignment, so the pieces join into one line per page. The page break band covers it, so it never runs through a break. */
+.ql-editor { display: flex; flex-direction: column; background: linear-gradient(to right, var(--panel) calc(var(--px) - 10px), transparent 0, transparent calc(100% - var(--px) + 10px), var(--panel) 0); }
+.ql-editor > * { flex: none; }
+.ql-editor > p, .ql-editor > h1, .ql-editor li { position: relative; }
+.ql-editor > p::before, .ql-editor > h1::before, .ql-editor li::before { content: ""; position: absolute; top: 0; bottom: -1px; left: -10px; width: 2px; background: var(--nc); pointer-events: none; }
+.ql-editor > h1::before { top: -0.5em; bottom: -0.1em; }
+.ql-editor > h1:first-child::before { top: 0; }
+.ql-editor .ql-align-right::before { left: auto; right: -10px; }
+/* Pre-drawn: below the last row the line carries on to the bottom of the page, on the side of the last row (the next row copies it). */
+.ql-editor::after { content: ""; flex: 1 0 2.5rem; margin: 0 calc(-1 * var(--px)); pointer-events: none;
+  background: linear-gradient(to right, transparent calc(var(--px) - 10px), var(--nc) 0, var(--nc) calc(var(--px) - 8px), transparent 0); }
+.ql-editor:is(:has(> p.ql-align-right:last-child), :has(> h1.ql-align-right:last-child), :has(> ol:last-child > li.ql-align-right:last-child))::after {
+  background: linear-gradient(to right, transparent calc(100% - var(--px) + 8px), var(--nc) 0, var(--nc) calc(100% - var(--px) + 10px), transparent 0); }
+/* Follow: the text sits at the bottom and the empty page is above it, so the line is drawn upward from the first row instead. */
+.body.typewriter .ql-editor::after { display: none; }
+.body.typewriter .ql-editor > :is(p, h1):first-child::after, .body.typewriter .ql-editor > ol:first-child > li:first-child::after { content: ""; position: absolute; bottom: 100%; left: -10px; width: 2px; height: 100vh; background: var(--nc); pointer-events: none; }
+.body.typewriter .ql-editor > :is(p, h1).ql-align-right:first-child::after, .body.typewriter .ql-editor > ol:first-child > li.ql-align-right:first-child::after { left: auto; right: -10px; }
+/* Page break: one line with a thin note-colour line above and below and the selected-note grey between, as wide as the paper (out to the margin lines). */
+.ql-editor > div.dv { box-sizing: border-box; margin: 0 -10px; padding: 0 10px; border-top: 2px solid var(--nc); border-bottom: 2px solid var(--nc); background: var(--panel); position: relative; counter-increment: pg; }
+/* The page number sits in the middle of the band: the number of the page that ends here. Counted from the breaks, so it renumbers by itself. */
+.ql-editor > div.dv::after { content: counter(pg); position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; color: var(--nc); pointer-events: none; user-select: none; }
 .ql-editor li > .ql-ui::before { display: inline-block; width: 1.2em; margin: 0 0.3em 0 0; text-align: right; white-space: nowrap; font-size: 1.1em; }
 .ql-editor li[data-list="bullet"] > .ql-ui::before { content: "\2022"; }
+/* The Bullet setting changes how every bullet looks, old ones too. */
+:root[data-bl="dash"] .ql-editor li[data-list="bullet"] > .ql-ui::before { content: "\2013"; }
+:root[data-bl="square"] .ql-editor li[data-list="bullet"] > .ql-ui::before { content: "\25AA"; transform: scale(1.2); }
 .ql-editor li[data-list="unchecked"] > .ql-ui::before { content: "\2610"; }
 .ql-editor li[data-list="checked"] > .ql-ui::before { content: "\2611"; }
 .ql-editor li[data-list="unchecked"] > .ql-ui, .ql-editor li[data-list="checked"] > .ql-ui { cursor: pointer; }
 .ql-editor li[data-list="checked"] { color: var(--grey); text-decoration: line-through; text-decoration-color: var(--nc); text-decoration-thickness: 2px; }
 .ql-editor li[data-list="ordered"] { counter-increment: list-0; }
-.ql-editor li[data-list="ordered"] > .ql-ui::before { content: counter(list-0, decimal) ". "; }
+.ql-editor li[data-list="ordered"] > .ql-ui::before { content: counter(list-0, decimal) "."; }
+:root[data-nl="alpha"] .ql-editor li[data-list="ordered"] > .ql-ui::before { content: counter(list-0, lower-alpha) "."; }
+:root[data-nl="roman"] .ql-editor li[data-list="ordered"] > .ql-ui::before { content: counter(list-0, lower-roman) "."; }
+/* Numbers are wider than a bullet, so numbered lines get a little more room. */
+.ql-editor li[data-list="ordered"] { padding-left: 2.3em; }
+.ql-editor li[data-list="ordered"] > .ql-ui { width: 2.3em; }
+.ql-editor li[data-list="ordered"] > .ql-ui::before { width: 1.6em; }
+.ql-editor li[data-list="ordered"].ql-align-right { padding-left: 0; padding-right: 2.3em; }
 
 /* ---------- Options menu (notes and folders) ---------- */
 .menu { position: fixed; z-index: 30; width: max(232px, 15rem); display: flex; flex-direction: column; gap: 2px; padding: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
@@ -441,7 +459,8 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .card > summary::-webkit-details-marker { display: none; }
 .card > summary::after { content: ""; flex: none; width: 22px; height: 22px; background: var(--grey); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M469-358q-5-2-10-7L261-563q-9-9-8.5-21.5T262-606q9-9 21.5-9t21.5 9l175 176 176-176q9-9 21-8.5t21 9.5q9 9 9 21.5t-9 21.5L501-365q-5 5-10 7t-11 2q-6 0-11-2Z'/%3E%3C/svg%3E") center / 22px 22px no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M469-358q-5-2-10-7L261-563q-9-9-8.5-21.5T262-606q9-9 21.5-9t21.5 9l175 176 176-176q9-9 21-8.5t21 9.5q9 9 9 21.5t-9 21.5L501-365q-5 5-10 7t-11 2q-6 0-11-2Z'/%3E%3C/svg%3E") center / 22px 22px no-repeat; }
 .card[open] > summary::after { transform: rotate(180deg); background: var(--tc); }
-.card > summary b { flex: 1; min-width: 0; font-size: 0.875rem; font-weight: 600; }
+.card > summary .sync-state { flex: 0 1 auto; min-width: 0; margin-left: auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }   /* a long value shrinks (…) instead of covering the title */
+.card > summary b { flex: 0 0 auto; min-width: 0; font-size: 0.875rem; font-weight: 600; }
 .chip svg { width: 20px; height: 20px; }
 .chip { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--tc); color: var(--on-tc); }
 .sync-state { font-size: 0.75rem; color: var(--grey); white-space: nowrap; }
@@ -450,40 +469,54 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .arow { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0; border-top: 1px solid var(--line); color: var(--ink-2); }
 .arow:first-child { border-top: 0; }
 .arow b { font-weight: 600; color: var(--ink); text-align: right; }
+.card-desc { margin: 0; color: var(--ink-2); font-size: 0.75rem; line-height: 1.4; }
 .card-body { display: flex; flex-direction: column; gap: 8px; padding: 0 12px 12px; font-size: 0.8125rem; }
 .aval::placeholder { color: var(--grey); font-weight: 400; }
 label.arow { cursor: text; }
-/* New-note setting: one rounded row per kind, with pills for what it gives you. */
-.dk { display: grid; gap: 0; padding-top: 4px; }
-.dk-row { --kc: var(--tc); --on-kc: var(--on-tc); display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 0; border-radius: 28px; background: transparent; color: var(--ink-2); font: inherit; text-align: left; cursor: pointer; }
-.dk-row[aria-checked="true"] { background: var(--panel); color: var(--ink); }
-/* Joined into one block: shared edges, only the outer corners are round. */
-.dk-row { border-radius: 0; position: relative; }
-.dk-row + .dk-row { border-top: 1px solid var(--line); }
-.dk-row:first-child { border-radius: 28px 28px 0 0; }
-.dk-row:last-child { border-radius: 0 0 28px 28px; }
-.dk-row[aria-checked="true"] { z-index: 1; }
-.dk-row:disabled { opacity: 0.45; cursor: not-allowed; }
-.dk-ic { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: var(--panel); border: 1px solid var(--line); }
-.dk-row[aria-checked="true"] .dk-ic { background: var(--kc); border-color: var(--kc); color: var(--on-kc); }
-.dk-t { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; }
-.dk-t b { flex: none; min-width: 3.4rem; }
-.dk-t b { font-size: 0.9375rem; font-weight: 700; }
-.dk-tags { display: flex; flex-wrap: nowrap; gap: 5px; min-width: 0; }
-.dk-tags i { font-style: normal; font-size: 0.6875rem; font-weight: 600; padding: 2px 8px; white-space: nowrap; border: 1px solid var(--line); border-radius: var(--r-pill); color: var(--grey); }
-.dk-row[aria-checked="true"] .dk-tags i { color: var(--kc); border-color: var(--kc); }
-.dk-rd { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; }
-.dk-row[aria-checked="true"] .dk-rd { border-color: var(--kc); }
-.dk-row[aria-checked="true"] .dk-rd::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--kc); }
 .pills { display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px; }
 .set-row .pills { padding-top: 0; flex-wrap: nowrap; }
+/* Rows of choices (Toolbar card) look like the other cards: the same row height and a thin line between rows. */
+.set-row:has(> .pills) { padding: 4px 0; }
+.set-row:has(> .pills) + .set-row:has(> .pills) { border-top: 1px solid var(--line); }
+.set-row .pills { gap: 6px; }
+.set-row .pill { min-height: 32px; padding: 0 12px; }
+.set-row .pill.glyph { width: 32px; padding: 0; }
+@media (max-width: 360px) { .card-body .set-row .pills { gap: 3px; } .card-body .set-row .pill { padding: 0 5px; font-size: 0.75rem; } .card-body .set-row .pill.glyph { padding: 0; } }
 @media (max-width: 360px) { .set-row { gap: 6px; } .set-row .pills { gap: 3px; } .set-row .pill { padding: 0 7px; font-size: 0.75rem; } } /* very narrow phones: keep the label and the buttons on one line */
 .pill { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; padding: 0 16px; border: 1px solid var(--line); border-radius: var(--r-pill); background: transparent; color: var(--ink-2); font: inherit; font-size: 0.8125rem; font-weight: 600; }
 .pill svg { width: 20px; height: 20px; }
 .pill.solid { background: var(--blue); border-color: var(--blue); color: var(--on-blue); }
 .pill.danger { color: var(--coral); }
 .pill[aria-checked="true"] { background: var(--line); color: var(--ink); }
+.card .pill[aria-checked="true"] { background: var(--tc); border-color: var(--tc); color: var(--on-tc); }   /* the chosen one takes the card's colour */
 .pill:disabled { opacity: 0.4; cursor: not-allowed; }
+.pill.glyph { justify-content: center; width: 32px; padding: 0; font-size: 1rem; line-height: 1; }
+.pill.glyph svg { width: 18px; height: 18px; }
+/* Preset: plain rows like About (name, what it allows), one line each, with a tick on the chosen one. */
+.dk-list { display: flex; flex-direction: column; }
+.dk-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 40px; padding: 4px 0; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--ink-2); font: inherit; text-align: left; cursor: pointer; }
+.dk-row:first-child { border-top: 0; }
+.dk-row > span:first-child { flex: 1; min-width: 0; white-space: nowrap; }
+.dk-row b { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 600; color: var(--ink); text-align: right; white-space: nowrap; }
+.dk-row > span:first-child { flex: 1 1 auto; min-width: 3em; overflow: hidden; text-overflow: ellipsis; }
+.dk-plus { flex: none; display: grid; place-items: center; width: 22px; height: 22px; color: var(--tc); }
+.dk-plus svg { width: 20px; height: 20px; }
+.cf { display: flex; flex-direction: column; gap: 4px; padding-top: 8px; margin-top: 4px; border-top: 1px solid var(--line); }
+.cf-label { padding-top: 4px; color: var(--grey); font-size: 0.75rem; }
+.cf .pills { padding-top: 8px; }
+.dk-row:disabled { opacity: 0.45; cursor: not-allowed; }
+/* The Preset form shows the editor's own toolbar: the same keys, the same look. Tapping a key switches it on (kept) or off. */
+.tools.cf-tools { order: 0; flex-wrap: nowrap; gap: 2px; margin-top: 6px; padding: 4px 6px; border: 0; border-radius: var(--r-md); }
+.cf-tools .tool.icon { width: 34px; height: 34px; }
+.cf-tools .tool[aria-pressed="false"] { color: var(--grey); opacity: 0.55; }
+.cf-tools .tool[aria-pressed="true"] { background: var(--tc); border-color: var(--tc); color: var(--on-tc); }
+.cf-tools .tool svg { transform: none !important; }
+.cf-tools .tool[data-cmd="right"] .i-right { display: none !important; } .cf-tools .tool[data-cmd="right"] .i-left { display: block !important; }
+.cf .pill.solid { background: var(--tc); border-color: var(--tc); color: var(--on-tc); }
+.cf .pill.solid:disabled { opacity: 0.4; cursor: not-allowed; }
+.dk-tick { flex: none; box-sizing: border-box; width: 22px; height: 22px; padding: 1px; border: 2px solid var(--line); border-radius: 7px; color: transparent; }   /* an empty rounded box; the chosen one is filled with the card colour and ticked */
+.dk-row[aria-checked="true"] .dk-tick { background: var(--tc); border-color: var(--tc); color: var(--on-tc); }
+@media (max-width: 360px) { .dk-row { gap: 6px; font-size: 0.75rem; } .dk-row b { font-size: 0.6875rem; } }
 .set-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; font-size: 0.8125rem; color: var(--ink-2); }
 .switch { flex: none; position: relative; width: 36px; height: 20px; padding: 0; border: 0; border-radius: var(--r-pill); background: var(--grey); }
 .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; }
@@ -495,6 +528,10 @@ label.arow { cursor: text; }
 .krow .kbtn:hover, .aval:hover { border-color: var(--grey); }
 .krow .kbtn:focus, .aval:focus { outline: none; border-color: var(--tc); color: var(--tc); }
 .reset { align-self: flex-end; min-height: 28px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r-pill); background: transparent; color: var(--ink-2); font: inherit; font-size: 0.75rem; font-weight: 600; }
+.dk-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid var(--line); }
+.dk-foot .reset:only-child, .dk-foot #dkReset { margin-left: auto; }
+.reset.solid { background: var(--tc); border-color: var(--tc); color: var(--on-tc); }
+.reset:disabled { opacity: 0.4; cursor: not-allowed; }
 .reset:hover { border-color: var(--grey); color: var(--ink); }
 .kmsg:empty { display: none; }
 .kmsg { min-height: 1.3em; font-size: 0.8125rem; color: var(--coral); }
@@ -521,8 +558,7 @@ label.arow { cursor: text; }
   .cal-soon, .date-long { display: none; }
   .date-short { display: inline; }
   .back { display: inline-flex; }
-  .ed-scroll { padding: 12px 0 8px; }
-  .ed-inner { --edge: 16px; }
+  .ed-inner { --edge: 26px; }
   .fab { bottom: 64px; }
   .editor { position: absolute; inset: 0; z-index: 6; transform: translateX(100%); visibility: hidden; box-shadow: -12px 0 24px rgba(0, 0, 0, 0.35); }
   .app[data-view="editor"] .editor { transform: none; visibility: visible; }
@@ -607,18 +643,13 @@ label.arow { cursor: text; }
       </div>
       <!-- Icons: Material Symbols (Rounded) by Google, https://fonts.google.com/icons, licensed under the Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0). -->
       <div class="tools" id="tools" role="toolbar" aria-label="Formatting">
-        <div class="tgroup" role="group" aria-label="Text">
-          <button class="tool icon" type="button" data-cmd="heading" aria-pressed="false" aria-label="Heading"><svg width="20" height="20" viewBox="80 -880 800 800" fill="currentColor" aria-hidden="true"><path d="M341.43-448.57V-310q0 13.36-9.03 22.4-9.03 9.03-22.58 9.03-13.54 0-22.4-8.93-8.85-8.94-8.85-22.5v-340q0-13.36 9.03-22.4 9.03-9.03 22.58-9.03 13.54 0 22.4 8.93 8.85 8.94 8.85 22.56v138.51h277.14V-650q0-13.36 9.03-22.4 9.03-9.03 22.58-9.03 13.54 0 22.4 8.93 8.85 8.94 8.85 22.5v340q0 13.36-9.03 22.4-9.03 9.03-22.58 9.03-13.54 0-22.4-8.93-8.85-8.94-8.85-22.56v-138.51H341.43Z"/></svg></button>
-          <button class="tool icon" type="button" data-cmd="bold" aria-pressed="false" aria-label="Bold"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M335-200q-25 0-42.5-17.5T275-260v-440q0-25 17.5-42.5T335-760h168q66 0 114.5 42T666-612q0 38-21 70t-56 49v6q43 14 69.5 50t26.5 81q0 68-52.5 112T510-200H335Zm26-76h144q38 0 66-25t28-63q0-37-28-62t-66-25H361v175Zm0-247h136q35 0 60.5-23t25.5-58q0-35-25.5-58.5T497-686H361v163Z"/></svg></button>
-          <button class="tool icon" type="button" data-cmd="right" aria-pressed="false" aria-label="Align"><svg class="i-left" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg><svg class="i-right" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-780q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg></button>
-        </div>
-        <span class="tsep" aria-hidden="true"></span>
-        <div class="tgroup" role="group" aria-label="Blocks">
-          <button class="tool icon" type="button" data-cmd="bullet" aria-pressed="false" aria-label="Bullet"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M407-198q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407Zm0-252q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407Zm0-253q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407ZM189-161q-28.1 0-48-19Q121-199 121-227.5t19.5-48q19.5-19.5 48-19.5t47.5 20q19 20 19 48 0 27.2-19.4 46.6Q216.2-161 189-161Zm0-252q-28.1 0-48-19.5Q121-452 121-480t20-47.5Q160.9-547 189-547q27.2 0 46.6 19.5Q255-508 255-480t-19.4 47.5Q216.2-413 189-413Zm-48.5-272.5Q121-705 121-733t19.5-47.5Q160-800 188-800t47.5 19.5Q255-761 255-733t-19.5 47.5Q216-666 188-666t-47.5-19.5Z"/></svg></button>
-          <button class="tool icon" type="button" data-cmd="check" aria-pressed="false" aria-label="Checklist"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m222-299 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-235q-9 9-21 9t-21-9L101-335q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm0-320 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-555q-9 9-21 9t-21-9L101-655q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm328 329q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Zm0-320q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Z"/></svg></button>
-        </div>
+        <button class="tool icon" type="button" data-cmd="plain" aria-pressed="false" aria-label="Text" title="Plain text: take off the heading, list and alignment"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path transform="translate(480 -480) scale(.8) translate(-480 480)" d="M430-700H250q-20.8 0-35.4-14.6Q200-729.2 200-750.1q0-20.8 14.5-35.3Q229.1-800 250-800h460q20.8 0 35.4 14.6Q760-770.7 760-749.8q0 20.8-14.5 35.3Q730.8-700 710-700H530v490q0 20.8-14.6 35.4Q500.7-160 479.8-160q-20.8 0-35.3-14.5Q430-189.1 430-210v-490Z"/></svg></button>
+        <button class="tool icon" type="button" data-cmd="heading" aria-pressed="false" aria-label="Heading"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path transform="translate(480 -480) scale(1.2) translate(-480 480)" d="M341.43-448.57V-310q0 13.36-9.03 22.4-9.03 9.03-22.58 9.03-13.54 0-22.4-8.93-8.85-8.94-8.85-22.5v-340q0-13.36 9.03-22.4 9.03-9.03 22.58-9.03 13.54 0 22.4 8.93 8.85 8.94 8.85 22.56v138.51h277.14V-650q0-13.36 9.03-22.4 9.03-9.03 22.58-9.03 13.54 0 22.4 8.93 8.85 8.94 8.85 22.5v340q0 13.36-9.03 22.4-9.03 9.03-22.58 9.03-13.54 0-22.4-8.93-8.85-8.94-8.85-22.56v-138.51H341.43Z"/></svg></button>
+        <button class="tool icon" type="button" data-cmd="bold" aria-pressed="false" aria-label="Bold"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M335-200q-25 0-42.5-17.5T275-260v-440q0-25 17.5-42.5T335-760h168q66 0 114.5 42T666-612q0 38-21 70t-56 49v6q43 14 69.5 50t26.5 81q0 68-52.5 112T510-200H335Zm26-76h144q38 0 66-25t28-63q0-37-28-62t-66-25H361v175Zm0-247h136q35 0 60.5-23t25.5-58q0-35-25.5-58.5T497-686H361v163Z"/></svg></button>
+        <button class="tool icon" type="button" data-cmd="right" aria-pressed="false" aria-label="Align"><svg class="i-left" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg><svg class="i-right" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-780q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg></button>
+        <button class="tool icon" type="button" data-cmd="kind" data-k="text" aria-pressed="false" aria-label="List" title="List: bullet, numbering, checklist"><svg class="k-bullet" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M407-198q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407Zm0-252q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407Zm0-253q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407ZM189-161q-28.1 0-48-19Q121-199 121-227.5t19.5-48q19.5-19.5 48-19.5t47.5 20q19 20 19 48 0 27.2-19.4 46.6Q216.2-161 189-161Zm0-252q-28.1 0-48-19.5Q121-452 121-480t20-47.5Q160.9-547 189-547q27.2 0 46.6 19.5Q255-508 255-480t-19.4 47.5Q216.2-413 189-413Zm-48.5-272.5Q121-705 121-733t19.5-47.5Q160-800 188-800t47.5 19.5Q255-761 255-733t-19.5 47.5Q216-666 188-666t-47.5-19.5Z"/></svg><svg class="k-check" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m222-299 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-235q-9 9-21 9t-21-9L101-335q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm0-320 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-555q-9 9-21 9t-21-9L101-655q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm328 329q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Zm0-320q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Z"/></svg><svg class="k-number" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-80q-13 0-21.5-8.5T120-110q0-13 8.5-21.5T150-140h70v-30h-30q-13 0-21.5-8.5T160-200q0-13 8.5-21.5T190-230h30v-30h-70q-13 0-21.5-8.5T120-290q0-13 8.5-21.5T150-320h90q17 0 28.5 11.5T280-280v40q0 17-11.5 28.5T240-200q17 0 28.5 11.5T280-160v40q0 17-11.5 28.5T240-80h-90Zm-7-280q-9 0-16-7t-7-16v-87q0-17 11.5-28.5T160-510h60v-30h-70q-13 0-21.5-8.5T120-570q0-13 8.5-21.5T150-600h90q17 0 28.5 11.5T280-560v70q0 17-11.5 28.5T240-450h-60v30h70q13 0 21.5 8.5T280-390q0 13-8.5 21.5T250-360H143Zm45.5-288.5Q180-657 180-670v-150h-30q-13 0-21.5-8.5T120-850q0-13 8.5-21.5T150-880h68q9 0 15.5 6.5T240-858v188q0 13-8.5 21.5T210-640q-13 0-21.5-8.5ZM399-209q-12.7 0-21.3-8.6-8.6-8.6-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.3-8.5h411q12.7 0 21.3 8.6 8.6 8.6 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.3 8.5H399Zm0-243q-12.7 0-21.3-8.6-8.6-8.6-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.3-8.5h411q12.7 0 21.3 8.6 8.6 8.6 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.3 8.5H399Zm0-243q-12.7 0-21.3-8.6-8.6-8.6-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.3-8.5h411q12.7 0 21.3 8.6 8.6 8.6 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.3 8.5H399Z"/></svg></button>
         <button class="tool icon" type="button" data-cmd="pagebreak" aria-pressed="false" aria-label="Page break"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M220-80q-24.8 0-42.4-17.6Q160-115.2 160-140v-140q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v140h520v-140q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v140q0 24.8-17.6 42.4Q764.8-80 740-80H220Zm-60-740q0-24.8 17.6-42.4Q195.2-880 220-880h336q12.4 0 23.7 5T599-862l183 183q8 8 13 19.3 5 11.3 5 23.7v116q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-114H581q-12.8 0-21.4-8.6Q551-651.2 551-664v-156H220v300q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-300Zm220 450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h200q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H380Zm320 0q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h190q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H700Zm-630 0q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3Q57.2-430 70-430h190q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H70Zm410-120Zm0 180Z"/></svg></button>
-        <button class="tool" type="button" data-cmd="typewriter" aria-pressed="false" aria-label="Follow" title="Follow: keep the line you are typing at the bottom"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M190-120q-13 0-21.5-8.5T160-150q0-13 8.5-21.5T190-180h580q13 0 21.5 8.5T800-150q0 13-8.5 21.5T770-120H190Zm279-134q-5-2-10-7L307-413q-9-9-8.5-21.5T308-456q9-9 21.5-9t21.5 9l99 100v-454q0-13 8.5-21.5T480-840q13 0 21.5 8.5T510-810v454l96-96q9-9 21-8.5t21 9.5q9 9 9 21.5t-9 21.5L501-261q-5 5-10 7t-11 2q-6 0-11-2Z"/></svg><span class="tw-label">Follow</span></button>
+        <button class="tool icon" type="button" data-cmd="typewriter" aria-pressed="false" aria-label="Follow" title="Follow: keep the line you are typing at the bottom"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M190-120q-13 0-21.5-8.5T160-150q0-13 8.5-21.5T190-180h580q13 0 21.5 8.5T800-150q0 13-8.5 21.5T770-120H190Zm279-134q-5-2-10-7L307-413q-9-9-8.5-21.5T308-456q9-9 21.5-9t21.5 9l99 100v-454q0-13 8.5-21.5T480-840q13 0 21.5 8.5T510-810v454l96-96q9-9 21-8.5t21 9.5q9 9 9 21.5t-9 21.5L501-261q-5 5-10 7t-11 2q-6 0-11-2Z"/></svg></button>
       </div>
       <div class="ed-scroll" id="edScroll">
         <div class="ed-inner">
@@ -644,6 +675,7 @@ label.arow { cursor: text; }
     <details class="card" id="syncDet" style="--tc:var(--blue);--on-tc:var(--on-blue)">
       <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M251-160q-88 0-149.5-61.5T40-371q0-78 50-137t127-71q20-97 94-158.5T482-799q112 0 189 81.5T748-522v24q72-2 122 46.5T920-329q0 69-50 119t-119 50H251Zm0-60h500q45 0 77-32t32-77q0-45-32-77t-77-32h-63v-84q0-91-61-154t-149-63q-88 0-149.5 63T267-522h-19q-62 0-105 43.5T100-371q0 63 44 107t107 44Zm229-260Z"/></svg></span><b>Sync</b><span class="sync-state" id="syncState">Off</span></summary>
       <div class="card-body">
+        <p class="card-desc">Back up your notes and sync them across devices.</p>
         <div id="syncForm">
           <label class="arow"><span>Link</span><input id="syncUrl" class="aval" type="url" placeholder="Tap to paste" aria-label="Link from your setup" autocomplete="off" spellcheck="false"></label>
           <label class="arow"><span>Secret key</span><input id="syncSecret" class="aval" type="password" placeholder="Tap to paste" aria-label="Secret key" autocomplete="off" spellcheck="false"></label>
@@ -660,9 +692,18 @@ label.arow { cursor: text; }
     <details class="card" style="--tc:var(--coral);--on-tc:var(--on-coral)">
       <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h600q24 0 42 18t18 42v600q0 24-18 42t-42 18H180Zm0-513h600v-147H180v147Zm600 60H180v393h600v-393Zm-600-60v60-60Zm0 0v-147 147Zm0 60v393-393Z"/></svg></span><b>Toolbar</b><span class="sync-state" id="tbState"></span></summary>
       <div class="card-body">
+        <p class="card-desc">Choose the toolbar position and the list styles.</p>
         <div class="set-row"><span>Position</span>
         <div class="pills" id="tbSeg" role="radiogroup" aria-label="Toolbar position">
-          <button class="pill" type="button" role="radio" data-tb="top">Top</button><button class="pill" type="button" role="radio" data-tb="bottom">Bottom</button><button class="pill" type="button" role="radio" data-tb="typewriter">Follow</button>
+          <button class="pill glyph" type="button" role="radio" data-tb="top" aria-label="Top" title="Top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"/><rect x="4" y="3.5" width="16" height="4.5" rx="1" fill="currentColor" stroke="none"/></svg></button><button class="pill glyph" type="button" role="radio" data-tb="bottom" aria-label="Bottom" title="Bottom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"/><rect x="4" y="16" width="16" height="4.5" rx="1" fill="currentColor" stroke="none"/></svg></button><button class="pill glyph" type="button" role="radio" data-tb="typewriter" aria-label="Follow" title="Follow"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M190-120q-13 0-21.5-8.5T160-150q0-13 8.5-21.5T190-180h580q13 0 21.5 8.5T800-150q0 13-8.5 21.5T770-120H190Zm279-134q-5-2-10-7L307-413q-9-9-8.5-21.5T308-456q9-9 21.5-9t21.5 9l99 100v-454q0-13 8.5-21.5T480-840q13 0 21.5 8.5T510-810v454l96-96q9-9 21-8.5t21 9.5q9 9 9 21.5t-9 21.5L501-261q-5 5-10 7t-11 2q-6 0-11-2Z"/></svg></button>
+        </div></div>
+        <div class="set-row"><span>Bullet</span>
+        <div class="pills" id="blSeg" role="radiogroup" aria-label="Bullet look">
+          <button class="pill glyph" type="button" role="radio" data-bl="point" aria-label="Point">&#8226;</button><button class="pill glyph" type="button" role="radio" data-bl="dash" aria-label="Dash">&#8211;</button><button class="pill glyph" type="button" role="radio" data-bl="square" aria-label="Square">&#9642;</button>
+        </div></div>
+        <div class="set-row"><span>Number</span>
+        <div class="pills" id="nlSeg" role="radiogroup" aria-label="Number look">
+          <button class="pill glyph" type="button" role="radio" data-nl="decimal" aria-label="Numbers">1</button><button class="pill glyph" type="button" role="radio" data-nl="alpha" aria-label="Letters">a</button><button class="pill glyph" type="button" role="radio" data-nl="roman" aria-label="Roman">i</button>
         </div></div>
       </div>
     </details>
@@ -670,6 +711,7 @@ label.arow { cursor: text; }
     <details class="card" style="--tc:var(--green);--on-tc:var(--on-green)">
       <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M140-200q-24 0-42-18.5T80-260v-440q0-24 18-42t42-18h680q24 0 42 18t18 42v440q0 23-18 41.5T820-200H140Zm0-60h680v-440H140v440Zm190-65h300q12.8 0 21.4-8.7 8.6-8.7 8.6-21.5 0-12.8-8.6-21.3-8.6-8.5-21.4-8.5H330q-12.8 0-21.4 8.7-8.6 8.7-8.6 21.5 0 12.8 8.6 21.3 8.6 8.5 21.4 8.5Zm-190 65v-440 440Zm114.5-323.7q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm124 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm123 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm124 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm123 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm-494 125q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm124 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm123 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm124 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm123 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Z"/></svg></span><b>Shortcuts</b><span class="sync-state">Tap keys to edit</span></summary>
       <div class="card-body">
+        <p class="card-desc">Set your own keyboard shortcuts for toolbar actions.</p>
         <div class="set-row"><span id="scLabel">Use shortcuts</span><button class="switch" type="button" role="switch" id="scSwitch" aria-checked="true" aria-labelledby="scLabel"></button></div>
         <div id="krows"></div>
         <div class="kmsg" id="kmsg" role="status"></div>
@@ -680,11 +722,15 @@ label.arow { cursor: text; }
     <details class="card" style="--tc:var(--amber);--on-tc:var(--on-amber)">
       <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M435.5-128.6Q427-137.2 427-150v-165q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v53h323q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H487v52q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM150-202q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h187q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm165.5-174.6Q307-385.2 307-398v-52H150q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h157v-54q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v166q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM457-450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h353q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H457Zm144.5-173.6Q593-632.2 593-645v-165q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v52h157q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H653v53q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM150-698q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h353q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg></span><b>Preset</b><span class="sync-state" id="dkState"></span></summary>
       <div class="card-body">
-        <div class="dk" id="dkSeg" role="radiogroup" aria-label="Kind of note the + button makes">
-          <button class="dk-row" type="button" role="radio" data-dk="notes"><span class="dk-t"><b>Notes</b><span class="dk-tags"><i>Everything</i></span></span><span class="dk-rd"></span></button>
-          <button class="dk-row" type="button" role="radio" data-dk="list"><span class="dk-t"><b>List</b><span class="dk-tags"><i>Checklist</i><i>Bullet</i></span></span><span class="dk-rd"></span></button>
-          <button class="dk-row" type="button" role="radio" data-dk="chat" disabled><span class="dk-t"><b>Chat</b><span class="dk-tags"><i>Soon</i></span></span><span class="dk-rd"></span></button>
+        <p class="card-desc">Preconfigure the toolbar for new notes.</p>
+        <div class="dk-list" id="dkSeg" role="group" aria-label="Kind of note the + button makes; none chosen means a normal note"></div>
+        <div class="cf dk-ask" id="dkAsk" hidden><div class="cf-label" id="dkAskText"></div><div class="pills"><button class="pill" type="button" id="dkKeep">Keep</button><button class="pill danger solid" type="button" id="dkGo">Delete</button></div></div>
+        <div class="cf" id="cfForm" hidden>
+          <label class="arow"><span>Name</span><input id="cfName" class="aval" type="text" maxlength="16" placeholder="Name it" aria-label="Name of your mode" autocomplete="off" spellcheck="false"></label>
+          <div class="cf-label">Tap the keys this mode keeps</div>
+          <div class="tools cf-tools" id="cfTools" role="group" aria-label="Toolbar keys this mode keeps"></div>
         </div>
+        <div class="dk-foot"><button class="reset" type="button" id="dkAdd">Add</button><button class="reset" type="button" id="dkReset" hidden>Reset</button></div>
       </div>
     </details>
 
@@ -756,6 +802,7 @@ ${Nn(this.code(t,r))}
   /* ================= Constants ================= */
   const APP_VERSION = '2.0';                           // shown in Settings > About; change it here only
   const STORE_KEY = 'daybook:v3';
+  const TOOL_CHOICES = [['plain', 'Text'], ['heading', 'Heading'], ['bold', 'Bold'], ['right', 'Align'], ['kind', 'List'], ['pagebreak', 'Page break'], ['typewriter', 'Follow']];   // the toolbar keys a custom mode can keep
   const COLORS = ['blue', 'coral', 'amber', 'green', 'violet', 'grey'];   // in this order in the colour picker
   const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
   const ALL = 'all';                                   // id of the built-in folder that shows every note
@@ -834,6 +881,8 @@ ${Nn(this.code(t,r))}
               are real formatting and never characters inside the text.
      folders: { id, name }     (the built-in "All" folder is not stored; only its name)
      settings: typewriter, shortcutsOn, shortcuts { commandId: { code, alt?, shift? } } */
+  const CUSTOM_IDS = ['custom', 'custom1', 'custom2'];   // up to three own presets; 'custom' is the first so older notes keep working
+  const isCustomKind = (k) => CUSTOM_IDS.includes(k);
   const store = {
     ok: true,
     timer: 0,
@@ -891,7 +940,7 @@ ${Nn(this.code(t,r))}
       id: raw.id, title: str(raw.title), content: cleanContent(raw.content),
       color: COLORS.includes(raw.color) ? raw.color : 'blue',
       pinned: raw.pinned === true,
-      ...(raw.kind === 'list' && { kind: 'list' }),     // 'list' notes only hold bullet and checklist lines; anything else is a plain note
+      ...((raw.kind === 'list' || raw.kind === 'chat' || isCustomKind(raw.kind)) && { kind: raw.kind }),     // 'list' notes only hold bullet and checklist lines, 'chat' notes a few tools; anything else is a plain note
       created: isNum(raw.created) ? raw.created : updated,
       updated,
       meta: isNum(raw.meta) ? raw.meta : updated
@@ -908,7 +957,7 @@ ${Nn(this.code(t,r))}
     return out;
   }
   function load() {
-    const s = { notes: [], folders: [], gone: {}, allName: 'All', settings: { typewriter: true, toolbar: 'typewriter', defaultKind: 'notes', shortcutsOn: true, shortcuts: {} } };
+    const s = { notes: [], folders: [], gone: {}, allName: 'All', settings: { typewriter: true, toolbar: 'typewriter', defaultKind: 'notes', bullet: 'point', number: 'decimal', customs: [], shortcutsOn: true, shortcuts: {} } };
     let raw = null;
     try { raw = JSON.parse(bootRaw); store.size = bootRaw ? bootRaw.length : 0; }
     catch (e) { if (!(e instanceof SyntaxError)) store.ok = false; }
@@ -920,8 +969,18 @@ ${Nn(this.code(t,r))}
     if (Array.isArray(raw.notes)) s.notes = raw.notes.map((n) => cleanNote(n, folderIds)).filter(Boolean);
     if (isObj(raw.settings)) {
       s.settings.typewriter = raw.settings.typewriter !== false;
-      if (['notes', 'list'].includes(raw.settings.defaultKind)) s.settings.defaultKind = raw.settings.defaultKind;
+      const cleanCustom = (c, id) => {          // your own preset: a name and the toolbar keys it keeps
+        if (!isObj(c) || !str(c.name).trim()) return null;
+        const keys = Array.isArray(c.tools) ? c.tools.filter((t) => TOOL_CHOICES.some(([k]) => k === t)) : [];
+        return { id, name: c.name.trim().slice(0, 16), tools: [...new Set(keys)] };
+      };
+      const list = Array.isArray(raw.settings.customs) ? raw.settings.customs : isObj(raw.settings.custom) ? [{ ...raw.settings.custom, id: 'custom' }] : [];   // older files kept one
+      list.forEach((c) => { const id = isObj(c) && CUSTOM_IDS.includes(c.id) ? c.id : null; const k = id && cleanCustom(c, id); if (k && !s.settings.customs.some((x) => x.id === id)) s.settings.customs.push(k); });
+      if (['notes', 'list', 'chat', ...CUSTOM_IDS].includes(raw.settings.defaultKind)) s.settings.defaultKind = raw.settings.defaultKind;
       if (['top', 'bottom', 'typewriter'].includes(raw.settings.toolbar)) s.settings.toolbar = raw.settings.toolbar;
+      if (['point', 'dash', 'square'].includes(raw.settings.bullet)) s.settings.bullet = raw.settings.bullet;
+      if (['decimal', 'alpha', 'roman'].includes(raw.settings.number)) s.settings.number = raw.settings.number;
+      if (isCustomKind(s.settings.defaultKind) && !s.settings.customs.some((x) => x.id === s.settings.defaultKind)) s.settings.defaultKind = 'notes';
       s.settings.shortcutsOn = raw.settings.shortcutsOn !== false;
       s.settings.shortcuts = cleanShortcuts(raw.settings.shortcuts);
     }
@@ -1056,8 +1115,36 @@ ${Nn(this.code(t,r))}
   });
   first('Delete');
   /* List notes: every line is a bullet or a checklist item (or a page break), and it can never be switched off. */
+  const customOf = (id) => settings.customs.find((c) => c.id === id);
   const isListNote = () => activeNote()?.kind === 'list';
-  const LIST_OK = new Set(['bullet', 'check', 'pagebreak']);               // the only tools that stay on in a list note
+  const LIST_OK = new Set(['kind', 'bullet', 'check', 'pagebreak']);               // the only tools that stay on in a list note
+  const CHAT_OK = new Set(['bold', 'right', 'pagebreak']);   // chat notes (beta): bold, align, page break; no headings, bullets, checklists or numbering
+  /* The keys a chat or custom note keeps, or null when the note has no limit. Style also keeps its shortcuts (bullet, checklist, numbering). */
+  function toolsFor(note) {
+    if (!note) return null;
+    if (note.kind === 'chat') return CHAT_OK;
+    const cu = isCustomKind(note.kind) && customOf(note.kind);
+    if (cu) { const t = new Set(cu.tools); if (t.has('kind')) ['bullet', 'check', 'number'].forEach((x) => t.add(x)); return t; }
+    return null;
+  }
+  const toolOk = (id) => { if (isListNote()) return LIST_OK.has(id); const t = toolsFor(activeNote()); return t ? t.has(id) : true; };
+  /* Chat and custom notes keep only some keys. What a key would have made and is not allowed (a heading, a list, bold, alignment) is taken off,
+     whether it was typed ("# ", "- ", "1. ") or pasted. */
+  function enforceKind(source, allow) {
+    let at = 0; const fix = [];
+    for (const op of quill.getContents().ops) {
+      const len = typeof op.insert === 'string' ? op.insert.length : 1;
+      const a = op.attributes;
+      if (a?.header && !allow.has('heading')) fix.push(['line', at, 'header']);
+      if (a?.list && !allow.has('kind')) fix.push(['line', at, 'list']);
+      if (a?.align && !allow.has('right')) fix.push(['line', at, 'align']);
+      if (a?.bold && !allow.has('bold')) fix.push(['text', at, len]);
+      at += len;
+    }
+    if (!fix.length) return;
+    enforcing = true;
+    try { for (const [t, i, x] of fix) { if (t === 'line') quill.formatLine(i, 1, x, false, source); else quill.formatText(i, x, 'bold', false, source); } } finally { enforcing = false; }
+  }
   let enforcing = false;
   /* Any line that is not a list item or a page break becomes one (after paste, undo, or text from another device). It takes the type of the line above. */
   function enforceList(source) {
@@ -1136,13 +1223,61 @@ ${Nn(this.code(t,r))}
     quill.formatLine(r.index, r.length, name, isOn(quill.getFormat(r.index, r.length)) ? false : value, USER);
     syncTools();
   }
-  /* Right: the line is attached to the right edge (writing still runs left to right). Same button again takes it off. Like Heading and Bullet, it is "on" only when every selected line has it. */
+  /* Align: one alignment per page (a page is the lines between two page breaks). The Align key moves the whole page to the right edge, or back to the left,
+     and every line on a page always matches, so the margin line has one side per page. Same key again takes it off. */
   const isRight = () => fmt.align === 'right';
+  function pagesOf() {
+    const pages = []; let cur = null;
+    for (const line of quill.getLines()) {
+      const i = quill.getIndex(line);
+      if (isDivider(line)) { cur = null; continue; }
+      if (!cur) { cur = { start: i, end: i }; pages.push(cur); }
+      cur.end = i + line.length();
+    }
+    return pages;
+  }
   function toggleRight() {
     const r = curRange();
     quill.history.cutoff();
     const off = quill.getFormat(r.index, r.length).align === 'right';
-    quill.formatLine(r.index, r.length, 'align', off ? false : 'right', USER);
+    const pages = pagesOf(), a = r.index, b = r.index + r.length;
+    let hit = pages.filter((p) => a < p.end && b >= p.start);
+    if (!hit.length && pages.length) hit = [pages.find((p) => p.start >= a) || pages[pages.length - 1]];   // the cursor is on a break: use the page next to it
+    for (const p of hit) quill.formatLine(p.start, p.end - p.start, 'align', off ? false : 'right', USER);
+    syncTools();
+  }
+  /* Keeps every line of a page on the side of that page's first line (pasted text, a merged line, a new page after a break). */
+  function enforcePageAlign(source) {
+    const todo = []; let side = false, first = true;
+    for (const line of quill.getLines()) {
+      if (isDivider(line)) { first = true; continue; }
+      const i = quill.getIndex(line), cur = quill.getFormat(i, 0).align === 'right' ? 'right' : false;
+      if (first) { side = cur; first = false; } else if (cur !== side) todo.push([i, side]);
+    }
+    if (!todo.length) return false;
+    enforcing = true;
+    try { for (const [i, v] of todo) quill.formatLine(i, 1, 'align', v, source); } finally { enforcing = false; }
+    return true;
+  }
+  /* Text: takes the heading, list and alignment off the selected lines, so they are plain text again (bold and other marks stay). */
+  function plainText() {
+    const r = curRange();
+    quill.history.cutoff();
+    ['header', 'list', 'align'].forEach((name) => quill.formatLine(r.index, r.length, name, false, USER));
+    syncTools();
+  }
+  /* Line style: one key that goes Text -> Bullet -> Checklist -> Numbering -> Text. A list note has no plain text, so there it flips Bullet <-> Checklist.
+     Heading is its own key; a bullet on a heading line replaces the heading. */
+  const lineKind = () => (fmt.list === 'bullet' ? 'bullet' : fmt.list === 'checked' || fmt.list === 'unchecked' ? 'check' : fmt.list === 'ordered' ? 'number' : 'text');
+  function cycleKind() {
+    const r = curRange();
+    fmt = quill.getFormat(r.index, r.length);
+    const k = lineKind();
+    if (isListNote()) return setListType(k === 'bullet' ? 'unchecked' : 'bullet');
+    quill.history.cutoff();
+    const next = { text: 'bullet', bullet: 'unchecked', check: 'ordered', number: false }[k];
+    quill.formatLine(r.index, r.length, 'list', next, USER);
+    quill.history.cutoff();
     syncTools();
   }
   /* Page break: puts a divider line at the cursor and moves on to the line below it. */
@@ -1150,15 +1285,17 @@ ${Nn(this.code(t,r))}
     const r = curRange();
     quill.history.cutoff();
     const at = r.index + r.length;                       // with text selected, the break goes right after the selection and the text is kept
+    const side = quill.getFormat(at, 0).align === 'right' ? 'right' : false;   // the new page starts on the same side
     quill.insertText(at, '\n\n', USER);
     quill.formatLine(at + 1, 1, 'divider', true, USER);
+    quill.formatLine(at + 2, 1, 'align', side, USER);
     if (quill.hasFocus()) quill.setSelection(at + 2, 0, USER); else lastSel = { index: at + 2, length: 0 };   // no focus: remember the place, do not open the keyboard
     quill.history.cutoff();
     syncTools(); followEnd();
   }
   /* Toolbar and shortcut commands. If the text is not focused (keyboard closed on a phone) they still work, on the last cursor place, without focusing it. */
   const runCommand = (id) => {
-    if (isListNote() && !LIST_OK.has(id)) return;
+    if (!toolOk(id)) return;
     if (quill.hasFocus()) return COMMANDS[id].run();
     noFocus = true;
     try { COMMANDS[id].run(); } finally { noFocus = false; }
@@ -1167,23 +1304,27 @@ ${Nn(this.code(t,r))}
 
   /* One list of commands drives the toolbar buttons and the keyboard shortcuts. */
   const COMMANDS = {
+    kind:       { label: 'List',      isOn: () => lineKind() !== 'text',               run: cycleKind },
+    plain:      { label: 'Text',      def: { code: 'Digit0', alt: true },   isOn: () => false,                                    run: plainText },
     heading:    { label: 'Heading',   def: { code: 'Digit1', alt: true },   isOn: isHeading,                                    run: () => lineFormat('header', 1, (f) => typeof f.header === 'number') },
     bold:       { label: 'Bold',      def: { code: 'KeyB' },                isOn: () => fmt.bold === true,                    run: bold },
     right:      { label: 'Align',     def: { code: 'KeyR', alt: true },   isOn: isRight,                                       run: toggleRight },
     bullet:     { label: 'Bullet',    def: { code: 'KeyL', shift: true },   isOn: () => fmt.list === 'bullet',                  run: () => (isListNote() ? setListType('bullet') : lineFormat('list', 'bullet', (f) => f.list === 'bullet')) },
     check:      { label: 'Checklist', def: { code: 'Digit9', shift: true }, isOn: () => fmt.list === 'checked' || fmt.list === 'unchecked', run: () => (isListNote() ? setListType('unchecked') : lineFormat('list', 'unchecked', (f) => f.list === 'checked' || f.list === 'unchecked')) },
+    number:     { label: 'Numbering', def: { code: 'Digit7', shift: true }, isOn: () => fmt.list === 'ordered',            run: () => lineFormat('list', 'ordered', (f) => f.list === 'ordered') },
     pagebreak:  { label: 'Page break', def: { code: 'Enter' },             isOn: () => false,                                run: pageBreak },
     typewriter: { label: 'Follow',                                          isOn: typewriterOn,                                 run: toggleTypewriter }
   };
   const SHORTCUT_IDS = Object.keys(COMMANDS).filter((id) => COMMANDS[id].def);
 
+  function renderEditorTools() { const n = activeNote(); if (isCustomKind(n?.kind)) { const a = toolsFor(n); if (a) enforceKind(Quill.sources.API, a); } syncTools(); }
   function syncTools() {
     const r = curRange();
     fmt = quill.getFormat(r.index, r.length);
-    const list = activeNote()?.kind === 'list';
     $('tools').querySelectorAll('[data-cmd]').forEach((b) => {
       b.setAttribute('aria-pressed', String(COMMANDS[b.dataset.cmd].isOn()));
-      b.disabled = list && !LIST_OK.has(b.dataset.cmd);                      // list notes: everything but Bullet, Checklist and Page break is greyed out
+      if (b.dataset.cmd === 'kind') { const k = lineKind(); b.dataset.k = k; b.setAttribute('aria-label', { text: 'List', bullet: 'Bullet', check: 'Checklist', number: 'Numbering' }[k]); }
+      b.disabled = !toolOk(b.dataset.cmd);                                   // list and chat notes: the tools they do not allow are greyed out
     });
   }
 
@@ -1192,14 +1333,21 @@ ${Nn(this.code(t,r))}
   const atEnd = () => { const r = quill.getSelection(); return !r || r.index + r.length >= quill.getLength() - 1; };
   const toEnd = () => { root.scrollTop = root.scrollHeight; };
   const TB_NAME = { top: 'Top', bottom: 'Bottom', typewriter: 'Follow' };
-  const DK_NAME = { notes: 'Notes', list: 'List', chat: 'Chat' };
+  const DK_NAME = { notes: 'Note', list: 'List', chat: 'Chat', custom: 'Custom' };
+  const DK_ALLOW = { notes: 'Everything', list: 'Checklist, Bullet', chat: 'Text, Align, Break', custom: 'Soon' };   // what each kind allows   // what each kind allows
   function applyDefaultKind() {
-    $('dkState').textContent = DK_NAME[settings.defaultKind];
+    $('dkState').textContent = settings.defaultKind === 'notes' ? 'Off' : customOf(settings.defaultKind) ? customOf(settings.defaultKind).name : DK_NAME[settings.defaultKind];   // nothing chosen: the + button makes a normal note
     $('dkSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.dk === settings.defaultKind)));
+  }
+  function applyBullet() {
+    document.documentElement.dataset.bl = settings.bullet;
+    document.documentElement.dataset.nl = settings.number;
+    $('nlSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.nl === settings.number)));
+    $('blSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.bl === settings.bullet)));
   }
   function applyToolbar() {
     el.editor.dataset.tb = settings.toolbar === 'bottom' || (settings.toolbar === 'typewriter' && typewriterOn()) ? 'bottom' : 'top';
-    $('tbState').textContent = TB_NAME[settings.toolbar]; applyDefaultKind();
+    $('tbState').textContent = TB_NAME[settings.toolbar]; applyDefaultKind(); applyBullet();
     $('tbSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.tb === settings.toolbar)));
   }
   function applyTypewriter(jumpToEnd) {
@@ -1212,7 +1360,7 @@ ${Nn(this.code(t,r))}
   quill.on('text-change', (delta, old, source) => {
     if (source === SILENT || enforcing) return;
     const n = activeNote(); if (!n) return;
-    if (n.kind === 'list') enforceList(Quill.sources.API);
+    if (n.kind === 'list') enforceList(Quill.sources.API); else { const allow = toolsFor(n); if (allow) enforceKind(Quill.sources.API, allow); enforcePageAlign(Quill.sources.API); }
     n.content = quill.getContents().ops;
     touch(n); syncTools(); followEnd();
   });
@@ -1361,7 +1509,7 @@ ${Nn(this.code(t,r))}
     paintSaved();
   }
 
-  const untitled = (n) => (n.kind === 'list' ? 'Untitled list' : 'Untitled note');   // what an empty title shows
+  const untitled = (n) => (n.kind === 'list' ? 'Untitled list' : n.kind === 'chat' ? 'Untitled chat' : customOf(n.kind) ? 'Untitled ' + customOf(n.kind).name.toLowerCase() : 'Untitled note');   // what an empty title shows
   function renderEditor() {
     const n = activeNote();
     el.blank.hidden = !!n;
@@ -1375,7 +1523,7 @@ ${Nn(this.code(t,r))}
     el.title.value = n.title;
     el.title.placeholder = untitled(n);
     quill.setContents(n.content, SILENT);
-    if (n.kind === 'list') enforceList(SILENT);
+    if (n.kind === 'list') enforceList(SILENT); else { const allow = toolsFor(n); if (allow) enforceKind(SILENT, allow); }
     quill.history.clear();
     fmt = {};
     lastSel = { index: Math.max(0, quill.getLength() - 1), length: 0 };
@@ -1485,9 +1633,10 @@ ${Nn(this.code(t,r))}
   }
   function newNote(kind) {   // 'notes' (a plain page) or 'list' (only bullet and checklist lines); no kind means the one chosen in Settings
     const now = Date.now();
-    const list = (kind === 'notes' || kind === 'list' ? kind : settings.defaultKind) === 'list';
+    const ok = (k) => ['notes', 'list', 'chat'].includes(k) || (isCustomKind(k) && !!customOf(k));
+    const want = ok(kind) ? kind : ok(settings.defaultKind) ? settings.defaultKind : 'notes', list = want === 'list';
     const n = { id: uid(), title: '', content: list ? [{ insert: '\n', attributes: { list: 'unchecked' } }] : [{ insert: '\n' }], color: randomColor(), pinned: false, created: now, updated: now };
-    if (list) n.kind = 'list';
+    if (want !== 'notes') n.kind = want;
     if (ui.folder !== ALL) n.folders = [ui.folder];
     state.notes.unshift(n);
     ui.query = ''; el.search.value = '';
@@ -1599,19 +1748,41 @@ ${Nn(this.code(t,r))}
   /* ================= Options menu: tap a note's avatar (folders: right-click or long-press) ================= */
   const menu = { kind: null, id: null, confirm: false };
   const button = (cls, act, label, extra = '') => `<button class="${cls}" type="button" data-act="${act}"${extra}>${label}</button>`;
-  /* New note kinds: Note is the plain page; List holds only bullet and checklist lines; Chat is a greyed-out placeholder until it is built. */
+  /* New note kinds: Note is the plain page; List holds only bullet and checklist lines; Chat is in beta: a note with only bold, align and page break; Custom is a greyed-out placeholder. */
   const KINDS = [
     ['notes', 'Note',  'blue',  true,  'M180-180h400v-170q0-12.8 8.6-21.4Q597.2-380 610-380h170v-400H180v600Zm0 60q-24.8 0-42.4-17.6Q120-155.2 120-180v-600q0-24.8 17.6-42.4Q155.2-840 180-840h600q24.8 0 42.4 17.6Q840-804.8 840-780v395q0 12.4-5 23.7T822-342L618-138q-8 8-19.3 13-11.3 5-23.7 5H180Zm260-300H330q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h110q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5Zm190-160H330q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5ZM180-180v-600 600Z'],
     ['list',  'List',  'green', true,  'm222-299 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-235q-9 9-21 9t-21-9L101-335q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm0-320 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-555q-9 9-21 9t-21-9L101-655q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm328 329q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Zm0-320q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Z'],
-    ['chat',  'Chat',  'grey',  false, 'M240-240 131-131q-14 14-32.5 6.3Q80-132.3 80-152v-668q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H240Zm-26-60h606v-520H140v600l74-80Zm-74 0v-520 520Z']
+    ['chat',  'Chat',  'grey',  true, 'M240-240 131-131q-14 14-32.5 6.3Q80-132.3 80-152v-668q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H240Zm-26-60h606v-520H140v600l74-80Zm-74 0v-520 520Z'],
+    ['custom', 'Custom', 'violet', true, 'M658-487 487-658q-5-5-7-10.1-2-5.1-2-11 0-5.8 2-10.8 2-5 7-10l171-171q5-5 10.1-7 5.1-2 11-2 5.8 0 10.8 2 5 2 10 7l171 171q5 5 7 10.1 2 5.1 2 11 0 5.8-2 10.8-2 5-7 10L700-487q-5 5-10.1 7-5.1 2-11 2-5.8 0-10.8-2-5-2-10-7Zm-538-81v-241q0-12.7 8.6-21.3Q137.2-839 150-839h241q12.7 0 21.3 8.6Q421-821.7 421-809v241q0 12.7-8.6 21.3Q403.7-538 391-538H150q-12.7 0-21.3-8.6Q120-555.2 120-568Zm418 418v-241q0-12.7 8.6-21.3Q555.2-421 568-421h241q12.7 0 21.3 8.6Q839-403.7 839-391v241q0 12.7-8.6 21.3Q821.7-120 809-120H568q-12.7 0-21.3-8.6Q538-137.2 538-150Zm-418 0v-241q0-12.7 8.6-21.3Q137.2-421 150-421h241q12.7 0 21.3 8.6Q421-403.7 421-391v241q0 12.7-8.6 21.3Q403.7-120 391-120H150q-12.7 0-21.3-8.6Q120-137.2 120-150Zm60-448h181v-181H180v181Zm502 51 129-129-129-129-129 129 129 129Zm-84 367h181v-181H598v181Zm-418 0h181v-181H180v181Zm181-418Zm192-78ZM361-361Zm237 0Z']
   ];
+  /* The Preset choices are one plain row per kind, stacked like About, so more kinds can be added below. The one that is not built yet stays greyed out. */
+  const TICK = '<svg class="dk-tick" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m378-332 363-363q9-9 21.5-9t21.5 9q9 9 9 21.5t-9 21.5L399-267q-9 9-21 9t-21-9L175-449q-9-9-8.5-21.5T176-492q9-9 21.5-9t21.5 9l159 160Z"/></svg>';
+  const ADD = '<span class="dk-plus"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M450-450H230q-12.7 0-21.3-8.6-8.6-8.6-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.3-8.5h220v-220q0-12.7 8.6-21.3 8.6-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.3v220h220q12.7 0 21.3 8.6 8.6 8.6 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.3 8.5H510v220q0 12.7-8.6 21.3-8.6 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.3v-220Z"/></svg></span>';
+  const toolSummary = (tools) => TOOL_CHOICES.filter(([id]) => tools.includes(id)).map(([, n]) => n).join(', ') || 'No keys';
+  /* Preset: List and Chat, then your own mode (or Add, to make one), each one plain row like About, stacked so more can be added. */
+  function foot() {            // the two buttons under the presets: Add | Reset normally, Cancel | Save while making one
+    const f = !$('cfForm').hidden, n = settings.customs.length;
+    $('dkAdd').textContent = f ? 'Cancel' : 'Add'; $('dkAdd').hidden = !f && n >= 3;
+    $('dkReset').textContent = f ? 'Save' : 'Reset'; $('dkReset').hidden = !f && !n;
+    $('dkReset').classList.toggle('solid', f); $('dkReset').disabled = f && (!cfTools.length || !$('cfName').value.trim());   // needs a name and at least one key
+  }
+  function buildPreset() {
+    const rows = ['list', 'chat'].map((id) => `<button class="dk-row" type="button" role="checkbox" data-dk="${id}"><span>${id === 'chat' ? 'Chat (Beta)' : 'List'}</span><b>${DK_ALLOW[id]}</b>${TICK}</button>`);
+    settings.customs.forEach((c) => rows.push(`<button class="dk-row" type="button" role="checkbox" data-dk="${c.id}"><span>${esc(c.name)}</span><b>${esc(toolSummary(c.tools))}</b>${TICK}</button>`));
+    $('dkSeg').innerHTML = rows.join('');
+    foot();
+    applyDefaultKind();
+  }
+  buildPreset();
   const kindIcon = (c, path) => `<span class="pk" style="background:var(--${c});color:var(--on-${c})"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="${path}"/></svg></span>`;
   function renderMenu() {
     const m = el.menu;
     m.dataset.kind = menu.kind || '';
     if (menu.kind === 'new') {
-      m.innerHTML = KINDS.map(([id, name, c, on, svg]) =>
-        `<button class="mi preset" type="button" data-act="make" data-v="${id}" role="menuitem"${on ? '' : ' disabled'}>${kindIcon(c, svg)}<b>${name}</b>${on ? '' : '<span class="pk-tag">Soon</span>'}</button>`).join('');
+      const cIcon = KINDS.find((k) => k[0] === 'custom');
+      const all = [...KINDS.filter(([id]) => id !== 'custom'), ...settings.customs.map((c) => ['custom:' + c.id, c.name, cIcon[2], true, cIcon[4]])];
+      m.innerHTML = all.map(([id0, name, c, on, svg]) => { const id = id0.replace('custom:', ''); return
+        `<button class="mi preset" type="button" data-act="make" data-v="${id}" role="menuitem">${kindIcon(c, svg)}<b>${esc(name)}</b>${id === 'chat' ? '<span class="pk-tag">Beta</span>' : ''}</button>`; }).join('');
       return;
     }
     if (menu.kind === 'folder') {
@@ -1783,7 +1954,54 @@ ${Nn(this.code(t,r))}
   $('settingsBtn').addEventListener('click', openDialog);
   $('kDone').addEventListener('click', closeDialog);
   el.dlg.addEventListener('click', (e) => { if (e.target === el.dlg) closeDialog(); });
-  $('dkSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-dk]'); if (!b || b.disabled) return; settings.defaultKind = b.dataset.dk; store.save(); applyDefaultKind(); });
+  $('dkSeg').addEventListener('click', (e) => {
+    const f = e.target.closest('[data-cf]'); if (f) return openCustomForm();
+    const b = e.target.closest('[data-dk]'); if (!b || b.disabled) return;
+    settings.defaultKind = settings.defaultKind === b.dataset.dk ? 'notes' : b.dataset.dk; store.save(); applyDefaultKind();   // tap the chosen one again to clear it
+  });
+  /* Reset deletes your own presets; it asks once. */
+  let asking = null;
+  const ask = (what) => {
+    asking = what; $('cfForm').hidden = true; foot();
+    const n = settings.customs.length, c = customOf(what);
+    $('dkAskText').textContent = c ? `Delete ${c.name}?` : `Delete your ${n} ${n === 1 ? 'preset' : 'presets'}?`;
+    $('dkAsk').hidden = false;
+  };
+  $('dkReset').addEventListener('click', () => { if ($('cfForm').hidden) ask('all'); else saveCustom(); });
+  $('dkAdd').addEventListener('click', () => { if ($('cfForm').hidden) openCustomForm(); else { $('cfForm').hidden = true; foot(); } });
+  $('dkKeep').addEventListener('click', () => { asking = null; $('dkAsk').hidden = true; });
+  $('dkGo').addEventListener('click', () => {
+    if (asking === 'all') { settings.customs = []; settings.defaultKind = 'notes'; }
+    else if (asking) { settings.customs = settings.customs.filter((c) => c.id !== asking); if (settings.defaultKind === asking) settings.defaultKind = 'notes'; }
+    asking = null; $('dkAsk').hidden = true; store.save(); buildPreset(); renderEditorTools();
+  });
+  /* Your own mode: a name and the toolbar keys it keeps. One slot; Edit changes it, Delete removes it (its notes then act like plain notes). */
+  let cfTools = [];
+  function renderCfTools() {            // the editor's own toolbar keys, copied: pressed = kept
+    $('cfTools').replaceChildren(...[...$('tools').querySelectorAll('[data-cmd]')].map((b) => {
+      const id = b.dataset.cmd, c = b.cloneNode(true);
+      c.removeAttribute('disabled'); c.dataset.tool = id; c.dataset.k = 'text';
+      c.setAttribute('aria-pressed', String(cfTools.includes(id)));
+      return c;
+    }));
+    foot();
+  }
+  function openCustomForm() {
+    if (settings.customs.length >= 3) return;
+    $('dkAsk').hidden = true; $('cfName').value = ''; cfTools = [];   // a new preset starts with every key off
+    $('cfForm').hidden = false; renderCfTools(); $('cfName').focus();
+  }
+  $('cfTools').addEventListener('click', (e) => { const b = e.target.closest('[data-tool]'); if (!b) return; const id = b.dataset.tool; cfTools = cfTools.includes(id) ? cfTools.filter((t) => t !== id) : [...cfTools, id]; renderCfTools(); });
+  $('cfName').addEventListener('input', foot);
+  function saveCustom() {
+    const name = $('cfName').value.trim().slice(0, 16);
+    if (!name) { $('cfName').focus(); return; }
+    const id = CUSTOM_IDS.find((i) => !customOf(i)); if (!id || settings.customs.length >= 3) return;
+    settings.customs.push({ id, name, tools: TOOL_CHOICES.map(([k]) => k).filter((k) => cfTools.includes(k)) });
+    store.save(); $('cfForm').hidden = true; buildPreset(); renderEditorTools();
+  }
+  $('blSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-bl]'); if (!b) return; settings.bullet = b.dataset.bl; store.save(); applyBullet(); });
+  $('nlSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-nl]'); if (!b) return; settings.number = b.dataset.nl; store.save(); applyBullet(); });
   $('tbSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-tb]'); if (!b) return; settings.toolbar = b.dataset.tb; store.save(); applyToolbar(); });
   $('scSwitch').addEventListener('click', () => { settings.shortcutsOn = !settings.shortcutsOn; store.save(); renderShortcutHints(); });
   $('kReset').addEventListener('click', () => { settings.shortcuts = {}; recording = null; say(''); store.save(); renderDialog(); renderShortcutHints(); });
