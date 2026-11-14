@@ -2317,27 +2317,23 @@ ${Nn(this.code(t,r))}
     push(`trailer\n<</Size ${n}/Root 1 0 R>>\nstartxref\n${x}\n%%EOF`);
     return new Blob(parts, { type: 'application/pdf' });
   }
-  let readyShare = null;
+  /* One rule for every format: open the share menu; if it is missing or refuses, download the file instead. */
+  const fileName = (t) => t.replace(/[\\/:*?"<>|]+/g, '').trim().slice(0, 60) || 'Note';
+  async function give(data, file) {   // data goes to the share menu; file is what gets downloaded if that does not work
+    try { await navigator.share(data); }
+    catch (e) {
+      if (e && e.name === 'AbortError') return;   // closing the share menu is not a failure
+      const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = file.name;
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+      toast('Share unavailable, downloaded');
+    }
+  }
   async function shareNote(fmt) {
     const n = activeNote(); if (!n) return;
     const title = n.title.trim();
-    const send = async (data) => {
-      try { await navigator.share(data); }
-      catch (e) {
-        if (e && e.name === 'NotAllowedError' && data.files) { readyShare = { data, fmt, sig: quill.root.innerHTML }; toast('Ready, tap share again'); }
-        else if (!e || e.name !== 'AbortError') throw e;
-      }
-    };
-    if (readyShare) {
-      const r = readyShare; readyShare = null;
-      if (r.fmt === fmt && r.sig === quill.root.innerHTML) { try { await navigator.share(r.data); } catch (e) {} return; }
-    }
     if (fmt === 'text') {
       const text = (title ? title + '\n\n' : '') + quill.getText().trim() + '\n\n— Daybook';
-      try {
-        if (navigator.share) await send({ title: title || 'Note', text });
-        else { await navigator.clipboard.writeText(text); toast('Copied'); }
-      } catch (e) { toast('Could not share the text'); }
+      await give({ title: title || 'Note', text }, new File([text], fileName(title) + '.txt', { type: 'text/plain' }));
       return;
     }
     const btn = $('pdf'); btn.disabled = true; btn.classList.add('busy');
@@ -2358,14 +2354,8 @@ ${Nn(this.code(t,r))}
       const pdf = fmt === 'pdf';
       const blob = pdf ? pdfFromCanvas(c) : await new Promise((res) => c.toBlob(res, 'image/png'));
       if (!blob) throw new Error('no file');
-      const name = (title.replace(/[\\/:*?"<>|]+/g, '').trim().slice(0, 60) || 'Note') + (pdf ? '.pdf' : '.png');
-      const file = new File([blob], name, { type: pdf ? 'application/pdf' : 'image/png' });
-      if (navigator.share) await send({ files: [file], title: title || 'Note' });
-      else {
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
-        document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
-        toast('Saved');
-      }
+      const file = new File([blob], fileName(title) + (pdf ? '.pdf' : '.png'), { type: pdf ? 'application/pdf' : 'image/png' });
+      await give({ files: [file], title: title || 'Note' }, file);
     } catch (e) { toast('Could not make the file: ' + ((e && (e.message || e.name)) || 'error').toString().slice(0, 60)); }
     finally { f.remove(); btn.disabled = false; btn.classList.remove('busy'); }
   }
