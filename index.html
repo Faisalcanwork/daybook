@@ -192,8 +192,8 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .btn.danger { color: var(--coral); }
 .btn.danger.solid { background: var(--coral); border-color: var(--coral); color: var(--on-coral); }
 /* Every round icon button: one size, one look. */
-.icon-btn, .folder-add, #saved, #pdf, .mpin, .mdel { flex: none; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); }
-.icon-btn:hover, .folder-add:hover, #saved:hover, #pdf:hover { background: var(--panel); color: var(--ink); }
+.icon-btn, .folder-add, #saved, #pdf, #apSaved, #apShare, .mpin, .mdel { flex: none; display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--ink-2); }
+.icon-btn:hover, .folder-add:hover, #saved:hover, #pdf:hover, #apShare:hover { background: var(--panel); color: var(--ink); }
 .mpin, .mdel { color: var(--grey); }
 .mpin:hover { background: var(--panel); color: var(--ink); }
 .mdel:hover { background: var(--panel); color: var(--coral); }
@@ -269,6 +269,11 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .folder[aria-selected="true"] .folder-count { background: var(--blue); color: var(--on-blue); }
 .folder input { width: 92px; padding: 0; border: 0; border-bottom: 2px solid currentColor; background: transparent; outline: none; font: inherit; color: inherit; -webkit-user-select: text; user-select: text; }
 
+.cont { position: absolute; right: 22px; bottom: 188px; z-index: 5; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--panel); color: var(--nc, var(--grey)); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45); cursor: pointer; }
+.cont[hidden] { display: none; }
+.cont:hover { filter: brightness(1.15); }
+.cont:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+@media (min-width: 901px) { .cont { right: auto; left: 278px; transform: translateX(-100%); bottom: 194px; } }
 .list { contain: layout style; flex: 1; overflow-y: auto; padding-bottom: 64px; }
 .item { position: relative; content-visibility: auto; contain-intrinsic-size: auto 64px; }
 .item::after { content: ""; position: absolute; left: 72px; right: 0; bottom: 0; height: 1px; background: var(--line); }
@@ -294,8 +299,8 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .av-btn { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); display: block; width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%; background: transparent; }
 .av-btn:hover .av, .av-btn:focus-visible .av { filter: brightness(1.15); }
 .av-btn:focus-visible, #edAvatar:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
-#edAvatar { display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; }
-#edAvatar:hover .av { filter: brightness(1.15); }
+#edAvatar, #apAvatar { display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; }
+#edAvatar:hover .av, #apAvatar:hover .av { filter: brightness(1.15); }
 .empty-list { padding: 36px 20px; text-align: center; color: var(--ink-2); font-size: 0.8125rem; }
 .empty-list strong { display: block; margin-bottom: 4px; font-family: var(--font-display); font-size: 1rem; color: var(--ink); }
 .empty-list .btn { margin-top: 16px; padding: 8px 16px; font-size: 0.8125rem; }
@@ -306,13 +311,89 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .stats span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.6875rem; color: var(--grey); }
 
 .fab {
-  position: absolute; right: 16px; bottom: 40px; z-index: 5; display: grid; place-items: center; width: 52px; height: 52px; padding: 0;
+  position: absolute; right: 16px; bottom: 124px; z-index: 5; display: grid; place-items: center; width: 52px; height: 52px; padding: 0;
   border: 0; border-radius: 50%; background: var(--blue); color: var(--on-blue); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
 }
+.dock { flex: none; display: flex; justify-content: center; padding: 8px 12px 10px; background: var(--bg); border-top: 1px solid var(--line); }
+.dock-in { display: flex; gap: 2px; width: 100%; max-width: 420px; padding: 4px; border: 1px solid var(--line); border-radius: var(--r-pill); background: var(--panel); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
+.dock-i { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; height: 52px; padding: 0; border: 1px solid transparent; border-radius: var(--r-pill); background: transparent; color: var(--grey); font: inherit; font-size: 0.6875rem; font-weight: 600; cursor: pointer; transition: background-color .2s, color .2s, border-color .2s, transform .1s; }
+.dock-i svg { flex: none; width: 22px; height: 22px; }
+.dock-i span { overflow: hidden; max-width: 100%; text-overflow: ellipsis; white-space: nowrap; }
+.dock-i:hover { color: var(--ink); }
+.dock-i:active { transform: scale(0.96); }
+.dock-i[aria-current="page"] { color: var(--blue); background: color-mix(in srgb, var(--blue) 16%, transparent); border-color: color-mix(in srgb, var(--blue) 34%, transparent); }
+.dock-i:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+/* Files tab: its own list and viewer, kept on this device only. */
+.files { flex: 1; min-height: 0; display: none; flex-direction: column; border-top: 1px solid var(--line); background: var(--surface); }
+.app[data-tab="files"] .files { display: flex; }
+.app[data-tab="files"] .panes, .app[data-tab="files"] #newNote, .app[data-tab="files"] #cont, .app:not([data-tab="files"]) #addFile { display: none; }
+.files-head { flex: none; }
+.fs .pin { width: 14px; height: 14px; margin-left: 6px; vertical-align: -2px; }
+.fs .ftg { margin-left: 6px; color: var(--grey); }
+.flist { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+.frow { width: 100%; display: grid; grid-template-columns: 48px minmax(0, 1fr); column-gap: 12px; align-items: center; padding: 8px 16px 8px 12px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.frow:hover { background: var(--panel); }
+.frow:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+.fi { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: var(--blue); font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; }
+.fn, .fs { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fn { font-weight: 700; font-size: 0.9375rem; }
+.fs { margin-top: 4px; color: var(--ink-2); font-size: 0.8125rem; }
+.fview { position: absolute; inset: 0; z-index: 30; display: none; flex-direction: column; background: var(--bg); }
+.fview.show { display: flex; }
+#apage { --nc: var(--grey); --on-nc: var(--on-grey); background: var(--surface); }
+#apage ::selection { background: color-mix(in srgb, var(--nc) 38%, transparent); }
+.pg-body { flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 16px; }
+.pg-body[data-align="right"] { align-items: flex-end; }
+.pg-item { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; padding: 2px 6px 2px 10px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--panel); }
+.pg-item .fn { color: var(--ink); }
+#apage .ed-scroll { overflow-x: hidden; }
+.pg-entry { position: relative; display: flex; flex-direction: column; align-items: inherit; gap: 4px; max-width: 100%; }
+.pg-item { position: relative; touch-action: pan-y; background: var(--panel); }
+.pg-reply { position: absolute; left: 6px; top: 50%; width: 30px; height: 30px; margin-top: -15px; display: grid; place-items: center; border-radius: 50%; background: var(--nc); color: var(--on-nc); opacity: var(--pull, 0); transform: scale(calc(0.6 + var(--pull, 0) * 0.4)); pointer-events: none; }
+.pg-note { max-width: min(100%, 26rem); margin: 0 4px; padding: 6px 10px; border: 0; border-left: 3px solid var(--nc); border-radius: 10px; background: color-mix(in srgb, var(--nc) 14%, var(--panel)); color: var(--ink-2); font: inherit; font-size: 0.875rem; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; cursor: pointer; }
+.pg-note.add { background: transparent; border-left-color: var(--line); color: var(--grey); }
+.pg-note.edit { width: min(100%, 26rem); padding: 0; cursor: text; }
+.pg-note.edit textarea { display: block; width: 100%; box-sizing: border-box; resize: none; padding: 6px 10px; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 0.875rem; outline: none; -webkit-user-select: text; user-select: text; }
+#apage[data-tb="bottom"] .tools { order: 3; border-bottom: 0; border-top: 1px solid var(--line); }
+.pg-body[data-follow="on"] > :first-child { margin-top: auto; }
+.fi[data-k="pdf"], .fi[data-k="video"] { color: var(--coral); }
+.fi[data-k="doc"] { color: var(--blue); }
+.fi[data-k="image"] { color: var(--amber); }
+.fi[data-k="sheet"] { color: var(--green); }
+.fi[data-k="slide"] { color: var(--amber); }
+.fi[data-k="zip"], .fi[data-k="audio"] { color: var(--violet); }
+.fi[data-k="code"] { color: var(--grey); }
+.menu[data-kind="attach"], .menu[data-kind="att"] { width: auto; min-width: 11rem; padding: 6px; border-radius: 24px; }
+.pg-rename { width: 100%; min-width: 8rem; box-sizing: border-box; padding: 2px 8px; border: 1px solid var(--blue); border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; font-weight: 700; outline: none; -webkit-user-select: text; user-select: text; }
+#apSaved { color: var(--green); pointer-events: none; }
+.pg-empty { margin: auto; max-width: 18rem; text-align: center; color: var(--grey); }
+.fav { display: grid; place-items: center; width: 48px; height: 48px; }
+.fv-open { display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 12px; align-items: center; padding: 8px 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; min-width: 0; }
+.ap-to { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.ap-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.fv-top { flex: none; display: flex; align-items: center; gap: 2px; padding: 8px 8px 8px 6px; background: var(--surface); border-bottom: 2px solid var(--nc, var(--blue)); }
+.fv-top .icon-btn { width: 40px; height: 40px; }
+.fv-title { flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 0 8px; }
+.fv-title b { flex: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 1rem; line-height: 1.25; }
+.fv-title small { margin-top: 1px; color: var(--ink-2); font: 0.6875rem var(--font-mono); letter-spacing: 0.02em; text-transform: uppercase; }
+.fv-find { flex: none; display: flex; align-items: center; gap: 4px; padding: 8px 8px 8px 12px; border-bottom: 1px solid var(--line); }
+.fv-find[hidden] { display: none; }
+.fv-find input { flex: 1; min-width: 0; height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: var(--r-pill); background: var(--panel); color: var(--ink); font: inherit; outline: none; -webkit-user-select: text; user-select: text; }
+.fv-find input:focus { border-color: var(--blue); }
+.fv-find .cnt { min-width: 3.4em; text-align: center; color: var(--ink-2); font: 0.75rem var(--font-mono); }
+.fv-body mark { border-radius: 3px; background: color-mix(in srgb, var(--amber) 45%, transparent); color: inherit; }
+.fv-body mark.cur { background: var(--amber); color: var(--on-amber); }
+.fv-top b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fv-body { flex: 1; min-height: 0; display: grid; place-items: center; padding: 16px; overflow: auto; text-align: center; color: var(--ink-2); }
+.fv-body img, .fv-body video { max-width: 100%; max-height: 100%; border-radius: var(--r-md); }
+.fv-body audio { width: 100%; max-width: 420px; }
+.fv-body pre { align-self: start; width: 100%; margin: 0; text-align: left; white-space: pre-wrap; word-break: break-word; font: 0.8125rem/1.5 var(--font-mono); color: var(--ink); }
+.fv-bar { flex: none; display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.fv-bar .btn { flex: 1; }
 .fab.open { visibility: hidden; }   /* the button turns into the menu while it is open */
 .fab:hover { filter: brightness(1.08); }
 /* On a wide screen the New note button sits in the list column, so it never covers the writing or the toolbar. */
-@media (min-width: 901px) { .fab { right: auto; left: 284px; transform: translateX(-100%); bottom: 64px; } }
+@media (min-width: 901px) { .fab { right: auto; left: 284px; transform: translateX(-100%); bottom: 130px; } }
 
 /* ---------- Editor pane ---------- */
 .editor {
@@ -436,8 +517,10 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .ql-editor li[data-list="ordered"].ql-align-right { padding-left: 0; padding-right: 2.3em; }
 
 /* ---------- Options menu (notes and folders) ---------- */
-.menu { position: fixed; z-index: 30; width: max(232px, 15rem); display: flex; flex-direction: column; gap: 2px; padding: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
+.menu { position: fixed; z-index: 31; width: max(232px, 15rem); display: flex; flex-direction: column; gap: 2px; padding: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
 .mh { margin-bottom: 4px; padding: 4px 8px 8px; border-bottom: 1px solid var(--line); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); font-size: 0.6875rem; color: var(--grey); }
+.mbar { display: flex; gap: 8px; padding: 2px; }
+.menu[data-kind="folder"], .menu[data-kind="ffolder"] { width: auto; padding: 6px; }
 .mhead { display: flex; align-items: center; gap: 12px; padding: 4px 4px 8px; }
 .mav { flex: none; display: block; }
 .mtitle { flex: 1; min-width: 0; display: flex; flex-direction: column; }
@@ -517,29 +600,18 @@ label.arow { cursor: text; }
 .pill.glyph svg { width: 18px; height: 18px; }
 /* Preset: plain rows like About (name, what it allows), one line each, with a tick on the chosen one. */
 .dk-list { display: flex; flex-direction: column; }
-.dk-sel { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; padding: 4px 0; border: 0; background: transparent; color: var(--ink-2); font: inherit; cursor: pointer; text-align: left; }
-.dk-sel > span { flex: 1; }
-.dk-sel b { color: var(--tc); font-weight: 600; }
-.dk-sel svg { flex: none; width: 22px; height: 22px; color: var(--tc); transition: transform .15s; }
-.dk-sel[aria-expanded="true"] svg { transform: rotate(180deg); }
-.dk-pick { margin: 2px 0 6px; padding: 2px 8px; border-radius: var(--r-md); background: var(--bg); }
-.dk-pick[hidden] { display: none; }
-.dk-pick .dk-row > span:first-child { flex: none; }
-.dk-pick .dk-row b { flex: 1 1 auto; font-size: 0.75rem; }
-@media (max-width: 360px) { .dk-pick .dk-tick { display: none; } .dk-pick .dk-row b { font-size: 0.6875rem; } }
-.dk-pick .dk-tick { border: 0; background: none; border-radius: 0; }
-.dk-pick .dk-row[aria-checked="true"] { color: var(--tc); }
-.dk-pick .dk-row[aria-checked="true"] .dk-tick { background: none; color: var(--tc); }
 .dk-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 40px; padding: 4px 0; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--ink-2); font: inherit; text-align: left; cursor: pointer; }
 .dk-row:first-child { border-top: 0; }
-.dk-row > span:first-child { flex: 1; min-width: 0; white-space: nowrap; }
-.dk-row b { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 600; color: var(--ink); text-align: right; white-space: nowrap; }
-.dk-row > span:first-child { flex: 1 1 auto; min-width: 3em; overflow: hidden; text-overflow: ellipsis; }
+.dk-name { flex: none; max-width: 45%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dk-keys { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; font-weight: 600; color: var(--ink); }
+.dk-radio svg { width: 16px; height: 16px; }
+.dk-radio { flex: none; box-sizing: border-box; width: 24px; height: 24px; display: grid; place-items: center; border: 2px solid var(--line); border-radius: 50%; color: transparent; }
+.dk-row[aria-checked="true"] .dk-radio { background: var(--tc); border-color: var(--tc); color: var(--on-tc); }
+.dk-row[aria-checked="true"] .dk-name { color: var(--tc); font-weight: 600; }
 .cf { display: flex; flex-direction: column; gap: 4px; padding-top: 8px; margin-top: 4px; border-top: 1px solid var(--line); }
 .dk-ask { border-top: 0; margin-top: 0; padding-top: 4px; }
 .dk-ask .pills { padding-top: 4px; }
 .cf-label { padding-top: 4px; color: var(--grey); font-size: 0.75rem; }
-.dk-row:disabled { opacity: 0.45; cursor: not-allowed; }
 /* The Preset form shows the editor's own toolbar: the same keys, the same look. Tapping a key switches it on (kept) or off. */
 .tools.cf-tools { order: 0; flex-wrap: nowrap; gap: 2px; margin-top: 6px; padding: 4px 6px; border: 0; border-radius: var(--r-md); }
 .cf-tools .tool.icon { flex: 1 1 0; width: auto; max-width: 34px; min-width: 0; height: 34px; }
@@ -547,9 +619,6 @@ label.arow { cursor: text; }
 .cf-tools .tool[aria-pressed="true"] { background: var(--tc); border-color: var(--tc); color: var(--on-tc); }
 .cf-tools .tool svg { transform: none !important; }
 .cf-tools .tool[data-cmd="right"] .i-right { display: none !important; } .cf-tools .tool[data-cmd="right"] .i-left { display: block !important; }
-.dk-tick { flex: none; box-sizing: border-box; width: 22px; height: 22px; padding: 1px; border: 2px solid var(--line); border-radius: 7px; color: transparent; }   /* an empty rounded box; the chosen one is filled with the card colour and ticked */
-.dk-row[aria-checked="true"] .dk-tick { background: var(--tc); border-color: var(--tc); color: var(--on-tc); }
-@media (max-width: 360px) { .dk-row { gap: 6px; font-size: 0.75rem; } .dk-row b { font-size: 0.6875rem; } }
 .set-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; font-size: 0.8125rem; color: var(--ink-2); }
 .switch { flex: none; position: relative; width: 36px; height: 20px; padding: 0; border: 0; border-radius: var(--r-pill); background: var(--grey); }
 .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; }
@@ -561,7 +630,7 @@ label.arow { cursor: text; }
 .krow .kbtn:hover, .aval:hover { border-color: var(--grey); }
 .krow .kbtn:focus, .aval:focus { outline: none; border-color: var(--tc); color: var(--tc); }
 .reset { align-self: flex-end; min-height: 28px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r-pill); background: transparent; color: var(--ink-2); font: inherit; font-size: 0.75rem; font-weight: 600; }
-.dk-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid var(--line); }
+.dk-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; margin-top: 2px; border-top: 1px solid var(--line); }
 .dk-foot .reset:only-child, .dk-foot #dkReset { margin-left: auto; }
 .reset.solid { background: var(--tc); border-color: var(--tc); color: var(--on-tc); }
 .reset:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -579,7 +648,7 @@ label.arow { cursor: text; }
   .mchip { padding: 8px 16px; }
   .sw { width: 32px; height: 32px; }
   .btn { min-height: 40px; }
-  .icon-btn, .folder-add, #saved, #pdf, .mpin, .mdel { width: 44px; height: 44px; }
+  .icon-btn, .folder-add, #saved, #pdf, #apSaved, #apShare, .mpin, .mdel { width: 44px; height: 44px; }
 }
 
 /* ---------- Phones and narrow windows: list first, then editor ---------- */
@@ -592,7 +661,9 @@ label.arow { cursor: text; }
   .date-short { display: inline; }
   .back { display: inline-flex; }
   .ed-inner { --edge: 26px; }
-  .fab { bottom: 64px; }
+  .fab { bottom: 134px; }
+  .flist { padding-bottom: 90px; }
+  .cont { bottom: 198px; }
   .editor { position: absolute; inset: 0; z-index: 6; transform: translateX(100%); visibility: hidden; box-shadow: -12px 0 24px rgba(0, 0, 0, 0.35); }
   .app[data-view="editor"] .editor { transform: none; visibility: visible; }
 }
@@ -616,8 +687,8 @@ label.arow { cursor: text; }
   .fab:active { box-shadow: inset 0 0 0 999px var(--press), 0 4px 14px rgba(0, 0, 0, 0.45); }
   :is(.av-btn, .sw):active { filter: brightness(1.2); }
   /* Buttons also sink a little while pressed and spring back (the `scale` property, so it never fights a button's own transform). */
-  :is(.icon-btn, .folder-add, .tool, .fab, .av-btn, #pdf, .mpin, .mdel, .mi, .pill, .mchip, .btn) { transition: background-color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), filter var(--t-fast) var(--ease), scale var(--t-fast) var(--ease); }
-  :is(.icon-btn, .folder-add, .tool, .fab, .av-btn, #pdf, .mpin, .mdel):not(:disabled):active { scale: 0.88; }
+  :is(.icon-btn, .folder-add, .tool, .fab, .av-btn, #pdf, #apShare, .mpin, .mdel, .mi, .pill, .mchip, .btn) { transition: background-color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease), filter var(--t-fast) var(--ease), scale var(--t-fast) var(--ease); }
+  :is(.icon-btn, .folder-add, .tool, .fab, .av-btn, #pdf, #apShare, .mpin, .mdel):not(:disabled):active { scale: 0.88; }
   :is(.mi, .pill, .mchip, .btn):not(:disabled):active { scale: 0.96; }
   .folder::after { transition: opacity var(--t-base) var(--ease); }
   /* Everything that appears or disappears fades, at the same speed. */
@@ -723,12 +794,35 @@ label.arow { cursor: text; }
     </main>
   </div>
 
+  <section class="files" id="files" aria-label="Files">
+    <div class="files-head"><div class="searchrow" id="fSearchRow" data-colours="closed"><div class="searchbox" id="fSearchBox"><svg width="18" height="18" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M378-329q-108.2 0-183.1-75Q120-479 120-585t75-181q75-75 181.5-75t181 75Q632-691 632-584.9 632-542 618-502q-14 40-42 75l242 240q9 8.6 9 21.8T818-143q-9 9-22.2 9-13.2 0-21.8-9L533-384q-30 26-70 40.5Q423.1-329 378-329Zm-1-60q81.2 0 138.1-57.5Q572-504 572-585t-56.9-138.5Q458.2-781 377-781q-82.1 0-139.5 57.5Q180-666 180-585t57.5 138.5Q294.9-389 377-389Z"/></svg><input class="search" id="fSearch" type="search" autocomplete="off" aria-label="Search files"><button class="search-clear" type="button" id="fSearchClear" aria-label="Clear search" hidden><svg width="16" height="16" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-438 270-228q-9 9-21 9t-21-9q-9-9-9-21t9-21l210-210-210-210q-9-9-9-21t9-21q9-9 21-9t21 9l210 210 210-210q9-9 21-9t21 9q9 9 9 21t-9 21L522-480l210 210q9 9 9 21t-9 21q-9 9-21 9t-21-9L480-438Z"/></svg></button></div><div class="cpill" id="fcPill"><div class="ctags" id="ftags" role="group" aria-label="Colour tags"></div><button class="cbtn" type="button" id="fcBtn" aria-expanded="false" aria-controls="ftags" aria-label="Filter by colour"></button></div></div><div class="word-bar" id="fwords" role="group" aria-label="Your tags"></div></div>
+    <div class="folder-bar"><div class="folder-list" id="ffolders" role="tablist" aria-label="File folders"></div><button class="folder-add" type="button" id="ffolderAdd" aria-label="New folder" title="New folder">
+            <svg width="16" height="16" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M450-450H230q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h220v-220q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v220h220q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H510v220q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-220Z"/></svg>
+          </button></div>
+    <ul class="list" id="flist"></ul>
+    <div class="stats" id="fstats" aria-label="Overview"></div>
+  </section>
+
+  <nav class="dock" id="dock" aria-label="Sections">
+    <div class="dock-in">
+      <button class="dock-i" type="button" data-dock="notes" aria-current="page"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M180-180h400v-170q0-12.8 8.6-21.4Q597.2-380 610-380h170v-400H180v600Zm0 60q-24.8 0-42.4-17.6Q120-155.2 120-180v-600q0-24.8 17.6-42.4Q155.2-840 180-840h600q24.8 0 42.4 17.6Q840-804.8 840-780v395q0 12.4-5 23.7T822-342L618-138q-8 8-19.3 13-11.3 5-23.7 5H180Zm260-300H330q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h110q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5Zm190-160H330q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5ZM180-180v-600 600Z"/></svg><span>Notes</span></button>
+      <button class="dock-i" type="button" data-dock="files" aria-label="Files"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h240l80 80h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Z"/></svg><span>Files</span></button>
+      <button class="dock-i" type="button" data-dock="calendar" aria-label="Calendar"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-28q0-13.6 9-22.8 9-9.2 23-9.2t23.5 9.2Q310-861.6 310-848v28h340v-28q0-13.6 9-22.8 9-9.2 23-9.2t23.5 9.2Q715-861.6 715-848v28h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Z"/></svg><span>Calendar</span></button>
+      <button class="dock-i" type="button" data-dock="food" aria-label="Food"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M280-80v-366q-51-14-85.5-56T160-600v-280h80v280h40v-280h80v280h40v-280h80v280q0 56-34.5 98T360-446v366h-80Zm400 0v-320H560v-280q0-83 58.5-141.5T760-880v800h-80Z"/></svg><span>Food</span></button>
+    </div>
+  </nav>
+
+  <button class="fab" type="button" id="addFile" aria-label="Attach a file" title="Attach a file"><svg width="26" height="26" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M450-450H230q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h220v-220q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v220h220q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H510v220q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-220Z"/></svg></button>
+  <input type="file" id="fileIn" multiple hidden>
   <button class="fab" type="button" id="newNote" aria-label="New note" title="New note (hold or right-click for more)" aria-haspopup="menu">
     <svg width="26" height="26" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M450-450H230q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h220v-220q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v220h220q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H510v220q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-220Z"/></svg>
   </button>
+  <button class="cont" type="button" id="cont" hidden><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-120q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120v-240h80v94q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/></svg></button>
 </div>
 
 <div class="menu" id="menu" role="menu" hidden></div>
+<div class="fview" id="apage" role="dialog" aria-label="File page"><div class="ed-top"><button class="back" type="button" id="apBack" aria-label="Back to files" style="display:block"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m406-481 177 177q9 9 8.5 21t-9.5 21q-9 9-21.5 9t-21.5-9L341-460q-5-5-7-10t-2-11q0-6 2-11t7-10l199-199q9-9 21.5-9t21.5 9q9 9 9 21.5t-9 21.5L406-481Z"/></svg></button><div class="ed-head"><button id="apAvatar" type="button" aria-label="Page options" title="Page options"></button><input class="title" id="apTitle" type="text" placeholder="Untitled page" aria-label="Page title" autocomplete="off" maxlength="80"></div><button id="apSaved" type="button" tabindex="-1"></button><button id="apShare" type="button" aria-label="Share" title="Share the attachments"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M686-80q-47.5 0-80.75-33.25T572-194q0-8 5-34L278-403q-16.28 17.34-37.64 27.17Q219-366 194-366q-47.5 0-80.75-33T80-480q0-48 33.25-81T194-594q24 0 45 9.3 21 9.29 37 25.7l301-173q-2-8-3.5-16.5T572-766q0-47.5 33.25-80.75T686-880q47.5 0 80.75 33.25T800-766q0 47.5-33.25 80.75T686-652q-23.27 0-43.64-9Q622-670 606-685L302-516q3 8 4.5 17.5t1.5 18q0 8.5-1 16t-3 15.5l303 173q16-15 36.09-23.5 20.1-8.5 43.07-8.5Q734-308 767-274.75T800-194q0 47.5-33.25 80.75T686-80Zm.04-60q22.96 0 38.46-15.54 15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5Zm-492-286q22.96 0 38.46-15.54 15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5ZM724.5-727.54q15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5 22.96 0 38.46-15.54ZM686-194ZM194-480Zm492-286Z"/></svg></button></div><div class="tools" id="apTools" role="toolbar" aria-label="Page tools"><button class="tool icon" type="button" id="apAttach" aria-label="Attach a file or photo" title="Attach a file or photo"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-330h80v330q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-350h80v350Z"/></svg></button><button class="tool icon" type="button" id="apComment" aria-pressed="false" aria-label="Comments" title="Comments: one per attachment (or swipe an attachment to the right)"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M240-400h480v-80H240v80Zm0-120h480v-80H240v80Zm0-120h480v-80H240v80ZM880-80 720-240H160q-33 0-56.5-23.5T80-320v-480q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v720ZM160-320h594l46 45v-525H160v480Zm0 0v-480 480Z"/></svg></button><button class="tool icon" type="button" data-cmd="right" id="apAlign" aria-pressed="false" aria-label="Align" title="Align the attachments: left or right"><svg class="i-left" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg><svg class="i-right" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-780q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg></button><button class="tool icon" type="button" data-cmd="typewriter" id="apFollow" aria-pressed="false" aria-label="Follow" title="Follow: keep the newest attachment at the bottom"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M190-120q-13 0-21.5-8.5T160-150q0-13 8.5-21.5T190-180h580q13 0 21.5 8.5T800-150q0 13-8.5 21.5T770-120H190Zm279-134q-5-2-10-7L307-413q-9-9-8.5-21.5T308-456q9-9 21.5-9t21.5 9l99 100v-454q0-13 8.5-21.5T480-840q13 0 21.5 8.5T510-810v454l96-96q9-9 21-8.5t21 9.5q9 9 9 21.5t-9 21.5L501-261q-5 5-10 7t-11 2q-6 0-11-2Z"/></svg></button></div><div class="ed-scroll"><div class="pg-body" id="apItems" data-align="left"></div></div><div class="ed-foot"><span id="apCount"></span></div></div>
+<div class="fview" id="fview" role="dialog" aria-label="File"><div class="fv-top"><button class="icon-btn" type="button" id="fvClose" aria-label="Back" title="Back"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m406-481 177 177q9 9 8.5 21t-9.5 21q-9 9-21.5 9t-21.5-9L341-460q-5-5-7-10t-2-11q0-6 2-11t7-10l199-199q9-9 21.5-9t21.5 9q9 9 9 21.5t-9 21.5L406-481Z"/></svg></button><div class="fv-title"><b id="fvName"></b><small id="fvMeta"></small></div><button class="icon-btn" type="button" id="fvFind" aria-label="Search in file" title="Search in file" hidden><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M378-329q-108.2 0-183.1-75Q120-479 120-585t75-181q75-75 181.5-75t181 75Q632-691 632-584.9 632-542 618-502q-14 40-42 75l242 240q9 8.6 9 21.8T818-143q-9 9-22.2 9-13.2 0-21.8-9L533-384q-30 26-70 40.5Q423.1-329 378-329Zm-1-60q81.2 0 138.1-57.5Q572-504 572-585t-56.9-138.5Q458.2-781 377-781q-82.1 0-139.5 57.5Q180-666 180-585t57.5 138.5Q294.9-389 377-389Z"/></svg></button><button class="icon-btn" type="button" id="fvPrint" aria-label="Print" title="Print" hidden><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M640-640v-120H320v120h-80v-200h480v200h-80Zm-480 80h640-640Zm560 100q17 0 28.5-11.5T760-500q0-17-11.5-28.5T720-540q-17 0-28.5 11.5T680-500q0 17 11.5 28.5T720-460Zm-80 260v-160H320v160h320Zm80 80H240v-160H80v-240q0-51 35-85.5t85-34.5h560q51 0 85.5 34.5T880-520v240H720v160Zm80-240v-160q0-17-11.5-28.5T760-640H200q-17 0-28.5 11.5T160-600v160h80v-80h480v80h80Z"/></svg></button><button class="icon-btn" type="button" id="fvSave" aria-label="Download" title="Download"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg></button></div><div class="fv-find" id="fvFindBar" hidden><input id="fvFindIn" type="search" placeholder="Search in file" aria-label="Search in file" autocomplete="off"><span class="cnt" id="fvFindCnt"></span><button class="icon-btn" type="button" id="fvFindPrev" aria-label="Previous match" title="Previous"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-528 296-344l-56-56 240-240 240 240-56 56-184-184Z"/></svg></button><button class="icon-btn" type="button" id="fvFindNext" aria-label="Next match" title="Next"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/></svg></button><button class="icon-btn" type="button" id="fvFindX" aria-label="Close search" title="Close search"><svg width="18" height="18" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-424 284-228q-11 11-28 11t-28-11q-11-11-11-28t11-28l196-196-196-196q-11-11-11-28t11-28q11-11 28-11t28 11l196 196 196-196q11-11 28-11t28 11q11 11 11 28t-11 28L536-480l196 196q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-424Z"/></svg></button></div><div class="fv-body" id="fvBody"></div><div class="fv-bar" id="fvBar"><button class="btn danger" type="button" id="fvDel">Delete</button></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <div class="dlg" id="dlg" hidden>
@@ -785,13 +879,12 @@ label.arow { cursor: text; }
     <details class="card" style="--tc:var(--amber);--on-tc:var(--on-amber)">
       <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M435.5-128.6Q427-137.2 427-150v-165q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v53h323q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H487v52q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM150-202q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h187q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm165.5-174.6Q307-385.2 307-398v-52H150q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h157v-54q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v166q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM457-450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h353q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H457Zm144.5-173.6Q593-632.2 593-645v-165q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v52h157q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H653v53q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM150-698q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h353q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg></span><b>Preset</b><span class="sync-state" id="dkState"></span></summary>
       <div class="card-body">
-        <p class="card-desc">Preconfigure the toolbar for new notes.</p>
-        <button class="dk-sel" type="button" id="dkSel" aria-haspopup="listbox" aria-expanded="false"><span>Rule</span><b id="dkSelV"></b><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-345 240-585l43-43 197 198 197-197 43 43-240 240Z"/></svg></button>
-        <div class="dk-list dk-pick" id="dkSeg" role="listbox" aria-label="Kind of note the + button makes" hidden></div>
+        <p class="card-desc">Choose the rule a new note starts with.</p>
+        <div class="dk-list" id="dkSeg" role="radiogroup" aria-label="Rule for new notes"></div>
         <div class="cf dk-ask" id="dkAsk" hidden><div class="cf-label" id="dkAskText"></div><div class="pills"><button class="pill" type="button" id="dkKeep">Keep</button><button class="pill danger" type="button" id="dkGo">Delete</button></div></div>
         <div class="cf" id="cfForm" hidden>
-          <label class="arow"><span>Name</span><input id="cfName" class="aval" type="text" maxlength="16" placeholder="Name it" aria-label="Name of your mode" autocomplete="off" spellcheck="false"></label>
-          <div class="cf-label">Tap the keys this mode keeps</div>
+          <label class="arow"><span>Name</span><input id="cfName" class="aval" type="text" maxlength="16" placeholder="e.g. Journal" aria-label="Name of your preset" autocomplete="off" spellcheck="false"></label>
+          <div class="cf-label">Tap to choose the keys it shows</div>
           <div class="tools cf-tools" id="cfTools" role="group" aria-label="Toolbar keys this mode keeps"></div>
         </div>
         <div class="dk-foot"><button class="reset" type="button" id="dkAdd">Add</button><button class="reset" type="button" id="dkReset" hidden>Reset</button></div>
@@ -1393,7 +1486,7 @@ ${Nn(this.code(t,r))}
   const SHORTCUT_IDS = Object.keys(COMMANDS).filter((id) => COMMANDS[id].def);
   /* Keys for the whole app. They sit in Settings with the text ones and can be changed the same way. */
   const APP = {
-    newnote:   { label: 'New note',   def: { code: 'KeyN', mod: 'alt' },   run: () => $('newNote').click() },
+    newnote:   { label: 'New note',   def: { code: 'KeyN', mod: 'alt' },   run: () => $($('app').dataset.tab === 'files' ? 'addFile' : 'newNote').click() },
     search:    { label: 'Search',     def: { code: 'KeyS', mod: 'alt' },   run: () => { if (el.app.dataset.view === 'editor' && phoneMQ.matches) setView('list'); setTimeout(() => el.search.focus(), 60); } },
     settings:  { label: 'Settings',   def: { code: 'Comma', mod: 'alt' }, run: () => $('settingsBtn').click() },
     pin:       { label: 'Pin note',   def: { code: 'KeyP', mod: 'alt' },   run: () => { const n = activeNote(); if (n) { n.pinned = !n.pinned; touchMeta(n); toast(n.pinned ? 'Pinned to top' : 'Unpinned'); } } },
@@ -1420,10 +1513,10 @@ ${Nn(this.code(t,r))}
   const toEnd = () => { root.scrollTop = root.scrollHeight; };
   const TB_NAME = { top: 'Top', bottom: 'Bottom', typewriter: 'Follow' };
   const DK_NAME = { notes: 'None', list: 'List', chat: 'Chat' };
-  const DK_ALLOW = { notes: 'Everything', list: 'Checklist, Bullet', chat: 'Text, Align, Break' };   // what each kind allows
+  const DK_ALLOW = { notes: 'All keys', list: 'Checklist, Bullet', chat: 'Text, Align, Break' };   // what each kind allows
   function applyDefaultKind() {
     const dk = settings.defaultKind, nm = customOf(dk) ? customOf(dk).name : DK_NAME[dk];
-    $('dkState').textContent = dk === 'notes' ? 'Off' : nm; $('dkSelV').textContent = nm;   // nothing chosen: the + button makes a normal note
+    $('dkState').textContent = nm;   // nothing chosen: the + button makes a normal note
     $('dkSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.dk === settings.defaultKind)));
   }
   function applyBullet() {
@@ -1517,7 +1610,20 @@ ${Nn(this.code(t,r))}
   }
 
   const motionOK = () => !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* Continue: a small button above New note that reopens the note you last opened. It is remembered on this device only, apart from the notes. */
+  const LAST_KEY = 'daybook:last';
+  let lastId = null;
+  try { lastId = localStorage.getItem(LAST_KEY); } catch { /* blocked */ }
+  function renderCont() {
+    const n = lastId && findNote(lastId), c = $('cont');
+    c.hidden = !n || !!(ui.query || ui.color || ui.tag) || (!phoneMQ.matches && ui.activeId === lastId);
+    if (c.hidden) return;
+    const name = n.title.trim() || untitled(n);
+    c.style.setProperty('--nc', `var(--${n.color})`); c.title = c.ariaLabel = `Continue: ${name}`;
+  }
+  $('cont').addEventListener('click', () => { if (lastId && findNote(lastId)) openNote(lastId); });
   function renderList() {
+    renderCont();
     const notes = visibleNotes();
     $('searchClear').hidden = !ui.query;
     if (!notes.length) {
@@ -1676,6 +1782,8 @@ ${Nn(this.code(t,r))}
     if (kind === 'ed') { applyView('list'); if (!phoneMQ.matches && ui.activeId) { ui.activeId = null; renderEditor(); renderList(); } }   // on a wide screen, Back also closes the open note
     else if (kind === 'dlg') hideDlg();
     else if (kind === 'menu') hideMenu();
+    else if (kind === 'pg') closePgUi();      // a file page: Back returns to the Files list
+    else if (kind === 'fv') closeFileUi();    // the file viewer: Back returns to where it was opened
   }
   function setView(v) {
     applyView(v);
@@ -1720,7 +1828,7 @@ ${Nn(this.code(t,r))}
   }
   function openNote(id) {
     const prev = ui.activeId;
-    ui.activeId = id;
+    ui.activeId = id; lastId = id; try { localStorage.setItem(LAST_KEY, id); } catch { /* blocked */ } renderCont();
     renderEditor();
     const found = markRow(id, true); if (prev && prev !== id) markRow(prev, false);
     if (!found) renderList();
@@ -1871,14 +1979,14 @@ ${Nn(this.code(t,r))}
   /* Preset: List and Chat, then your own mode (or Add, to make one), each one plain row like About, stacked so more can be added. */
   function foot() {            // the two buttons under the presets: Add | Reset normally, Cancel | Save while making one
     const f = !$('cfForm').hidden, n = settings.customs.length;
-    $('dkAdd').textContent = f ? 'Cancel' : 'Add'; $('dkAdd').hidden = !f && n >= 3;
+    $('dkAdd').textContent = f ? 'Cancel' : 'Add preset'; $('dkAdd').hidden = !f && n >= 3;
     $('dkReset').textContent = f ? 'Save' : 'Reset'; $('dkReset').hidden = !f && !n;
     $('dkReset').classList.toggle('solid', f); $('dkReset').disabled = f && (!cfTools.length || !$('cfName').value.trim());   // needs a name and at least one key
   }
   function buildPreset() {
-    const rows = [`<button class="dk-row" type="button" role="option" data-dk="notes"><span>None</span><b>Everything</b>${TICK}</button>`];
-    ['list', 'chat'].forEach((id) => rows.push(`<button class="dk-row" type="button" role="option" data-dk="${id}"><span>${id === 'chat' ? 'Chat (Beta)' : 'List'}</span><b>${DK_ALLOW[id]}</b>${TICK}</button>`));
-    settings.customs.forEach((c) => rows.push(`<button class="dk-row" type="button" role="option" data-dk="${c.id}"><span>${esc(c.name)}</span><b>${esc(toolSummary(c.tools))}</b>${TICK}</button>`));
+    const row = (id, name, keys) => `<button class="dk-row" type="button" role="radio" data-dk="${id}"><span class="dk-name">${esc(name)}</span><b class="dk-keys">${esc(keys)}</b><span class="dk-radio">${TICK}</span></button>`;
+    const rows = [row('notes', 'None', DK_ALLOW.notes), row('list', 'List', DK_ALLOW.list), row('chat', 'Chat (Beta)', DK_ALLOW.chat)];
+    settings.customs.forEach((c) => rows.push(row(c.id, c.name, toolSummary(c.tools))));
     $('dkSeg').innerHTML = rows.join('');
     foot();
     applyDefaultKind();
@@ -1894,17 +2002,36 @@ ${Nn(this.code(t,r))}
       m.innerHTML = all.map(([id0, name, c, on, svg]) => { const id = id0.replace('custom:', ''); return `<button class="mi preset" type="button" data-act="make" data-v="${id}" role="menuitem">${kindIcon(c, svg)}<b>${esc(name)}</b>${id === 'chat' ? '<span class="pk-tag">Beta</span>' : ''}</button>`; }).join('');
       return;
     }
-    if (menu.kind === 'folder') {
-      const name = folderLabel(menu.id);
+    if (menu.kind === 'folder' || menu.kind === 'ffolder') {   // one menu for note folders and file folders
+      const ff = menu.kind === 'ffolder', name = ff ? ffLabel(menu.id) : folderLabel(menu.id);
       if (name === undefined) return closeMenu();
       if (menu.confirm) {
-        const count = state.notes.filter((n) => n.folders?.includes(menu.id)).length;
-        m.innerHTML = `<div class="mh">Delete this folder?</div><div class="mnote">${count ? `${count} ${count === 1 ? 'note stays' : 'notes stay'} in ${esc(state.allName)}.` : 'It has no notes.'}</div>` +
+        const noun = ff ? 'file' : 'note', home = ff ? fs.all : state.allName;
+        const count = ff ? files.filter((f) => f.folders && f.folders.includes(menu.id)).length : state.notes.filter((n) => n.folders?.includes(menu.id)).length;
+        m.innerHTML = `<div class="mh">Delete this folder?</div><div class="mnote">${count ? `${count} ${count === 1 ? noun + ' stays' : noun + 's stay'} in ${esc(home)}.` : `It has no ${noun}s.`}</div>` +
           `<div class="mrow">${button('btn', 'keep', 'Keep it')}${button('btn danger solid', 'delete-folder', 'Delete folder')}</div>`;
         return;
       }
-      m.innerHTML = `<div class="mh">${esc(name)}</div>${button('mi', 'rename', 'Rename', ' role="menuitem"')}` +
-        (menu.id === ALL ? '' : button('mi danger', 'ask', 'Delete folder', ' role="menuitem"'));
+      m.innerHTML = `<div class="mbar"><button class="icon-btn" type="button" data-act="rename" aria-label="Rename" title="Rename"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg></button>` +
+        (menu.id === ALL ? '' : `<button class="mdel" type="button" data-act="ask" aria-label="Delete folder" title="Delete folder">${TRASH_SVG}</button>`) + '</div>';
+      return;
+    }
+    if (menu.kind === 'att') {   // one attachment
+      const [it] = attOf(); if (!it) return closeMenu();
+      m.innerHTML = button('mi', 'ar', 'Rename', ' role="menuitem"') + button('mi', 'ac', it.comment ? 'Edit comment' : 'Add comment', ' role="menuitem"') + button('mi', 'as', 'Download', ' role="menuitem"') + button('mi danger', 'ad', 'Remove', ' role="menuitem"');
+      return;
+    }
+    if (menu.kind === 'page') {   // the profile picker of a page: colour, folders (any number), pin, delete; the same from the list and from inside the page
+      const r = menuRec(); if (!r) return closeMenu();
+      if (menu.confirm) { m.innerHTML = `<div class="mh">Delete this page?</div><div class="mrow">${button('btn', 'keep', 'Keep it')}${button('btn danger solid', 'pdelete', 'Delete page')}</div>`; return; }
+      const swatches = COLORS.map((c) => `<button type="button" class="sw" style="background:var(--${c})" role="radio" data-act="pcolor" data-v="${c}" aria-label="${COLOR_NAME[c]}" title="${COLOR_NAME[c]}" aria-checked="${r.color === c}"></button>`).join('');
+      const chips = fs.folders.length
+        ? `<div class="mfolders">${fs.folders.map((g) => `<button type="button" class="mchip" data-act="pfolder" data-v="${g.id}" aria-pressed="${!!r.folders?.includes(g.id)}">${esc(g.name)}</button>`).join('')}</div>`
+        : '<div class="mnote">Add a folder with + to organise files.</div>';
+      m.style.setProperty('--nc', `var(--${r.color})`); m.style.setProperty('--on-nc', `var(--on-${r.color})`);
+      m.innerHTML = `<div class="mhead"><span class="mav" style="--nc:var(--${r.color})">${avatar({ title: r.name, color: r.color }, 36)}</span><div class="mtitle"><span id="mcolor">${COLOR_NAME[r.color]}</span></div>` +
+        `<button class="mpin" type="button" data-act="ppin" aria-pressed="${!!r.pinned}" aria-label="${r.pinned ? 'Unpin' : 'Pin to top'}" title="${r.pinned ? 'Unpin' : 'Pin to top'}">${PIN_SVG}</button><button class="mdel" type="button" data-act="ask" aria-label="Delete page" title="Delete page">${TRASH_SVG}</button></div>` +
+        `<div class="ml">Colour</div><div class="mcolors" role="radiogroup" aria-label="Page colour">${swatches}</div><div class="ml">Folder</div>${chips}`;
       return;
     }
     const n = findNote(menu.id);
@@ -1919,7 +2046,7 @@ ${Nn(this.code(t,r))}
       : '<div class="mnote">Add a folder with + to organise notes.</div>';
     const pinLabel = n.pinned ? 'Unpin' : 'Pin to top';
     m.style.setProperty('--nc', `var(--${n.color})`); m.style.setProperty('--on-nc', `var(--on-${n.color})`);
-    m.innerHTML = `<div class="mhead"><span class="mav" style="--nc:var(--${n.color})">${avatar(n, 36)}</span><div class="mtitle"><b>${esc(n.title || untitled(n))}</b><span id="mcolor">${COLOR_NAME[n.color]}</span></div>` +
+    m.innerHTML = `<div class="mhead"><span class="mav" style="--nc:var(--${n.color})">${avatar(n, 36)}</span><div class="mtitle"><span id="mcolor">${COLOR_NAME[n.color]}</span></div>` +
       `<button class="mpin" type="button" data-act="pin" aria-pressed="${!!n.pinned}" aria-label="${pinLabel}" title="${pinLabel}">${PIN_SVG}</button><button class="mdel" type="button" data-act="ask" aria-label="Delete note" title="Delete note">${TRASH_SVG}</button></div>` +
       `<div class="ml">Colour</div><div class="mcolors" role="radiogroup" aria-label="Note colour">${swatches}</div>` +
       `<div class="ml">Folders</div>${folders}`;
@@ -1934,7 +2061,7 @@ ${Nn(this.code(t,r))}
     el.menu.querySelectorAll('.sw').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.v === c)));
   }
   function openMenu(kind, id, x, y) {
-    if (kind === 'note' ? !findNote(id) : kind !== 'new' && folderLabel(id) === undefined) return;
+    if (kind === 'note' ? !findNote(id) : kind === 'att' ? !attOfId(id)[0] : kind === 'page' ? !(files.some((f) => f.id === id) || (pg && pg.id === id)) : kind === 'ffolder' ? ffLabel(id) === undefined : kind === 'file' ? !files.some((f) => f.id === id) : kind !== 'new' && folderLabel(id) === undefined) return;
     Object.assign(menu, { kind, id, confirm: false });
     renderMenu();
     const m = el.menu; clearTimeout(menuTimer); m.classList.remove('closing'); m.hidden = false; pushLayer('menu');
@@ -1956,11 +2083,35 @@ ${Nn(this.code(t,r))}
 
   const menuActions = {
     make:            (n, v) => { closeMenu(); newNote(v); },
-    rename:          () => { const id = menu.id; closeMenu(); startRename(id); },
+    rename:          () => { const id = menu.id, ff = menu.kind === 'ffolder'; closeMenu(); ff ? startFRename(id) : startRename(id); },
     ask:             () => { if (menu.kind === 'note') { const id = menu.id; closeMenu(); deleteNote(id); return; } menu.confirm = true; renderMenu(); },   // a note goes at once and can be undone; a folder still asks
     keep:            () => { menu.confirm = false; renderMenu(); },
-    'delete-folder': () => { const id = menu.id; closeMenu(); deleteFolder(id); },
+    'delete-folder': () => { const id = menu.id, ff = menu.kind === 'ffolder'; closeMenu(); ff ? deleteFFolder(id) : deleteFolder(id); },
     'delete-note':   () => { const id = menu.id; closeMenu(); deleteNote(id); },
+    pcolor:          (n, v) => {
+      const r = menuRec(); if (!r || r.color === v) return; r.color = v;
+      el.menu.style.setProperty('--nc', `var(--${v})`); el.menu.style.setProperty('--on-nc', `var(--on-${v})`);
+      const head = el.menu.querySelector('.mav'); if (head) { head.style.setProperty('--nc', `var(--${v})`); head.innerHTML = avatar({ title: r.name, color: v }, 36); }
+      const label = $('mcolor'); if (label) label.textContent = COLOR_NAME[v];
+      el.menu.querySelectorAll('.sw').forEach((x) => x.setAttribute('aria-checked', String(x.dataset.v === v)));
+      recSave(r);
+    },
+    pfolder:         (n, v) => {   // any number of folders, like a note
+      const r = menuRec(); if (!r) return; const on = !(r.folders || []).includes(v);
+      r.folders = on ? [...(r.folders || []), v] : (r.folders || []).filter((x) => x !== v); if (!r.folders.length) delete r.folders;
+      const b = el.menu.querySelector(`[data-act="pfolder"][data-v="${v}"]`); if (b) b.setAttribute('aria-pressed', String(on));
+      recSave(r);
+    },
+    ppin:            () => {
+      const r = menuRec(); if (!r) return; r.pinned = !r.pinned; if (!r.pinned) delete r.pinned;
+      const b = el.menu.querySelector('.mpin'); if (b) { b.setAttribute('aria-pressed', String(!!r.pinned)); b.title = r.pinned ? 'Unpin' : 'Pin to top'; b.setAttribute('aria-label', b.title); }
+      recSave(r); toast(r.pinned ? 'Pinned to top' : 'Unpinned');
+    },
+    pdelete:         () => { const r = menuRec(); closeMenu(); if (!r) return; if (r === pg) deletePage(); else deleteRecord(r); },
+    ar:              () => { const [, i] = attOf(); closeMenu(); if (i !== undefined) { pgRename = i; paintItems(); } },
+    ac:              () => { const [, i] = attOf(); closeMenu(); if (i !== undefined) startComment(i); },
+    as:              () => { const [it] = attOf(); closeMenu(); if (it) saveBlob(it); },
+    ad:              () => { const [, i] = attOf(); closeMenu(); if (i !== undefined) removeItem(i); },
     pin:             (n) => { n.pinned = !n.pinned; touchMeta(n); closeMenu(); toast(n.pinned ? 'Pinned to top' : 'Unpinned'); },
     color:           (n, v) => setNoteColor(n, v),
     folder:          (n, v, b) => {                                              // a note can be in any number of folders
@@ -1993,7 +2144,482 @@ ${Nn(this.code(t,r))}
   /* A long-press that opened a menu must not also count as a tap. */
   const swallowPressTap = () => { if (press.fired) { press.fired = false; return true; } return false; };
 
+  const attOfId = (id) => { const k = String(id).lastIndexOf(':'), i = +String(id).slice(k + 1); return pg && pg.id === String(id).slice(0, k) && pg.items[i] ? [pg.items[i], i] : []; };
+  const attOf = () => attOfId(menu.id);
+  const menuRec = () => (pg && pg.id === menu.id ? pg : files.find((x) => x.id === menu.id));
+  function recSave(r) { if (r === pg) { savePg(true); paintPg(); } else { fTx('readwrite', (st) => st.put(r)).catch(() => {}); renderFiles(); } }
+  function deleteRecord(r) {
+    files = files.filter((x) => x.id !== r.id); fTx('readwrite', (st) => st.delete(r.id)).catch(() => {}); renderFiles();
+    toast('Page deleted', { label: 'Undo', run: () => { files.push(r); fTx('readwrite', (st) => st.put(r)).catch(() => {}); renderFiles(); } });
+  }
+
   /* ================= Wiring ================= */
+  /* Files: kept on this device only, in a database of their own, so they never touch the notes or Google Drive sync. */
+  const FDB = (() => { let p; return () => (p ||= new Promise((ok, no) => { const r = indexedDB.open('daybook-files', 1); r.onupgradeneeded = () => r.result.createObjectStore('f', { keyPath: 'id' }); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); })); })();
+  const fTx = async (mode, fn) => { const db = await FDB(); return new Promise((ok, no) => { const t = db.transaction('f', mode), r = fn(t.objectStore('f')); t.oncomplete = () => ok(r.result); t.onerror = t.onabort = () => no(t.error); }); };
+  let files = [], fq = '', fvId = null, fvUrl = '';
+  /* File folders: like the note folders, but kept on this device with the files (a file sits in one folder). */
+  const FF_KEY = 'daybook-file-folders';
+  const fs = (() => { try { const j = JSON.parse(localStorage.getItem(FF_KEY)); if (j && Array.isArray(j.folders)) return { all: String(j.all || 'All'), folders: j.folders.filter((x) => x && x.id && x.name) }; } catch (e) {} return { all: 'All', folders: [] }; })();
+  const fsSave = () => { try { localStorage.setItem(FF_KEY, JSON.stringify(fs)); } catch (e) {} };
+  let fFolder = ALL, fRenaming = null, fColor = '', fTag = '', fColOpen = false;
+  const fTags = (f) => { const t = new Set(hashtags(f.title || f.name || '')); (f.items || []).forEach((i) => hashtags(i.comment || '').forEach((x) => t.add(x))); return [...t]; };   // #tags in a page's title and comments
+  function paintFColours() {
+    $('fSearchRow').dataset.colours = fColOpen ? 'open' : 'closed';
+    $('fcBtn').setAttribute('aria-expanded', String(fColOpen));
+    $('fcBtn').setAttribute('aria-label', fColOpen ? 'Close colours' : fColor ? `Colour filter: ${COLOR_NAME[fColor]}` : 'Filter by colour');
+    let pal = ''; try { pal = PALETTE.replace(/cring/g, 'fcring'); } catch (e) {}        // its own gradient id: the notes one hides with the notes tab
+    const html = fColor ? `<span class="cdot" style="--c:var(--${fColor})"></span>` : pal;
+    if ($('fcBtn')._h !== html) { $('fcBtn').innerHTML = html; $('fcBtn')._h = html; }
+  }
+  function renderFStats(inFolder) {   // the same overview strip as notes: new, edited, last 7 days, attachments, size
+    const today = dayKey(Date.now()), weekAgo = Date.now() - 7 * 864e5;
+    let nw = 0, ed = 0, wk = 0, att = 0, size = 0;
+    for (const f of inFolder) { const e = f.edited || f.added; if (dayKey(f.created || f.added) === today) nw++; if (dayKey(e) === today) ed++; if (e >= weekAgo) wk++; att += f.items.length; size += f.size || 0; }
+    const cell = (v, label) => `<div><b>${v}</b><span>${label}</span></div>`;
+    const h = cell(nw, 'New') + cell(ed, 'Edited') + cell(wk, '7 days') + cell(att, 'Files') + cell(fsize(size), 'Size');
+    const st = $('fstats'); if (st._h !== h) { st.innerHTML = h; st._h = h; }
+  }
+  function renderFFilters(inFolder) {
+    const have = new Set(inFolder.filter((f) => f.kind === 'page').map((f) => f.color));
+    const ch = COLORS.map((c) => `<button type="button" class="tag${have.has(c) ? '' : ' none'}" style="--c:var(--${c})" data-ftag="${c}" aria-pressed="${fColor === c}" aria-label="${COLOR_NAME[c]}" title="${COLOR_NAME[c]}"></button>`).join('');
+    const ft = $('ftags'); if (ft._h !== ch) { ft.innerHTML = ch; ft._h = ch; }
+    paintFColours();
+    const all = [...new Set(files.flatMap(fTags))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    if (fTag && !all.includes(fTag)) fTag = '';
+    const w = all.length ? all.map((t) => `<button type="button" class="word" data-fword="${esc(t)}" aria-pressed="${fTag === t}">#${esc(t)}</button>`).join('') : '<span class="word-hint">#tag is shown here</span>';
+    const fw = $('fwords'); if (fw._h !== w) { fw.innerHTML = w; fw._h = w; }
+  }
+  const ffLabel = (id) => (id === ALL ? fs.all : fs.folders.find((x) => x.id === id)?.name);
+  function renderFFolders() {
+    const counts = new Map(); files.forEach((f) => (f.folders || []).forEach((id) => counts.set(id, (counts.get(id) || 0) + 1)));
+    const items = [{ id: ALL, name: fs.all, count: files.length }, ...fs.folders.map((g) => ({ id: g.id, name: g.name, count: counts.get(g.id) || 0 }))];
+    const html = items.map((g) => {
+      const inner = fRenaming === g.id
+        ? `<input id="ffolderInput" type="text" maxlength="24" value="${esc(g.name)}" aria-label="Folder name">`
+        : `<span class="folder-name">${esc(g.name)}</span><span class="folder-count">${g.count}</span>`;
+      return `<div class="folder" role="tab" tabindex="0" data-ffolder="${g.id}" aria-selected="${fFolder === g.id}">${inner}</div>`;
+    }).join('');
+    const box = $('ffolders'); if (box._h !== html) { box.innerHTML = html; box._h = html; }
+    if (fRenaming) { const i = $('ffolderInput'); if (i && document.activeElement !== i) { i.focus(); i.select(); } }
+  }
+  function startFRename(id) { fRenaming = id; renderFFolders(); }
+  function finishFRename(save) {
+    const id = fRenaming; if (!id) return;
+    const name = $('ffolderInput')?.value.trim() ?? '';
+    fRenaming = null;
+    if (save && name) { if (id === ALL) fs.all = name; else { const g = fs.folders.find((x) => x.id === id); if (g) g.name = name; } fsSave(); toast('Renamed'); }
+    renderFiles();
+  }
+  function deleteFFolder(id) {
+    files.forEach((f) => { if (f.folders && f.folders.includes(id)) { f.folders = f.folders.filter((x) => x !== id); if (!f.folders.length) delete f.folders; fTx('readwrite', (st) => st.put(f)).catch(() => {}); } });
+    fs.folders = fs.folders.filter((x) => x.id !== id); fsSave();
+    if (fFolder === id) fFolder = ALL;
+    renderFiles(); toast('Folder deleted');
+  }
+  const fsize = (b) => (b < 1024 ? `${b} B` : b < 1048576 ? `${Math.round(b / 1024)} KB` : `${(b / 1048576).toFixed(1)} MB`);
+  const fext = (f) => { const e = f.name.includes('.') ? f.name.split('.').pop() : ''; return e && e.length <= 4 ? e : (f.type.split('/')[1] || 'file').slice(0, 4); };
+  function renderFiles() {
+    if (fFolder !== ALL && !fs.folders.some((x) => x.id === fFolder)) fFolder = ALL;
+    renderFFolders();
+    const q = fq.trim().toLowerCase(), inFolder = files.filter((f) => fFolder === ALL || (f.folders || []).includes(fFolder));
+    renderFFilters(inFolder);
+    const list = inFolder.filter((f) => (!fColor || (f.kind === 'page' && f.color === fColor)) && (!fTag || fTags(f).includes(fTag)) && (!q || f.name.toLowerCase().includes(q) || (f.items || []).some((i) => i.name.toLowerCase().includes(q) || (i.comment || '').toLowerCase().includes(q))))
+      .sort((a, b) => (!!b.pinned - !!a.pinned) || ((b.edited || b.added) - (a.edited || a.added)));   // pinned first, then the most recently edited
+    const fl = $('flist'); $('fSearchClear').hidden = !fq;
+    if (!list.length) {
+      const [title, text, action, label] = fq ? ['Nothing found', 'Try a different word.', 'clear', 'Clear search']
+        : fColor ? [`No ${COLOR_NAME[fColor]} pages`, 'Nothing has this colour tag here yet.', 'tag', 'Show all']
+        : fTag ? [`No "${fTag}" pages`, 'Nothing has this tag here yet.', 'tag', 'Show all']
+        : files.length ? ['This folder is empty', 'Add a page and it will be saved in here.', 'new', 'New page']
+        : ['A clean page', 'Attach your first files. They stay on this device only.', 'new', 'New page'];
+      fl.innerHTML = `<li class="empty-list"><strong>${title}</strong>${text}<br><button class="btn solid" type="button" data-fempty="${action}">${label}</button></li>`;
+    } else {
+      /* Same as the notes list: rows are kept between renders, only a row whose text changed is rebuilt, the rest are put in order and glide, so typing in search never redraws the whole list. */
+      if (!fl.firstElementChild?.dataset.fid) fl.textContent = '';
+      const have = new Map();
+      for (const li of fl.children) have.set(li.dataset.fid, li);
+      let sameOrder = have.size === list.length;
+      if (sameOrder) { let k = 0; for (const f of list) { if (fl.children[k++]?.dataset.fid !== f.id) { sameOrder = false; break; } } }
+      const smooth = motionOK() && have.size > 0 && have.size <= 300 && !sameOrder;
+      const before = smooth ? new Map([...have].map(([id, li]) => [id, li.offsetTop])) : null;
+      const tpl = document.createElement('template'), next = [], fresh = new Set();
+      const rowHtml = (f) => {
+        const name = f.name || 'Untitled page', where = fFolder === ALL && f.folders ? f.folders.map(ffLabel).filter(Boolean).join(', ') : '';
+        const snip = f.items.length ? f.items.map((i) => i.name).join(', ') : 'No files yet';
+        return `<li class="item" data-fid="${f.id}" style="--nc:var(--${f.color});--on-nc:var(--on-${f.color})"><button class="row" type="button" data-fid="${f.id}" aria-current="${!!pg && pg.id === f.id}"><span class="av-gap"></span><span class="row-main">` +
+          `<span class="row-top"><span class="row-title">${esc(name)}</span><span class="row-time">${esc(rowTime({ updated: f.edited || f.added }))}</span></span>` +
+          `<span class="row-bot"><span class="row-snip">${where ? `<b>${esc(where)}</b> ` : ''}${esc(snip)}</span>${f.items.length ? `<span class="badge" title="${f.items.length} attached">${f.items.length}</span>` : ''}${f.pinned ? PIN_ICON : ''}</span></span></button>` +
+          `<button class="av-btn" type="button" data-fmore="${f.id}" aria-label="Options for ${esc(name)}" title="Options">${avatar({ title: name, color: f.color }, 48)}</button></li>`;
+      };
+      for (const f of list) {
+        const html = rowHtml(f);
+        let li = have.get(f.id);
+        if (!li || li._h !== html) {
+          tpl.innerHTML = html;
+          const made = tpl.content.firstElementChild; made._h = html;
+          if (li) li.replaceWith(made); else if (have.size) fresh.add(f.id);
+          li = made;
+        }
+        next.push(li);
+      }
+      let ref = fl.firstChild;
+      for (const li of next) { if (li === ref) ref = ref.nextSibling; else fl.insertBefore(li, ref); }
+      while (ref) { const gone = ref; ref = ref.nextSibling; gone.remove(); }
+      if (smooth) {
+        const lh = fl.clientHeight;
+        for (const li of next) {
+          if (fresh.has(li.dataset.fid)) { li.animate([{ opacity: 0 }, { opacity: 1 }], { duration: MOTION.base, easing: MOTION.ease }); continue; }
+          const was = before.get(li.dataset.fid); if (was === undefined) continue;
+          const d = was - li.offsetTop;
+          if (d && Math.abs(d) < lh * 1.5) li.animate([{ transform: `translateY(${d}px)` }, { transform: 'none' }], { duration: MOTION.slow, easing: MOTION.ease });
+        }
+      }
+    }
+    renderFStats(inFolder);
+  }
+  function setTab(t) {
+    $('app').dataset.tab = t;
+    document.querySelectorAll('[data-dock]').forEach((b) => (b.dataset.dock === t ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current')));
+    if (t === 'files') renderFiles();
+  }
+  /* What a file is: a colour for its badge, and whether we can draw a small preview of it. */
+  const EXT = (f) => (f.name.includes('.') ? f.name.split('.').pop().toLowerCase() : '');
+  const TEXT_EXT = ['txt', 'md', 'csv', 'tsv', 'log', 'json', 'xml', 'yml', 'yaml', 'ini', 'js', 'ts', 'css', 'html', 'htm', 'py', 'sql', 'sh', 'srt'];
+  const isText = (f) => (f.type || '').startsWith('text/') || ['application/json', 'application/xml', 'application/javascript'].includes(f.type) || TEXT_EXT.includes(EXT(f));
+  const isPdf = (f) => f.type === 'application/pdf' || EXT(f) === 'pdf';
+  function fkind(f) {
+    const t = f.type || '', e = EXT(f);
+    if (isPdf(f)) return 'pdf';
+    if (t.startsWith('image/')) return 'image';
+    if (t.startsWith('video/')) return 'video';
+    if (t.startsWith('audio/')) return 'audio';
+    if (['doc', 'docx', 'odt', 'rtf', 'pages'].includes(e)) return 'doc';
+    if (['xls', 'xlsx', 'ods', 'numbers'].includes(e)) return 'sheet';
+    if (['ppt', 'pptx', 'odp', 'key'].includes(e)) return 'slide';
+    if (['zip', 'rar', '7z', 'tar', 'gz'].includes(e)) return 'zip';
+    if (isText(f)) return 'code';
+    return 'other';
+  }
+  const viewable = (f) => /^(image|video|audio|text)\//.test(f.type || '') || isText(f);   // shown inside the app
+  function normFiles(list) {   // older single files become one-attachment pages, and folder -> folders, so everything works the same way
+    return list.map((f) => {
+      let dirty = false;
+      if (f.kind !== 'page') {
+        f = { id: f.id, kind: 'page', title: '', name: baseName(f.name), color: 'grey', type: 'page', size: f.size, added: f.added, created: f.added, edited: f.added, items: [{ name: f.name, type: f.type, size: f.size, blob: f.blob }], align: 'left', ...(f.folder ? { folders: [f.folder] } : {}), ...(f.pinned ? { pinned: true } : {}) };
+        dirty = true;
+      } else if (f.folder) { f.folders = [...new Set([...(f.folders || []), f.folder])]; delete f.folder; dirty = true; }
+      if (!f.created) { f.created = f.added || Date.now(); dirty = true; }
+      if (dirty) fTx('readwrite', (st) => st.put(f)).catch(() => {});
+      return f;
+    });
+  }
+  const RESUME = 'daybook-resume';
+  const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  function openInTab(f) {   // a PDF opens in the browser's own viewer (Chrome's on phone and PC)
+    const u = URL.createObjectURL(f.blob);
+    if (standalone()) {   // the installed app has no tabs: open it here, remember where we were, and Back returns to this very screen
+      if (pg) savePg(true);
+      try { sessionStorage.setItem(RESUME, JSON.stringify({ tab: 'files', page: pg ? pg.id : null, t: Date.now() })); } catch (e) {}
+      location.assign(u); return;
+    }
+    const a = document.createElement('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener';
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 600000);
+  }
+  window.addEventListener('pageshow', (e) => { if (e.persisted) { try { sessionStorage.removeItem(RESUME); } catch (err) {} } });   // restored as it was: nothing to rebuild
+  function resumeAfterPdf() {   // the app was reloaded when Back came from a PDF: put the Files tab and the page back
+    let r = null; try { r = JSON.parse(sessionStorage.getItem(RESUME)); sessionStorage.removeItem(RESUME); } catch (e) {}
+    if (!r || Date.now() - r.t > 3600000) return;
+    setTab(r.tab); const f = r.page && files.find((x) => x.id === r.page); if (f) openPage(f);
+  }
+  function saveBlob(f) { const u = URL.createObjectURL(f.blob), a = document.createElement('a'); a.href = u; a.download = f.name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 60000); }
+  let fvRec = null, fvText = '', fvHits = [], fvCur = -1;
+  function closeFile() { closeFileUi(); dropLayer('fv'); }
+  function closeFileUi() { $('fvFindBar').hidden = true; $('fvFindIn').value = ''; fvText = ''; fvHits = []; $('fview').classList.remove('show'); $('fvBody').textContent = ''; if (fvUrl) URL.revokeObjectURL(fvUrl); fvUrl = ''; fvId = null; fvRec = null; }
+  function showFile(f, item) {   // item: an attachment of a page (nothing to delete here)
+    fvRec = f; fvId = item ? null : f.id; fvUrl = URL.createObjectURL(f.blob);
+    const url = fvUrl, body = $('fvBody'), t = f.type || '';
+    $('fvBar').style.display = item ? 'none' : '';
+    $('fvFindBar').hidden = true; $('fvFindIn').value = ''; fvText = ''; fvHits = [];
+    $('fvFind').hidden = !isText(f) || t.startsWith('image/'); $('fvPrint').hidden = !(t.startsWith('image/') || isText(f));
+    body.textContent = '';
+    const mk = (tag, set, into = body) => { const x = document.createElement(tag); Object.assign(x, set); into.append(x); return x; };
+    if (t.startsWith('image/')) mk('img', { src: url, alt: f.name, onerror: () => { if (fvUrl === url) { closeFile(); saveBlob(f); } } });
+    else if (t.startsWith('video/')) mk('video', { src: url, controls: true });
+    else if (t.startsWith('audio/')) mk('audio', { src: url, controls: true });
+    else if (isText(f)) f.blob.slice(0, 2000000).text().then((x) => { if (fvUrl === url) { fvText = x; mk('pre', { textContent: x }); } });
+    else mk('div', { textContent: `${fsize(f.size)} · ${EXT(f).toUpperCase() || 'File'}. Use Open to view it.` });
+    $('fvName').textContent = f.name; $('fvMeta').textContent = `${EXT(f) || 'file'} · ${fsize(f.size)}`;
+    const fvEl = $('fview'); fvEl.style.setProperty('--nc', item && pg ? `var(--${pg.color})` : 'var(--blue)');   // the bar takes the colour of its page
+    fvEl.classList.add('show'); pushLayer('fv');
+  }
+  function openFile(id) {
+    const f = files.find((x) => x.id === id); if (!f) return;
+    if (f.kind === 'page') { openPage(f); return; }
+    if (isPdf(f)) { openInTab(f); return; }
+    if (!viewable(f)) { saveBlob(f); return; }
+    showFile(f, false);
+  }
+  /* A file page works like a note: a title, a colour avatar (the profile picker), a toolbar with Attach and Align, and any number of
+     attachments in the body. It saves itself as you go, and an empty page that is closed leaves nothing behind. */
+  let pg = null, pgFresh = false, pgTimer = 0;
+  const pgName = (p) => (p.title || '').trim() || (p.items.length > 1 ? `${p.items.length} files` : p.items.length ? p.items[0].name.replace(/\.[^.]+$/, '') : 'Untitled page');
+  let pgEdit = null, pgComments = false, swipedAt = 0, pgRename = null;
+  const baseName = (n) => (n.lastIndexOf('.') > 0 ? n.slice(0, n.lastIndexOf('.')) : n);
+  const extOf = (n) => (n.lastIndexOf('.') > 0 ? n.slice(n.lastIndexOf('.')) : '');
+  const pgFollow = () => (pg && pg.follow !== undefined ? pg.follow : settings.typewriter);   // like a note: follow the newest at the bottom
+  const toEndPg = () => requestAnimationFrame(() => { const sc = $('apage').querySelector('.ed-scroll'); if (sc && pg && pgFollow()) sc.scrollTop = sc.scrollHeight; });
+  const REPLY_SVG = '<svg width="18" height="18" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M760-200v-160q0-50-35-85t-85-35H273l114 114-57 57-211-211 211-211 57 57-114 114h367q83 0 141.5 58.5T840-360v160h-80Z"/></svg>';
+  function paintHead() {
+    if (!pg) return;
+    const pgEl = $('apage'); pgEl.style.setProperty('--nc', `var(--${pg.color})`); pgEl.style.setProperty('--on-nc', `var(--on-${pg.color})`);
+    $('apAvatar').innerHTML = avatar({ title: $('apTitle').value.trim() || pgName(pg), color: pg.color }, 32);
+    $('apAlign').setAttribute('aria-pressed', String(pg.align === 'right'));
+    $('apComment').setAttribute('aria-pressed', String(pgComments));
+    $('apFollow').setAttribute('aria-pressed', String(pgFollow()));
+    pgEl.dataset.tb = settings.toolbar === 'bottom' || (settings.toolbar === 'typewriter' && pgFollow()) ? 'bottom' : 'top';
+  }
+  function paintItems() {
+    if (!pg) return;
+    const box = $('apItems'); box.dataset.align = pg.align === 'right' ? 'right' : 'left'; box.dataset.follow = pgFollow() ? 'on' : 'off';
+    box.innerHTML = pg.items.length
+      ? pg.items.map((it, i) => {
+        const note = pgEdit === i ? `<div class="pg-note edit"><textarea data-ci="${i}" rows="1" maxlength="240" placeholder="Add a comment" aria-label="Comment on ${esc(it.name)}"></textarea></div>`
+          : it.comment ? `<button class="pg-note" type="button" data-ci="${i}" data-pa="comment" aria-label="Edit comment">${esc(it.comment)}</button>`
+          : pgComments ? `<button class="pg-note add" type="button" data-ci="${i}" data-pa="comment">Add a comment</button>` : '';
+        return `<div class="pg-entry" data-i="${i}"><span class="pg-reply" aria-hidden="true">${REPLY_SVG}</span><div class="pg-item"><${pgRename === i ? 'div' : 'button'} class="fv-open"${pgRename === i ? '' : ' type="button"'} data-pi="${i}" data-pa="open"><span class="fi" data-k="${fkind(it)}">${esc(fext(it))}</span><span>${pgRename === i ? `<input class="pg-rename" data-ri="${i}" type="text" maxlength="80" value="${esc(baseName(it.name))}" aria-label="Rename ${esc(it.name)}">` : `<span class="fn">${esc(it.name)}</span>`}<span class="fs">${fsize(it.size)}</span></span></${pgRename === i ? 'div' : 'button'}><button class="icon-btn" type="button" data-pi="${i}" data-pa="more" aria-label="More" title="More: rename, comment, download, remove"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z"/></svg></button></div>${note}</div>`;
+      }).join('')
+      : '<p class="pg-empty">Tap the paperclip to add a file or take a photo. You can also paste (Ctrl V) or drop files here.</p>';
+    const rn = box.querySelector('.pg-rename'); if (rn) { rn.focus({ preventScroll: true }); rn.select(); }
+    const ta = box.querySelector('textarea');
+    if (ta) { ta.value = pg.items[+ta.dataset.ci]?.comment || ''; ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; ta.focus({ preventScroll: true }); ta.setSelectionRange(ta.value.length, ta.value.length); }
+    const total = pg.items.reduce((t, i) => t + i.size, 0);
+    $('apCount').textContent = [pg.items.length ? `${pg.items.length} ${pg.items.length === 1 ? 'file' : 'files'}` : 'no files yet', pg.items.length && fsize(total), `created ${ago(pg.created || pg.added)}`, `edited ${ago(pg.edited || pg.created || pg.added)}`].filter(Boolean).join(' · ');
+  }
+  const paintPg = () => { paintHead(); paintItems(); };
+  function commitComment(i, text) {   // one comment per attachment; clearing it takes it away
+    if (!pg || pgEdit !== i) return;
+    const it = pg.items[i], v = text.trim(); pgEdit = null;
+    if (it) { if (v) it.comment = v; else delete it.comment; }
+    savePg(true); paintItems();
+  }
+  const startComment = (i) => { if (!pg || !pg.items[i]) return; pgEdit = i; paintItems(); };
+  function savePg(now) {
+    if (!pg) return; clearTimeout(pgTimer);
+    const go = () => {
+      const p = pg; if (!p) return;
+      p.title = $('apTitle').value; p.name = pgName(p); p.size = p.items.reduce((t, i) => t + i.size, 0);
+      const sig = JSON.stringify([p.title, p.items.map((i) => [i.name, i.size, i.comment || ''])]);
+      if (p._sig !== undefined && p._sig !== sig) p.edited = Date.now();
+      p._sig = sig;
+      if (pgFresh) { if (!p.title.trim() && !p.items.length) return; files.push(p); pgFresh = false; }
+      fTx('readwrite', (st) => st.put(p)).catch(() => toast("Couldn't save. Storage may be full."));
+      renderFiles();
+    };
+    if (now) go(); else pgTimer = setTimeout(go, 350);
+  }
+  function openPage(f) {
+    if (f) { pg = f; pgFresh = false; if (!pg.items) pg.items = []; if (!pg.align) pg.align = 'left'; }
+    else { pg = { id: uid(), kind: 'page', title: '', name: 'Untitled page', color: 'grey', type: 'page', size: 0, added: Date.now(), created: Date.now(), items: [], align: 'left' }; if (fFolder !== ALL) pg.folders = [fFolder]; pgFresh = true; }
+    pgEdit = null; pgComments = false;
+    $('apTitle').value = pg.title ?? pg.name ?? '';
+    $('apage').classList.add('show'); pushLayer('pg'); paintPg(); toEndPg();
+    if (pgFresh) $('apTitle').focus({ preventScroll: true });
+  }
+  function closePgUi() { savePg(true); $('apage').classList.remove('show'); pg = null; renderFiles(); }
+  function closePg() { closePgUi(); dropLayer('pg'); }
+  function deletePage() {
+    const gone = pg, fresh = pgFresh; if (!gone) return;
+    clearTimeout(pgTimer); pg = null; $('apage').classList.remove('show'); dropLayer('pg');
+    if (fresh) return;
+    files = files.filter((x) => x.id !== gone.id); fTx('readwrite', (st) => st.delete(gone.id)).catch(() => {}); renderFiles();
+    toast('Page deleted', { label: 'Undo', run: () => { files.push(gone); fTx('readwrite', (st) => st.put(gone)).catch(() => {}); renderFiles(); } });
+  }
+  function uniqueName(name, skip = -1) {   // two attachments never share a name: "photo.png" then "photo (2).png"
+    const taken = new Set(pg.items.map((x, i) => (i === skip ? '' : x.name.toLowerCase())));
+    if (!taken.has(name.toLowerCase())) return name;
+    const base = baseName(name), ext = extOf(name); let n = 2;
+    while (taken.has(`${base} (${n})${ext}`.toLowerCase())) n++;
+    return `${base} (${n})${ext}`;
+  }
+  function renameItem(i, text) {   // the file type stays unless you type another: "Q3" gives "Q3.pdf"
+    if (!pg || pgRename !== i) return; pgRename = null;
+    const it = pg.items[i], clean = text.replace(/[\\/:*?"<>|]+/g, '').trim();
+    if (it && clean) {
+      const ext = extOf(it.name), typedExt = /\.[a-z][a-z0-9]{0,4}$/i.test(clean);   // typing a new ending (".pdf") is respected; otherwise the file keeps its own
+      const name = ext && !typedExt ? clean + ext : clean;
+      it.name = uniqueName(name, i); savePg(true);
+    }
+    paintItems();
+  }
+  function removeItem(i) {
+    if (!pg || !pg.items[i]) return; const it = pg.items[i];
+    pg.items.splice(i, 1); savePg(true); paintPg();
+    toast('Attachment removed', { label: 'Undo', run: () => { if (!pg) return; pg.items.splice(i, 0, it); savePg(true); paintPg(); } });
+  }
+  document.addEventListener('paste', (e) => {   // Ctrl/Cmd+V with a copied picture or file
+    if (!pg || !$('apage').classList.contains('show') || e.target.closest?.('input, textarea')) return;
+    const picked = [...(e.clipboardData?.files || [])]; if (picked.length) { e.preventDefault(); attachToPage(picked); }
+  });
+  function attachToPage(picked) {
+    if (!pg || !picked.length) return;
+    picked.forEach((b) => pg.items.push({ name: uniqueName(b.name), type: b.type, size: b.size, blob: b }));
+    savePg(true); paintPg(); toEndPg(); toast(picked.length > 1 ? `${picked.length} files attached` : 'File attached');
+  }
+  $('addFile').addEventListener('click', () => openPage());
+  $('apBack').addEventListener('click', closePg);
+  $('apSaved').innerHTML = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SAVE_ICON.saved}</svg>`;
+  $('apSaved').title = 'Saved on this device'; $('apSaved').setAttribute('aria-label', 'Saved on this device');
+  /* Share: every file on the page goes to the phone's share menu. A file with no known type gets one from its name (a phone refuses files without a type). If the phone refuses some of them, the rest are still shared. With no share menu, the files are downloaded one by one. */
+  const MIME = { pdf: 'application/pdf', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml', txt: 'text/plain', csv: 'text/csv', json: 'application/json', mp4: 'video/mp4', mov: 'video/quicktime', mp3: 'audio/mpeg', m4a: 'audio/mp4', wav: 'audio/wav', zip: 'application/zip', doc: 'application/msword', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', xls: 'application/vnd.ms-excel', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', ppt: 'application/vnd.ms-powerpoint', pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' };
+  const mimeOf = (it) => it.type || MIME[(it.name.split('.').pop() || '').toLowerCase()] || 'application/octet-stream';
+  $('apShare').addEventListener('click', async () => {
+    if (!pg) return; if (!pg.items.length) { toast('Nothing attached yet'); return; }
+    const items = [...pg.items], title = pg.name;
+    const files = items.map((it) => new File([it.blob], it.name, { type: mimeOf(it) }));
+    const can = (arr) => !!navigator.share && (!navigator.canShare || navigator.canShare({ files: arr }));
+    const send = async (arr) => { try { await navigator.share({ files: arr, title }); return 'ok'; } catch (e) { return e && e.name === 'AbortError' ? 'cancel' : 'fail'; } };
+    let list = files;
+    if (!can(list)) list = files.filter((f) => can([f]));   // keep what this phone allows
+    let res = list.length ? await send(list) : 'fail';
+    if (res === 'fail' && list.length > 1) { const one = list.filter((f) => can([f])); if (one.length && one.length < list.length) { list = one; res = await send(list); } }
+    if (res === 'cancel') return;
+    if (res === 'ok') { if (list.length < files.length) toast(`Shared ${list.length} of ${files.length}. The others cannot be shared from here`); return; }
+    for (const it of items) { saveBlob(it); await new Promise((r) => setTimeout(r, 450)); }   // one at a time, a phone blocks a burst of downloads
+    toast(items.length > 1 ? `Share unavailable, downloaded ${items.length} files` : 'Share unavailable, downloaded');
+  });
+  $('apAttach').addEventListener('click', () => { if (pg) $('fileIn').click(); });   // one button: the phone's own sheet offers Camera, Photos and Files
+  $('fileIn').addEventListener('change', (e) => { const picked = [...e.target.files]; e.target.value = ''; attachToPage(picked); });
+  $('apTitle').addEventListener('input', () => { paintHead(); savePg(); });
+  $('apAlign').addEventListener('click', () => { if (!pg) return; pg.align = pg.align === 'right' ? 'left' : 'right'; savePg(true); paintPg(); });
+  $('apComment').addEventListener('click', () => { if (!pg) return; pgComments = !pgComments; paintPg(); });
+  $('apFollow').addEventListener('click', () => { if (!pg) return; pg.follow = !pgFollow(); savePg(true); paintPg(); toEndPg(); });
+  $('apAvatar').addEventListener('click', (e) => { if (!pg) return; const r = e.currentTarget.getBoundingClientRect(); openMenu('page', pg.id, r.left, r.bottom + 6); });
+  $('apItems').addEventListener('click', (e) => {   // open, save or take off one attachment
+    if (Date.now() - swipedAt < 400 || swallowPressTap()) return;   // the click that ends a swipe or a long-press is not a tap
+    const cm = e.target.closest('[data-pa="comment"]'); if (cm && pg) { startComment(+cm.dataset.ci); return; }
+    const b = e.target.closest('[data-pi]'); if (!b || !pg) return;
+    const i = +b.dataset.pi, it = pg.items[i]; if (!it) return;
+    if (b.dataset.pa === 'more') { const r = b.getBoundingClientRect(); openMenu('att', `${pg.id}:${i}`, r.right - 190, r.bottom + 4); return; }
+    if (b.dataset.pa === 'rm') { removeItem(i); return; }
+    if (b.dataset.pa === 'open' && isPdf(it)) openInTab(it); else if (b.dataset.pa === 'open' && viewable(it)) showFile(it, true); else saveBlob(it);   // PDFs open in the browser; photos, text, video and audio open here; the rest is saved
+  });
+  bindMenu($('apItems'), 'att', (e) => { const c = e.target.closest('.pg-entry'); return pg && c && !e.target.closest('textarea, input') ? `${pg.id}:${c.dataset.i}` : null; });   // hold (or right-click) an attachment
+  $('apItems').addEventListener('keydown', (e) => {
+    const ri = e.target.closest('.pg-rename');
+    if (ri) { if (e.key === 'Enter') { e.preventDefault(); renameItem(+ri.dataset.ri, ri.value); } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); pgRename = null; paintItems(); } return; }
+    const ta = e.target.closest('textarea'); if (!ta) return;
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); commitComment(+ta.dataset.ci, ta.value); }
+    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); pgEdit = null; paintItems(); }
+  });
+  $('apItems').addEventListener('input', (e) => { const ta = e.target.closest('textarea'); if (ta) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; } });
+  $('apItems').addEventListener('focusout', (e) => { const ri = e.target.closest('.pg-rename'); if (ri) { renameItem(+ri.dataset.ri, ri.value); return; } const ta = e.target.closest('textarea'); if (ta) commitComment(+ta.dataset.ci, ta.value); });
+  /* Swipe an attachment to the right, like replying to a message: a reply arrow follows the card, and letting go past the mark opens its comment. */
+  let sw = null;
+  $('apItems').addEventListener('pointerdown', (e) => {
+    const card = e.target.closest('.pg-item'); if (!card || e.button > 0) return;
+    sw = { card, entry: card.closest('.pg-entry'), x: e.clientX, y: e.clientY, dx: 0, on: false, hit: false, id: e.pointerId };
+  });
+  $('apItems').addEventListener('pointermove', (e) => {
+    if (!sw || e.pointerId !== sw.id) return;
+    const dx = e.clientX - sw.x, dy = e.clientY - sw.y;
+    if (!sw.on) {
+      if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) { sw = null; return; }   // that is a scroll
+      if (!(dx > 10 && dx > Math.abs(dy))) return;
+      sw.on = true; sw.card.style.transition = 'none'; try { sw.card.setPointerCapture(e.pointerId); } catch (err) {}
+    }
+    sw.dx = Math.max(0, dx);
+    sw.card.style.transform = `translateX(${90 * (1 - Math.exp(-sw.dx / 90))}px)`;
+    sw.entry.style.setProperty('--pull', String(Math.min(1, sw.dx / 64)));
+    if (sw.dx >= 64 && !sw.hit) { sw.hit = true; buzz(10); } else if (sw.dx < 64) sw.hit = false;
+  });
+  const endSwipe = (e, cancelled) => {
+    if (!sw || e.pointerId !== sw.id) return;
+    const s = sw; sw = null; if (!s.on) return;
+    swipedAt = Date.now();
+    s.card.style.transition = 'transform var(--t-fast) var(--ease)'; s.card.style.transform = ''; s.entry.style.setProperty('--pull', '0');
+    if (!cancelled && s.dx >= 64) startComment(+s.entry.dataset.i);
+  };
+  $('apItems').addEventListener('pointerup', (e) => endSwipe(e, false));
+  $('apItems').addEventListener('pointercancel', (e) => endSwipe(e, true));
+  ['dragover', 'drop'].forEach((ev) => $('apage').addEventListener(ev, (e) => { e.preventDefault(); if (ev === 'drop') attachToPage([...(e.dataTransfer?.files || [])]); }));
+  $('fSearch').addEventListener('input', (e) => { fq = e.target.value; renderFiles(); });
+  $('ftags').addEventListener('click', (e) => { const b = e.target.closest('[data-ftag]'); if (!b) return; fColor = fColor === b.dataset.ftag ? '' : b.dataset.ftag; renderFiles(); });
+  $('fcBtn').addEventListener('click', () => { fColOpen = !fColOpen; paintFColours(); });
+  $('fSearchBox').addEventListener('click', () => { if (fColOpen) $('fSearch').focus(); });
+  $('fSearch').addEventListener('focus', () => { if (fColOpen) { fColOpen = false; paintFColours(); } });
+  $('fwords').addEventListener('click', (e) => { const b = e.target.closest('[data-fword]'); if (!b) return; fTag = fTag === b.dataset.fword ? '' : b.dataset.fword; renderFiles(); });
+  $('flist').addEventListener('click', (e) => {
+    if (swallowPressTap()) return;
+    const em = e.target.closest('[data-fempty]');
+    if (em) { if (em.dataset.fempty === 'new') openPage(); else if (em.dataset.fempty === 'clear') { fq = ''; $('fSearch').value = ''; renderFiles(); } else { fColor = ''; fTag = ''; renderFiles(); } return; }
+    const mo = e.target.closest('[data-fmore]'); if (mo) { const b = mo.getBoundingClientRect(); openMenu('page', mo.dataset.fmore, b.left, b.bottom + 6); return; }
+    const r = e.target.closest('.row[data-fid]'); if (r) openFile(r.dataset.fid);
+  });
+  bindMenu($('flist'), 'page', (e) => e.target.closest('.item[data-fid]')?.dataset.fid);   // hold (or right-click) a page: the same menu as its avatar
+  $('fSearchClear').addEventListener('click', () => { fq = ''; $('fSearch').value = ''; renderFiles(); $('fSearch').focus(); });        // hold (or right-click) a file to move it into a folder
+  $('ffolderAdd').addEventListener('click', () => {
+    const g = { id: uid(), name: 'New folder' }; fs.folders.push(g); fsSave();
+    fFolder = g.id; fRenaming = g.id; renderFiles(); toast('Folder created');
+    $('ffolders').querySelector(`[data-ffolder="${g.id}"]`)?.scrollIntoView?.({ inline: 'nearest', block: 'nearest' });
+  });
+  $('ffolders').addEventListener('click', (e) => { if (e.target.closest('input') || swallowPressTap()) return; const g = e.target.closest('[data-ffolder]'); if (g) { fFolder = g.dataset.ffolder; renderFiles(); } });
+  $('ffolders').addEventListener('dblclick', (e) => { const g = e.target.closest('[data-ffolder]'); if (g && !e.target.closest('input')) startFRename(g.dataset.ffolder); });
+  $('ffolders').addEventListener('keydown', (e) => {
+    if (e.target.id === 'ffolderInput') { if (e.key === 'Enter') { e.preventDefault(); finishFRename(true); } else if (e.key === 'Escape') finishFRename(false); return; }
+    const g = e.target.closest('[data-ffolder]'); if (!g) return;
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fFolder = g.dataset.ffolder; renderFiles(); }
+    else if (e.key === 'F2') { e.preventDefault(); startFRename(g.dataset.ffolder); }
+  });
+  $('ffolders').addEventListener('focusout', (e) => { if (e.target.id === 'ffolderInput') finishFRename(true); });
+  bindMenu($('ffolders'), 'ffolder', (e) => (e.target.closest('input') ? null : e.target.closest('[data-ffolder]')?.dataset.ffolder));
+  $('fvClose').addEventListener('click', closeFile);
+  /* The top bar: Back, name, search inside (text), print (photos and text), download. */
+  function fvFindRun(keep) {
+    const pre = $('fvBody').querySelector('pre'); if (!pre) return;
+    const q = $('fvFindIn').value.toLowerCase(); fvHits = [];
+    if (!q) { pre.textContent = fvText; fvCur = -1; $('fvFindCnt').textContent = ''; return; }
+    const low = fvText.toLowerCase(); let i, last = 0, out = '';
+    while (fvHits.length < 2000 && (i = low.indexOf(q, last)) !== -1) { out += esc(fvText.slice(last, i)) + `<mark>${esc(fvText.slice(i, i + q.length))}</mark>`; last = i + q.length; fvHits.push(i); }
+    pre.innerHTML = out + esc(fvText.slice(last));
+    fvCur = fvHits.length ? Math.min(keep ? Math.max(fvCur, 0) : 0, fvHits.length - 1) : -1; fvMark();
+  }
+  function fvMark() {
+    const ms = $('fvBody').querySelectorAll('mark'); ms.forEach((m, i) => m.classList.toggle('cur', i === fvCur));
+    if (ms[fvCur]) ms[fvCur].scrollIntoView({ block: 'center' });
+    $('fvFindCnt').textContent = fvHits.length ? `${fvCur + 1}/${fvHits.length}` : '0';
+  }
+  const fvStep = (d) => { if (!fvHits.length) return; fvCur = (fvCur + d + fvHits.length) % fvHits.length; fvMark(); };
+  function fvFindShow(on) { $('fvFindBar').hidden = !on; if (on) { $('fvFindIn').focus(); $('fvFindIn').select(); } else { $('fvFindIn').value = ''; fvFindRun(false); } }
+  $('fvFind').addEventListener('click', () => fvFindShow($('fvFindBar').hidden));
+  $('fvFindX').addEventListener('click', () => fvFindShow(false));
+  $('fvFindIn').addEventListener('input', () => fvFindRun(false));
+  $('fvFindIn').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); fvStep(e.shiftKey ? -1 : 1); }
+    else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); fvFindShow(false); }
+  });
+  $('fvFindNext').addEventListener('click', () => fvStep(1));
+  $('fvFindPrev').addEventListener('click', () => fvStep(-1));
+  $('fvPrint').addEventListener('click', async () => {
+    const f = fvRec; if (!f) return;
+    const fr = document.createElement('iframe'); fr.setAttribute('aria-hidden', 'true'); fr.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0';
+    const body = (f.type || '').startsWith('image/') ? `<img src="${fvUrl}" alt="">` : `<pre>${esc(await f.blob.text())}</pre>`;
+    fr.srcdoc = `<!doctype html><html><head><meta charset="utf-8"><title>${esc(f.name)}</title><style>@page{margin:14mm}body{margin:0;font:12px/1.5 ui-monospace,Menlo,Consolas,monospace}pre{margin:0;white-space:pre-wrap;word-break:break-word}img{max-width:100%}</style></head><body>${body}</body></html>`;
+    fr.onload = () => {
+      const w = fr.contentWindow, im = w.document.querySelector('img'), go = () => { w.focus(); w.print(); setTimeout(() => fr.remove(), 1500); };
+      if (im && !im.complete) { im.onload = go; im.onerror = () => fr.remove(); } else go();
+    };
+    document.body.append(fr);
+  });
+  $('fvSave').addEventListener('click', () => { const f = fvRec; if (!f) return; const a = document.createElement('a'); a.href = fvUrl; a.download = f.name; a.click(); });
+  $('fvDel').addEventListener('click', () => {
+    const f = files.find((x) => x.id === fvId); if (!f) return;
+    closeFile(); files = files.filter((x) => x !== f); fTx('readwrite', (s) => s.delete(f.id)).catch(() => {}); renderFiles();
+    toast('File deleted', { label: 'Undo', run: () => { files.push(f); fTx('readwrite', (s) => s.put(f)).catch(() => {}); renderFiles(); } });
+  });
+  document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if ($('fview').classList.contains('show')) closeFile(); else if ($('apage').classList.contains('show')) closePg(); });
+  fTx('readonly', (s) => s.getAll()).then((a) => { files = normFiles(a); renderFiles(); resumeAfterPdf(); }).catch(() => {});
+  $('dock').addEventListener('click', (e) => { const b = e.target.closest('[data-dock]'); if (!b) return; const d = b.dataset.dock; if (d === 'notes' || d === 'files') setTab(d); else toast(`${b.getAttribute('aria-label')} is coming soon`); });
   $('newNote').addEventListener('click', () => { if (!swallowPressTap()) { buzz(); newNote(settings.defaultKind); } });
   bindMenu($('newNote'), 'new', () => 'new');                                    // hold (or right-click) turns the button into the kind menu
   $('back').addEventListener('click', () => setView('list'));
@@ -2056,7 +2682,7 @@ ${Nn(this.code(t,r))}
   el.menu.addEventListener('click', (e) => {
     const b = e.target.closest('[data-act]'); if (!b) return;
     const n = findNote(menu.id), run = menuActions[b.dataset.act];
-    if (run && (n || menu.kind === 'folder' || menu.kind === 'new')) { buzz(); run(n, b.dataset.v, b); }
+    if (run && (n || menu.kind === 'folder' || menu.kind === 'new' || menu.kind === 'ffolder' || menu.kind === 'file' || menu.kind === 'page' || menu.kind === 'att')) { buzz(); run(n, b.dataset.v, b); }
   });
   document.addEventListener('pointerdown', (e) => { if (!el.menu.hidden && !e.target.closest('#menu')) closeMenu(); }, true);
   window.addEventListener('resize', closeMenu);
@@ -2080,19 +2706,15 @@ ${Nn(this.code(t,r))}
   $('search').addEventListener('focus', () => { if (ui.colours) setColours(false); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ui.colours && $('cPill').contains(document.activeElement)) { e.stopPropagation(); setColours(false); $('cBtn').focus(); } }, true);
   $('words').addEventListener('click', (e) => { const b = e.target.closest('[data-word]'); if (!b) return; ui.tag = ui.tag === b.dataset.word ? '' : b.dataset.word; renderWords(); renderStats(); renderList(); });
-  const openPick = (on) => { $('dkSeg').hidden = !on; $('dkSel').setAttribute('aria-expanded', String(on)); };
-  $('dkSel').addEventListener('click', () => openPick($('dkSeg').hidden));
-  document.addEventListener('click', (e) => { if (!$('dkSeg').hidden && !e.target.closest('#dkSel, #dkSeg')) openPick(false); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('dkSeg').hidden) { e.stopPropagation(); openPick(false); $('dkSel').focus(); } }, true);
   $('dkSeg').addEventListener('click', (e) => {
     const b = e.target.closest('[data-dk]'); if (!b || b.disabled) return;
-    settings.defaultKind = b.dataset.dk; store.save(); applyDefaultKind(); openPick(false);
+    settings.defaultKind = b.dataset.dk; store.save(); applyDefaultKind();
   });
   /* Reset deletes your own presets; it asks once. */
   const ask = () => {
     $('cfForm').hidden = true; foot();
     const n = settings.customs.length;
-    $('dkAskText').textContent = `Delete your ${n} ${n === 1 ? 'preset' : 'presets'}?`;
+    $('dkAskText').textContent = `Delete ${n === 1 ? 'your preset' : 'your ' + n + ' presets'}? Notes made with ${n === 1 ? 'it' : 'them'} keep their text.`;
     $('dkAsk').hidden = false;
   };
   $('dkReset').addEventListener('click', () => { if ($('cfForm').hidden) ask(); else saveCustom(); });
