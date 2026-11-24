@@ -775,6 +775,7 @@ label.arow { cursor: text; }
   .app[data-view="editor"] .editor { transform: none; visibility: visible; }
   .fview { display: flex; transform: translateX(100%); visibility: hidden; box-shadow: -12px 0 24px rgba(0, 0, 0, 0.35); }   /* a file page and a file view slide in like a note */
   .fview.show { transform: none; visibility: visible; }
+  #fview { position: fixed; }   /* it waits off-screen: fixed, so it never widens the page (a wider page made phones zoom out) */
 }
 /* ---------- Message at the top after an action ---------- */
 .gate { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: var(--bg); }
@@ -1109,7 +1110,7 @@ ${Nn(this.code(t,r))}
   }
 
   /* ================= Constants ================= */
-  const APP_VERSION = '4';                           // shown in Settings > About; change it here only
+  const APP_VERSION = '4.0';                           // shown in Settings > About; change it here only
   const STORE_KEY = 'daybook:v3';
   const TOOL_CHOICES = [['plain', 'Text'], ['heading', 'Heading'], ['bold', 'Bold'], ['right', 'Align'], ['kind', 'List'], ['pagebreak', 'Page break'], ['typewriter', 'Follow']];   // the toolbar keys a custom mode can keep
   const COLORS = ['blue', 'coral', 'amber', 'green', 'violet', 'grey'];
