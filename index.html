@@ -360,7 +360,11 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; padding: 4px 12px 14px; text-align: center; }
 .cal-grid span { padding: 8px 0; border-radius: 10px; font-size: 14px; }
 .cal-grid .dow { font-size: 11px; color: var(--ink-2); padding: 2px 0; }
+.cal-grid .wknd { color: var(--coral); }
+#csSeg .pill, #cwSeg .pill { white-space: nowrap; padding: 0 10px; }
 .cal-grid .today { background: var(--blue); color: var(--on-blue); font-weight: 600; }
+.cal-grid.wn { grid-template-columns: 1.3fr repeat(7, 1fr); }
+.cal-grid .wkn { align-self: center; font-size: 11px; color: var(--grey); padding: 0; }
 .files-head { flex: none; }
 .fs .pin { width: 14px; height: 14px; margin-left: 6px; vertical-align: -2px; }
 .fs .ftg { margin-left: 6px; color: var(--grey); }
@@ -769,6 +773,8 @@ label.arow { cursor: text; }
   .flist { padding-bottom: 90px; }
   .editor { position: absolute; inset: 0; z-index: 6; transform: translateX(100%); visibility: hidden; box-shadow: -12px 0 24px rgba(0, 0, 0, 0.35); }
   .app[data-view="editor"] .editor { transform: none; visibility: visible; }
+  .fview { display: flex; transform: translateX(100%); visibility: hidden; box-shadow: -12px 0 24px rgba(0, 0, 0, 0.35); }   /* a file page and a file view slide in like a note */
+  .fview.show { transform: none; visibility: visible; }
 }
 /* ---------- Message at the top after an action ---------- */
 .gate { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: var(--bg); }
@@ -806,6 +812,8 @@ label.arow { cursor: text; }
   @media (max-width: 900px) {
     .editor { transition: transform var(--t-slow) var(--ease), visibility 0s linear var(--t-slow); }
     .app[data-view="editor"] .editor { transition: transform var(--t-slow) var(--ease), visibility 0s; }
+    .fview { transition: transform var(--t-slow) var(--ease), visibility 0s linear var(--t-slow); }
+    .fview.show { transition: transform var(--t-slow) var(--ease), visibility 0s; }
   }
   @keyframes fade { from { opacity: 0; } }
   @keyframes fadeOut { to { opacity: 0; } }
@@ -984,6 +992,16 @@ label.arow { cursor: text; }
       </div>
     </details>
 
+    <details class="card" style="--tc:var(--blue);--on-tc:var(--on-blue)">
+      <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-60h65v60h340v-60h65v60h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Zm300 230q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-188.5-11.5Q280-423 280-440t11.5-28.5Q303-480 320-480t28.5 11.5Q360-457 360-440t-11.5 28.5Q337-400 320-400t-28.5-11.5ZM640-400q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-188.5-11.5Q280-263 280-280t11.5-28.5Q303-320 320-320t28.5 11.5Q360-297 360-280t-11.5 28.5Q337-240 320-240t-28.5-11.5ZM640-240q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg></span><b>Calendar</b><span class="sync-state" id="calState"></span></summary>
+      <div class="card-body">
+        <p class="card-desc">Choose how the month grids are laid out.</p>
+        <div class="set-row"><span>Week starts</span><div class="pills" id="csSeg" role="radiogroup" aria-label="First day of the week"><button class="pill" type="button" role="radio" data-cs="sat">Sat</button><button class="pill" type="button" role="radio" data-cs="sun">Sun</button><button class="pill" type="button" role="radio" data-cs="mon">Mon</button></div></div>
+        <div class="set-row"><span>Weekend</span><div class="pills" id="cwSeg" role="radiogroup" aria-label="Weekend days to tint"><button class="pill" type="button" role="radio" data-cw="off">Off</button><button class="pill" type="button" role="radio" data-cw="fs">Fri–Sat</button><button class="pill" type="button" role="radio" data-cw="ss">Sat–Sun</button></div></div>
+        <div class="set-row"><span id="cnLabel">Week numbers</span><button class="switch" type="button" role="switch" id="cnSwitch" aria-checked="false" aria-labelledby="cnLabel"></button></div>
+      </div>
+    </details>
+
     <details class="card" style="--tc:var(--green);--on-tc:var(--on-green)">
       <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M140-200q-24 0-42-18.5T80-260v-440q0-24 18-42t42-18h680q24 0 42 18t18 42v440q0 23-18 41.5T820-200H140Zm0-60h680v-440H140v440Zm190-65h300q12.8 0 21.4-8.7 8.6-8.7 8.6-21.5 0-12.8-8.6-21.3-8.6-8.5-21.4-8.5H330q-12.8 0-21.4 8.7-8.6 8.7-8.6 21.5 0 12.8 8.6 21.3 8.6 8.5 21.4 8.5Zm-190 65v-440 440Zm114.5-323.7q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm124 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm123 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm124 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm123 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm-494 125q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm124 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm123 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm124 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Zm123 0q8.5-8.7 8.5-21.5 0-12.8-8.7-21.3-8.7-8.5-21.5-8.5-12.8 0-21.3 8.7-8.5 8.7-8.5 21.5 0 12.8 8.7 21.3 8.7 8.5 21.5 8.5 12.8 0 21.3-8.7Z"/></svg></span><b>Shortcuts</b><span class="sync-state">Tap keys to edit</span></summary>
       <div class="card-body">
@@ -1091,7 +1109,7 @@ ${Nn(this.code(t,r))}
   }
 
   /* ================= Constants ================= */
-  const APP_VERSION = '3.6';                           // shown in Settings > About; change it here only
+  const APP_VERSION = '4';                           // shown in Settings > About; change it here only
   const STORE_KEY = 'daybook:v3';
   const TOOL_CHOICES = [['plain', 'Text'], ['heading', 'Heading'], ['bold', 'Bold'], ['right', 'Align'], ['kind', 'List'], ['pagebreak', 'Page break'], ['typewriter', 'Follow']];   // the toolbar keys a custom mode can keep
   const COLORS = ['blue', 'coral', 'amber', 'green', 'violet', 'grey'];
@@ -1264,7 +1282,7 @@ ${Nn(this.code(t,r))}
     return out;
   }
   function load() {
-    const s = { notes: [], folders: [], gone: {}, allName: 'All', settings: { typewriter: true, toolbar: 'typewriter', defaultKind: 'notes', fileSort: 'date', fpresets: [], fileDefault: 'none', bullet: 'point', number: 'decimal', customs: [], shortcutsOn: true, shortcuts: {} } };
+    const s = { notes: [], folders: [], gone: {}, allName: 'All', settings: { typewriter: true, toolbar: 'typewriter', defaultKind: 'notes', fileSort: 'date', calStart: 'sun', calWknd: 'off', calWeeks: false, fpresets: [], fileDefault: 'none', bullet: 'point', number: 'decimal', customs: [], shortcutsOn: true, shortcuts: {} } };
     let raw = null;
     try { raw = JSON.parse(bootRaw); store.size = bootRaw ? bootRaw.length : 0; }
     catch (e) { if (!(e instanceof SyntaxError)) store.ok = false; }
@@ -1292,6 +1310,9 @@ ${Nn(this.code(t,r))}
       if (isCustomKind(s.settings.defaultKind) && !s.settings.customs.some((x) => x.id === s.settings.defaultKind)) s.settings.defaultKind = 'notes';
       s.settings.shortcutsOn = raw.settings.shortcutsOn !== false;
       if (['date', 'type', 'az'].includes(raw.settings.fileSort)) s.settings.fileSort = raw.settings.fileSort;
+      if (['sun', 'mon', 'sat'].includes(raw.settings.calStart)) s.settings.calStart = raw.settings.calStart;
+      if (['off', 'fs', 'ss'].includes(raw.settings.calWknd)) s.settings.calWknd = raw.settings.calWknd;
+      s.settings.calWeeks = raw.settings.calWeeks === true;
       if (Array.isArray(raw.settings.fpresets)) raw.settings.fpresets.forEach((c) => {   // your own file presets: a name, the keys kept and how a page starts
         const id = isObj(c) && FP_IDS.includes(c.id) && !s.settings.fpresets.some((x) => x.id === c.id) ? c.id : null;
         if (!id || !str(c.name).trim()) return;
@@ -2468,17 +2489,32 @@ ${Nn(this.code(t,r))}
   /* Calendar: years are the folders, months are the list; a month opens its days in place. */
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const cal = { year: new Date().getFullYear(), open: new Date().getMonth() };
+  const CAL_START = { sun: 0, mon: 1, sat: 6 }, CAL_WKND = { off: [], fs: [5, 6], ss: [6, 0] }, CAL_NAME = { sun: 'Sunday', mon: 'Monday', sat: 'Saturday' };
+  const isoWeek = (d) => { const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())), n = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - n); return Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7); };
+  function paintCalSet() {
+    $('csSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.cs === settings.calStart)));
+    $('cwSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.cw === settings.calWknd)));
+    $('cnSwitch').setAttribute('aria-checked', String(settings.calWeeks));
+    $('calState').textContent = CAL_NAME[settings.calStart];
+  }
   function renderCal() {
+    paintCalSet();
     const now = new Date(), ny = now.getFullYear();
     const yrs = []; for (let y = ny - 2; y <= Math.max(2030, ny + 2); y++) yrs.push(y);
     if (!yrs.includes(cal.year)) yrs.push(cal.year);
     $('cyears').innerHTML = yrs.sort().map((y) => `<div class="folder" role="tab" tabindex="0" data-cyear="${y}" aria-selected="${y === cal.year}"><span class="folder-name">${y}</span></div>`).join('');
     $('cmonths').innerHTML = MONTHS.map((m, i) => {
-      const days = new Date(cal.year, i + 1, 0).getDate(), lead = new Date(cal.year, i, 1).getDay(), isNow = cal.year === ny && i === now.getMonth(), c = COLORS[i % COLORS.length], ab = m.slice(0, 3);
+      const days = new Date(cal.year, i + 1, 0).getDate(), isNow = cal.year === ny && i === now.getMonth(), c = COLORS[i % COLORS.length], ab = m.slice(0, 3);
       let g = '';
       if (cal.open === i) {
-        g = '<div class="cal-grid">' + ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d) => `<span class="dow">${d}</span>`).join('') + '<span></span>'.repeat(lead);
-        for (let d = 1; d <= days; d++) g += `<span${isNow && d === now.getDate() ? ' class="today"' : ''}>${d}</span>`;
+        const st = CAL_START[settings.calStart], wk = settings.calWeeks, we = CAL_WKND[settings.calWknd];
+        const lead = (new Date(cal.year, i, 1).getDay() - st + 7) % 7;
+        g = `<div class="cal-grid${wk ? ' wn' : ''}">` + (wk ? '<span class="dow"></span>' : '') + [0, 1, 2, 3, 4, 5, 6].map((k) => `<span class="dow">${'SMTWTFS'[(st + k) % 7]}</span>`).join('');
+        for (let c2 = 0, n = lead + days; c2 < Math.ceil(n / 7) * 7; c2++) {
+          const d = c2 - lead + 1;
+          if (wk && c2 % 7 === 0) g += `<span class="wkn">${isoWeek(new Date(cal.year, i, Math.max(1, d)))}</span>`;
+          g += d < 1 || d > days ? '<span></span>' : `<span class="${[isNow && d === now.getDate() ? 'today' : '', we.includes((st + c2 % 7) % 7) ? 'wknd' : ''].join(' ').trim()}">${d}</span>`;
+        }
         g += '</div>';
       }
       return `<li class="item" style="--nc:var(--${c});--on-nc:var(--on-${c})"><button class="row" type="button" data-cm="${i}" aria-current="${cal.open === i}" aria-expanded="${cal.open === i}"><span class="av-gap"></span><span class="row-main">` +
@@ -2488,6 +2524,10 @@ ${Nn(this.code(t,r))}
     }).join('');
     const o = $('cmonths').querySelector('[aria-expanded="true"]'); if (o) $('cmonths').scrollTop = Math.max(0, o.parentElement.offsetTop - $('cmonths').offsetTop - 8);
   }
+  $('csSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-cs]'); if (!b) return; settings.calStart = b.dataset.cs; store.save(); renderCal(); });
+  $('cwSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-cw]'); if (!b) return; settings.calWknd = b.dataset.cw; store.save(); renderCal(); });
+  $('cnSwitch').addEventListener('click', () => { settings.calWeeks = !settings.calWeeks; store.save(); renderCal(); });
+  paintCalSet();
   $('cyears').addEventListener('click', (e) => { const b = e.target.closest('[data-cyear]'); if (!b) return; cal.year = +b.dataset.cyear; cal.open = cal.year === new Date().getFullYear() ? new Date().getMonth() : 0; renderCal(); });
   $('cmonths').addEventListener('click', (e) => { const b = e.target.closest('[data-cm]'); if (!b) return; const i = +b.dataset.cm; cal.open = cal.open === i ? -1 : i; renderCal(); });
   function setTab(t) {
