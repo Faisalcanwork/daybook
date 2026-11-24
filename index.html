@@ -327,6 +327,8 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .fblank { display: none; }
 @media (min-width: 901px) {
   .files { position: relative; }
+  .cal-months { width: 300px; flex: none; border-right: 1px solid var(--line); }
+  .cal .folder-bar { width: 300px; }
   .files-head, #flist, #fstats, .files > .anchor { width: 300px; flex: none; }
   #flist { flex: 1 1 auto; border-right: 1px solid var(--line); }
   .files-head { border-right: 1px solid var(--line); }
@@ -341,12 +343,24 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
   .dock { grid-column: 1; grid-row: 2; align-items: flex-start; padding: 10px 6px; border-top: 0; border-right: 1px solid var(--line); }
   .dock-in { flex-direction: column; max-width: none; gap: 6px; padding: 0; border: 0; background: transparent; box-shadow: none; }
   .dock-i { height: 58px; border-radius: 14px; }
-  .app > .panes, .app > .files { grid-column: 2; grid-row: 2; border-top: 0; }
+  .app > .panes, .app > .files, .app > .cal { grid-column: 2; grid-row: 2; border-top: 0; }
 }
 /* Files tab: its own list and viewer, kept on this device only. */
 .files { flex: 1; min-height: 0; display: none; flex-direction: column; border-top: 1px solid var(--line); background: var(--surface); }
 .app[data-tab="files"] .files { display: flex; }
 .app[data-tab="files"] .panes, .app[data-tab="files"] #newNote, .app[data-tab="files"] #cont, .app:not([data-tab="files"]) #addFile, .app:not([data-tab="files"]) #fcont { display: none; }
+/* Calendar tab: years are the folders, months are the list (same rows as Notes and Files). */
+.cal { flex: 1; min-height: 0; display: none; flex-direction: column; border-top: 1px solid var(--line); background: var(--surface); }
+.app[data-tab="calendar"] .cal { display: flex; }
+.app[data-tab="calendar"] .panes, .app[data-tab="calendar"] .files, .app[data-tab="calendar"] #newNote, .app[data-tab="calendar"] #cont, .app[data-tab="calendar"] #addFile, .app[data-tab="calendar"] #fcont { display: none; }
+.cal-months { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+.cal-months .item { content-visibility: visible; }
+.cal-months .row { min-height: 65px; }   /* same height as a Notes or Files row */
+.cal-av { position: absolute; left: 12px; top: 8px; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; background: var(--nc); color: var(--on-nc); font-size: 0.8125rem; font-weight: 700; pointer-events: none; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; padding: 4px 12px 14px; text-align: center; }
+.cal-grid span { padding: 8px 0; border-radius: 10px; font-size: 14px; }
+.cal-grid .dow { font-size: 11px; color: var(--ink-2); padding: 2px 0; }
+.cal-grid .today { background: var(--blue); color: var(--on-blue); font-weight: 600; }
 .files-head { flex: none; }
 .fs .pin { width: 14px; height: 14px; margin-left: 6px; vertical-align: -2px; }
 .fs .ftg { margin-left: 6px; color: var(--grey); }
@@ -362,18 +376,24 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .fview.show { display: flex; }
 #apage { --nc: var(--grey); --on-nc: var(--on-grey); background: var(--surface); }
 #apage ::selection { background: color-mix(in srgb, var(--nc) 38%, transparent); }
-.pg-body { flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 16px; }
+.pg-body { caret-color: transparent; outline: none; -webkit-tap-highlight-color: transparent; flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 16px; }
 .pg-body[data-align="right"] { align-items: flex-end; }
 .pg-item { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; padding: 2px 6px 2px 10px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--panel); }
 .pg-item .fn { color: var(--ink); }
 #apage .ed-scroll { overflow-x: hidden; }
-.pg-entry { position: relative; display: flex; flex-direction: column; align-items: inherit; gap: 4px; max-width: 100%; }
+.pg-entry { position: relative; display: flex; flex-direction: column; align-items: inherit; gap: 0; max-width: 100%; }
 .pg-item { position: relative; touch-action: pan-y; background: var(--panel); }
 .pg-reply { position: absolute; left: 6px; top: 50%; width: 30px; height: 30px; margin-top: -15px; display: grid; place-items: center; border-radius: 50%; background: var(--nc); color: var(--on-nc); opacity: var(--pull, 0); transform: scale(calc(0.6 + var(--pull, 0) * 0.4)); pointer-events: none; }
 .pg-note { max-width: min(100%, 26rem); margin: 0 4px; padding: 6px 10px; border: 0; border-left: 3px solid var(--nc); border-radius: 10px; background: color-mix(in srgb, var(--nc) 14%, var(--panel)); color: var(--ink-2); font: inherit; font-size: 0.875rem; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; cursor: pointer; }
+.pg-note .lnk { color: var(--blue); cursor: pointer; }
 .pg-note.add { background: transparent; border-left-color: var(--line); color: var(--grey); }
 .pg-note.edit { width: min(100%, 26rem); padding: 0; cursor: text; }
 .pg-note.edit textarea { display: block; width: 100%; box-sizing: border-box; resize: none; padding: 6px 10px; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 0.875rem; outline: none; -webkit-user-select: text; user-select: text; }
+.pg-pin { position: absolute; top: -7px; right: -5px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--nc); color: var(--on-nc); pointer-events: none; box-shadow: 0 0 0 2px var(--surface); }
+.pg-pin svg { width: 12px; height: 12px; }
+/* Context mode: the files get a soft coloured edge, because a tap now writes a context instead of opening the file. */
+.pg-body[data-context="on"] .pg-item { border-color: color-mix(in srgb, var(--nc) 55%, var(--line)); }
+.pg-body[data-context="on"] .fv-open { cursor: text; }
 #apage[data-tb="bottom"] .tools { order: 3; border-bottom: 0; border-top: 1px solid var(--line); }
 .pg-body[data-follow="on"] > :first-child { margin-top: auto; }
 .fi[data-k="pdf"], .fi[data-k="video"] { color: var(--coral); }
@@ -445,8 +465,29 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .tool.icon svg { width: 24px; height: 24px; }
 .tool[aria-pressed="true"] { background: var(--nc); border-color: var(--nc); color: var(--on-nc); }
 .tool[data-cmd="pagebreak"] { margin-left: auto; }
-/* The Follow arrow flips when it is on, like Align. */
-.tool[data-cmd="typewriter"][aria-pressed="true"] svg { transform: rotate(180deg); }
+#apFollow { margin-left: auto; }   /* Follow sits at the right end, as in notes */
+.menu:is([data-kind="sort"], [data-kind="lkind"]) { width: auto; min-width: 11rem; padding: 6px; border-radius: 24px; }
+.mck { flex: none; width: 18px; height: 18px; color: var(--blue); }
+.mck svg { width: 18px; height: 18px; }
+.menu[data-kind="share"] { width: auto; min-width: 13rem; max-width: min(17rem, calc(100vw - 16px)); padding: 6px; gap: 0; border-radius: 24px; }
+.menu[data-kind="share"] .mh { display: none; }
+.menu[data-kind="share"] .sh-row { display: block; }
+.menu[data-kind="share"] .sh-chk { width: 100%; gap: 10px; padding: 5px 12px 5px 5px; }
+.menu[data-kind="share"] .sh-chk .mfi { width: 32px; height: 32px; font-size: 0.55rem; }
+.menu[data-kind="share"] .mrow { gap: 6px; padding: 6px 0 0; }
+.menu[data-kind="share"] .mrow .zipping, .menu[data-kind="share"] .mrow .zipping:disabled { position: relative; overflow: hidden; opacity: 1; color: var(--ink); }
+.menu[data-kind="share"] .mrow .zipping::before { content: ""; position: absolute; inset: 0 auto 0 0; width: calc(var(--p, 0) * 100%); background: color-mix(in srgb, var(--blue) 28%, transparent); transition: width 0.3s var(--ease, ease); }
+.menu[data-kind="share"] .mrow .zipping > * { position: relative; }
+.menu[data-kind="share"] .mrow .zipping.done { color: var(--green); }
+.zspin { flex: none; width: 14px; height: 14px; border: 2px solid color-mix(in srgb, currentColor 30%, transparent); border-top-color: currentColor; border-radius: 50%; animation: zspin 0.7s linear infinite; }
+.menu[data-kind="share"] .mrow .zipping.done svg { width: 18px; height: 18px; }
+.menu[data-kind="share"] .mrow .failed, .menu[data-kind="share"] .mrow .failed:disabled { opacity: 1; color: var(--coral); background: color-mix(in srgb, var(--coral) 16%, transparent); border-color: color-mix(in srgb, var(--coral) 40%, transparent); }
+.menu[data-kind="share"] .mrow .failed svg { width: 20px; height: 20px; }
+@media (prefers-reduced-motion: no-preference) { .menu[data-kind="share"] .mrow .failed { animation: zshake 0.4s; } }
+@keyframes zshake { 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+@keyframes zspin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .zspin { animation: none; } }
+.menu[data-kind="share"] .mrow .btn { flex: 1 1 0; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 0; height: 36px; padding: 0 10px; font-size: 0.8125rem; white-space: nowrap; }
 /* The line-style key shows the icon of what the line is now: text, bullet or checklist. */
 .tool[data-cmd="kind"] svg { display: none; }
 .tool[data-cmd="kind"][data-k="text"] .k-bullet, .tool[data-cmd="kind"][data-k="bullet"] .k-bullet, .tool[data-cmd="kind"][data-k="check"] .k-check, .tool[data-cmd="kind"][data-k="number"] .k-number { display: block; }
@@ -552,7 +593,7 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .mpin[aria-pressed="true"] { color: var(--blue); }
 .mi { padding: 8px 8px; border: 0; border-radius: 6px; background: transparent; text-align: left; font-size: 0.8438rem; }
 .mi:hover { background: var(--panel); }
-.menu[data-kind="new"] { width: auto; min-width: 11rem; padding: 6px; border-radius: 24px; }
+.menu:is([data-kind="new"], [data-kind="fnew"]) { width: auto; min-width: 11rem; padding: 6px; border-radius: 24px; }
 .mi.preset { display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; border-radius: var(--r-pill); }
 .mi.preset b { flex: 1; font-size: 0.875rem; font-weight: 600; }
 .pk { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; }
@@ -563,9 +604,10 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .mi.danger { color: var(--coral); }
 .ml { padding: 8px 8px 4px; font-family: var(--font-mono); font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--grey); }
 .sh-row { display: flex; align-items: center; gap: 2px; }
-.sh-chk { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 8px; border: 0; border-radius: 6px; background: transparent; color: inherit; font: inherit; font-size: 0.8438rem; text-align: left; cursor: pointer; }
+.sh-chk .mfi { width: 32px; height: 32px; font-size: 0.55rem; }
+.sh-chk { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; border: 0; border-radius: var(--r-pill); background: transparent; color: inherit; font: inherit; font-size: 0.875rem; font-weight: 600; text-align: left; cursor: pointer; }
 .sh-chk:hover { background: var(--panel); }
-.sh-box { flex: none; display: grid; place-items: center; box-sizing: border-box; width: 20px; height: 20px; border: 2px solid var(--line); border-radius: 6px; color: transparent; }
+.sh-box { flex: none; display: grid; place-items: center; box-sizing: border-box; width: 22px; height: 22px; border: 2px solid var(--line); border-radius: 50%; color: transparent; }
 .sh-box svg { width: 14px; height: 14px; }
 .sh-chk[aria-checked="true"] .sh-box { background: var(--blue); border-color: var(--blue); color: var(--on-blue); }
 .sh-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -652,12 +694,19 @@ label.arow { cursor: text; }
 .cf-tools .tool[aria-pressed="false"] { color: var(--grey); opacity: 0.55; }
 .cf-tools .tool[aria-pressed="true"] { background: var(--tc); border-color: var(--tc); color: var(--on-tc); }
 .cf-tools .tool svg { transform: none !important; }
+.cf-lists .tool[aria-pressed="true"] { background: transparent; border-color: transparent; color: var(--ink); opacity: 1; }
+.cf-lists .tool[aria-pressed="false"] { color: var(--grey); opacity: 0.45; }
+#fpTools .tool[data-tool="follow"] { margin-left: auto; }   /* like the page toolbar: Follow sits at the right end */
+.cf-lists.tools { flex: 0 0 auto; margin: 0; padding: 0; gap: 4px; background: transparent; }
+.cf-lists .tool.icon { flex: none; width: 38px; max-width: 38px; height: 38px; }
 .cf-tools .tool[data-cmd="right"] .i-right { display: none !important; } .cf-tools .tool[data-cmd="right"] .i-left { display: block !important; }
 .set-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; font-size: 0.8125rem; color: var(--ink-2); }
 .switch { flex: none; position: relative; width: 36px; height: 20px; padding: 0; border: 0; border-radius: var(--r-pill); background: var(--grey); }
 .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; }
 .switch[aria-checked="true"] { background: var(--tc, var(--blue)); }
 .switch[aria-checked="true"]::after { transform: translateX(16px); }
+.kgroup { margin-top: 10px; padding-bottom: 2px; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--grey); }
+.kgroup:first-child { margin-top: 2px; }
 .krow { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0; border-top: 1px solid var(--line); color: var(--ink-2); }
 #krows { display: flex; flex-direction: column; }
 .krow .kbtn, .aval { flex: none; width: 9.5rem; height: 32px; padding: 0 10px 0 32px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238E98AB'%3E%3Cpath d='M180-180h44l472-471-44-44-472 471v44Zm-30 60q-13 0-21.5-8.5T120-150v-73q0-12 5-23.5t13-19.5l557-556q8-8 19-12.5t23-4.5q11 0 22 4.5t20 12.5l44 44q9 9 13 20t4 22q0 11-4.5 22.5T823-694L266-138q-8 8-19.5 13t-23.5 5h-73Zm629-617-41-41 41 41Zm-105 64-22-22 44 44-22-22Z'/%3E%3C/svg%3E") no-repeat 8px center / 18px 18px; color: var(--ink); font: inherit; font-weight: 600; text-align: right; cursor: text; }
@@ -666,10 +715,32 @@ label.arow { cursor: text; }
 .reset { align-self: flex-end; min-height: 28px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r-pill); background: transparent; color: var(--ink-2); font: inherit; font-size: 0.75rem; font-weight: 600; }
 .dk-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; margin-top: 2px; border-top: 1px solid var(--line); }
 .dk-foot .reset:only-child, .dk-foot #dkReset { margin-left: auto; }
+.reset.danger { color: var(--coral); border-color: var(--coral); }
+.reset.solid.danger { background: var(--coral); border-color: var(--coral); color: var(--on-coral); }
 .reset.solid { background: var(--tc); border-color: var(--tc); color: var(--on-tc); }
 .reset:disabled { opacity: 0.4; cursor: not-allowed; }
 .reset:hover { border-color: var(--grey); color: var(--ink); }
 .kmsg:empty { display: none; }
+/* Preset card, polished: a full-width Notes|Files switch, each preset a rounded row (name over keys), equal buttons underneath. */
+#presetCard .ps-row { display: block; padding: 0 0 8px; min-height: 0; border: 0; }
+#psSeg { display: flex; gap: 0; padding: 3px; border: 1px solid var(--line); border-radius: var(--r-pill); background: var(--bg); }
+#psSeg .pill { flex: 1 1 0; justify-content: center; min-height: 30px; border-color: transparent; padding: 0 12px; font-size: 0.8125rem; }
+#presetCard .card-desc { margin: 0 0 8px; font-size: 0.75rem; color: var(--grey); }
+#presetCard .dk-list { gap: 4px; }
+#presetCard .dk-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "n k r"; align-items: center; column-gap: 10px; min-height: 38px; padding: 3px 10px 3px 12px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg); }
+#presetCard .dk-row:first-child { border-top: 1px solid var(--line); }
+#presetCard .dk-name { grid-area: n; max-width: none; color: var(--ink); font-weight: 600; }
+#presetCard .dk-keys { grid-area: k; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; font-weight: 500; font-size: 0.6875rem; color: var(--grey); }
+#presetCard .dk-radio { grid-area: r; }
+#presetCard .dk-row[aria-checked="true"] .dk-name { color: var(--ink); }
+#presetCard .dk-row:not([aria-checked="true"]):hover { border-color: var(--grey); }
+#presetCard .dk-foot { gap: 8px; padding-top: 8px; margin-top: 0; border-top: 0; }
+#presetCard .dk-foot .reset { flex: 1 1 0; align-self: auto; min-height: 34px; border-radius: var(--r-md); font-size: 0.8125rem; margin-left: 0; }
+#presetCard .dk-foot .reset:first-child:not(.solid) { border-style: dashed; }
+#presetCard .dk-foot .reset[hidden] { display: none; }
+#presetCard .cf { margin-top: 8px; padding: 6px 10px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg); }
+#presetCard .dk-ask { margin-top: 10px; }
+
 .kmsg { min-height: 1.3em; font-size: 0.8125rem; color: var(--coral); }
 
 /* ---------- Fingers and controllers: bigger things to hit ---------- */
@@ -728,8 +799,8 @@ label.arow { cursor: text; }
   .toast.show { transition-delay: 0s; }
   .menu:not([hidden]), .dlg:not([hidden]), .dlg:not([hidden]) .dlg-panel { animation: fade var(--t-base) var(--ease); }
   /* +: the menu scales out of the button's corner while the button disappears, so it reads as the button growing. */
-  .menu[data-kind="new"]:not([hidden]) { transform-origin: bottom right; animation: grow var(--t-slow) var(--ease); }
-  .menu[data-kind="new"].closing { animation: shrink var(--t-fast) var(--ease) forwards; }
+  .menu:is([data-kind="new"], [data-kind="fnew"], [data-kind="sort"], [data-kind="lkind"]):not([hidden]) { animation: grow var(--t-slow) var(--ease); }
+  .menu:is([data-kind="new"], [data-kind="fnew"], [data-kind="sort"], [data-kind="lkind"]).closing { animation: shrink var(--t-fast) var(--ease) forwards; }
   .dlg.closing, .dlg.closing .dlg-panel, .menu.closing { animation: fadeOut var(--t-fast) var(--ease) forwards; pointer-events: none; }
   /* Screens are the only thing that moves. */
   @media (max-width: 900px) {
@@ -819,9 +890,9 @@ label.arow { cursor: text; }
         <button class="tool icon" type="button" data-cmd="heading" aria-pressed="false" aria-label="Heading"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path transform="translate(480 -480) scale(1.2) translate(-480 480)" d="M341.43-448.57V-310q0 13.36-9.03 22.4-9.03 9.03-22.58 9.03-13.54 0-22.4-8.93-8.85-8.94-8.85-22.5v-340q0-13.36 9.03-22.4 9.03-9.03 22.58-9.03 13.54 0 22.4 8.93 8.85 8.94 8.85 22.56v138.51h277.14V-650q0-13.36 9.03-22.4 9.03-9.03 22.58-9.03 13.54 0 22.4 8.93 8.85 8.94 8.85 22.5v340q0 13.36-9.03 22.4-9.03 9.03-22.58 9.03-13.54 0-22.4-8.93-8.85-8.94-8.85-22.56v-138.51H341.43Z"/></svg></button>
         <button class="tool icon" type="button" data-cmd="bold" aria-pressed="false" aria-label="Bold"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M335-200q-25 0-42.5-17.5T275-260v-440q0-25 17.5-42.5T335-760h168q66 0 114.5 42T666-612q0 38-21 70t-56 49v6q43 14 69.5 50t26.5 81q0 68-52.5 112T510-200H335Zm26-76h144q38 0 66-25t28-63q0-37-28-62t-66-25H361v175Zm0-247h136q35 0 60.5-23t25.5-58q0-35-25.5-58.5T497-686H361v163Z"/></svg></button>
         <button class="tool icon" type="button" data-cmd="right" aria-pressed="false" aria-label="Align"><svg class="i-left" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg><svg class="i-right" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-780q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg></button>
-        <button class="tool icon" type="button" data-cmd="kind" data-k="text" aria-pressed="false" aria-label="List" title="List: bullet, numbering, checklist"><svg class="k-bullet" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M407-198q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407Zm0-252q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407Zm0-253q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407ZM189-161q-28.1 0-48-19Q121-199 121-227.5t19.5-48q19.5-19.5 48-19.5t47.5 20q19 20 19 48 0 27.2-19.4 46.6Q216.2-161 189-161Zm0-252q-28.1 0-48-19.5Q121-452 121-480t20-47.5Q160.9-547 189-547q27.2 0 46.6 19.5Q255-508 255-480t-19.4 47.5Q216.2-413 189-413Zm-48.5-272.5Q121-705 121-733t19.5-47.5Q160-800 188-800t47.5 19.5Q255-761 255-733t-19.5 47.5Q216-666 188-666t-47.5-19.5Z"/></svg><svg class="k-check" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m222-299 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-235q-9 9-21 9t-21-9L101-335q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm0-320 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-555q-9 9-21 9t-21-9L101-655q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm328 329q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Zm0-320q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Z"/></svg><svg class="k-number" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-80q-13 0-21.5-8.5T120-110q0-13 8.5-21.5T150-140h70v-30h-30q-13 0-21.5-8.5T160-200q0-13 8.5-21.5T190-230h30v-30h-70q-13 0-21.5-8.5T120-290q0-13 8.5-21.5T150-320h90q17 0 28.5 11.5T280-280v40q0 17-11.5 28.5T240-200q17 0 28.5 11.5T280-160v40q0 17-11.5 28.5T240-80h-90Zm-7-280q-9 0-16-7t-7-16v-87q0-17 11.5-28.5T160-510h60v-30h-70q-13 0-21.5-8.5T120-570q0-13 8.5-21.5T150-600h90q17 0 28.5 11.5T280-560v70q0 17-11.5 28.5T240-450h-60v30h70q13 0 21.5 8.5T280-390q0 13-8.5 21.5T250-360H143Zm45.5-288.5Q180-657 180-670v-150h-30q-13 0-21.5-8.5T120-850q0-13 8.5-21.5T150-880h68q9 0 15.5 6.5T240-858v188q0 13-8.5 21.5T210-640q-13 0-21.5-8.5ZM399-209q-12.7 0-21.3-8.6-8.6-8.6-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.3-8.5h411q12.7 0 21.3 8.6 8.6 8.6 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.3 8.5H399Zm0-243q-12.7 0-21.3-8.6-8.6-8.6-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.3-8.5h411q12.7 0 21.3 8.6 8.6 8.6 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.3 8.5H399Zm0-243q-12.7 0-21.3-8.6-8.6-8.6-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.3-8.5h411q12.7 0 21.3 8.6 8.6 8.6 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.3 8.5H399Z"/></svg></button>
+        <button class="tool icon" type="button" data-cmd="kind" data-k="text" aria-pressed="false" aria-label="List" title="List: tap for the next style, hold for the list"><svg class="k-bullet" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M407-198q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407Zm0-252q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407Zm0-253q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h403q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H407ZM189-161q-28.1 0-48-19Q121-199 121-227.5t19.5-48q19.5-19.5 48-19.5t47.5 20q19 20 19 48 0 27.2-19.4 46.6Q216.2-161 189-161Zm0-252q-28.1 0-48-19.5Q121-452 121-480t20-47.5Q160.9-547 189-547q27.2 0 46.6 19.5Q255-508 255-480t-19.4 47.5Q216.2-413 189-413Zm-48.5-272.5Q121-705 121-733t19.5-47.5Q160-800 188-800t47.5 19.5Q255-761 255-733t-19.5 47.5Q216-666 188-666t-47.5-19.5Z"/></svg><svg class="k-check" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m222-299 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-235q-9 9-21 9t-21-9L101-335q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm0-320 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-555q-9 9-21 9t-21-9L101-655q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm328 329q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Zm0-320q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Z"/></svg><svg class="k-number" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-80q-13 0-21.5-8.5T120-110q0-13 8.5-21.5T150-140h70v-30h-30q-13 0-21.5-8.5T160-200q0-13 8.5-21.5T190-230h30v-30h-70q-13 0-21.5-8.5T120-290q0-13 8.5-21.5T150-320h90q17 0 28.5 11.5T280-280v40q0 17-11.5 28.5T240-200q17 0 28.5 11.5T280-160v40q0 17-11.5 28.5T240-80h-90Zm-7-280q-9 0-16-7t-7-16v-87q0-17 11.5-28.5T160-510h60v-30h-70q-13 0-21.5-8.5T120-570q0-13 8.5-21.5T150-600h90q17 0 28.5 11.5T280-560v70q0 17-11.5 28.5T240-450h-60v30h70q13 0 21.5 8.5T280-390q0 13-8.5 21.5T250-360H143Zm45.5-288.5Q180-657 180-670v-150h-30q-13 0-21.5-8.5T120-850q0-13 8.5-21.5T150-880h68q9 0 15.5 6.5T240-858v188q0 13-8.5 21.5T210-640q-13 0-21.5-8.5ZM399-209q-12.7 0-21.3-8.6-8.6-8.6-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.3-8.5h411q12.7 0 21.3 8.6 8.6 8.6 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.3 8.5H399Zm0-243q-12.7 0-21.3-8.6-8.6-8.6-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.3-8.5h411q12.7 0 21.3 8.6 8.6 8.6 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.3 8.5H399Zm0-243q-12.7 0-21.3-8.6-8.6-8.6-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.3-8.5h411q12.7 0 21.3 8.6 8.6 8.6 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.3 8.5H399Z"/></svg></button>
         <button class="tool icon" type="button" data-cmd="pagebreak" aria-pressed="false" aria-label="Page break"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M220-80q-24.8 0-42.4-17.6Q160-115.2 160-140v-140q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v140h520v-140q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v140q0 24.8-17.6 42.4Q764.8-80 740-80H220Zm-60-740q0-24.8 17.6-42.4Q195.2-880 220-880h336q12.4 0 23.7 5T599-862l183 183q8 8 13 19.3 5 11.3 5 23.7v116q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-114H581q-12.8 0-21.4-8.6Q551-651.2 551-664v-156H220v300q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-300Zm220 450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h200q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H380Zm320 0q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h190q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H700Zm-630 0q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3Q57.2-430 70-430h190q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H70Zm410-120Zm0 180Z"/></svg></button>
-        <button class="tool icon" type="button" data-cmd="typewriter" aria-pressed="false" aria-label="Follow" title="Follow: keep the line you are typing at the bottom"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M190-120q-13 0-21.5-8.5T160-150q0-13 8.5-21.5T190-180h580q13 0 21.5 8.5T800-150q0 13-8.5 21.5T770-120H190Zm279-134q-5-2-10-7L307-413q-9-9-8.5-21.5T308-456q9-9 21.5-9t21.5 9l99 100v-454q0-13 8.5-21.5T480-840q13 0 21.5 8.5T510-810v454l96-96q9-9 21-8.5t21 9.5q9 9 9 21.5t-9 21.5L501-261q-5 5-10 7t-11 2q-6 0-11-2Z"/></svg></button>
+        <button class="tool icon" type="button" data-cmd="typewriter" aria-pressed="false" aria-label="Follow" title="Follow: keep the line you are typing at the bottom"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"/></svg></button>
       </div>
       <div class="ed-scroll" id="edScroll">
         <div class="ed-inner">
@@ -844,7 +915,12 @@ label.arow { cursor: text; }
 </div>
 <div class="stats" id="fstats" aria-label="Overview"></div>
     <div class="fblank" aria-hidden="true">Open a page to see it here</div>
-    <div class="fview" id="apage" role="dialog" aria-label="File page"><div class="ed-top"><button class="back" type="button" id="apBack" aria-label="Back to files" style="display:block"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m406-481 177 177q9 9 8.5 21t-9.5 21q-9 9-21.5 9t-21.5-9L341-460q-5-5-7-10t-2-11q0-6 2-11t7-10l199-199q9-9 21.5-9t21.5 9q9 9 9 21.5t-9 21.5L406-481Z"/></svg></button><div class="ed-head"><button id="apAvatar" type="button" aria-label="Page options" title="Page options"></button><input class="title" id="apTitle" type="text" placeholder="Untitled page" aria-label="Page title" autocomplete="off" maxlength="80"></div><button id="apSaved" type="button" tabindex="-1"></button><button id="apShare" type="button" aria-label="Share" title="Share the attachments"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M686-80q-47.5 0-80.75-33.25T572-194q0-8 5-34L278-403q-16.28 17.34-37.64 27.17Q219-366 194-366q-47.5 0-80.75-33T80-480q0-48 33.25-81T194-594q24 0 45 9.3 21 9.29 37 25.7l301-173q-2-8-3.5-16.5T572-766q0-47.5 33.25-80.75T686-880q47.5 0 80.75 33.25T800-766q0 47.5-33.25 80.75T686-652q-23.27 0-43.64-9Q622-670 606-685L302-516q3 8 4.5 17.5t1.5 18q0 8.5-1 16t-3 15.5l303 173q16-15 36.09-23.5 20.1-8.5 43.07-8.5Q734-308 767-274.75T800-194q0 47.5-33.25 80.75T686-80Zm.04-60q22.96 0 38.46-15.54 15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5Zm-492-286q22.96 0 38.46-15.54 15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5ZM724.5-727.54q15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5 22.96 0 38.46-15.54ZM686-194ZM194-480Zm492-286Z"/></svg></button></div><div class="tools" id="apTools" role="toolbar" aria-label="Page tools"><button class="tool icon" type="button" id="apAttach" aria-label="Attach a file or photo" title="Attach a file or photo"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-330h80v330q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-350h80v350Z"/></svg></button><button class="tool icon" type="button" id="apComment" aria-pressed="false" aria-label="Comments" title="Comments: one per attachment (or swipe an attachment to the right)"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M240-400h480v-80H240v80Zm0-120h480v-80H240v80Zm0-120h480v-80H240v80ZM880-80 720-240H160q-33 0-56.5-23.5T80-320v-480q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v720ZM160-320h594l46 45v-525H160v480Zm0 0v-480 480Z"/></svg></button><button class="tool icon" type="button" data-cmd="right" id="apAlign" aria-pressed="false" aria-label="Align" title="Align the attachments: left or right"><svg class="i-left" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg><svg class="i-right" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-780q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg></button><button class="tool icon" type="button" data-cmd="typewriter" id="apFollow" aria-pressed="false" aria-label="Follow" title="Follow: keep the newest attachment at the bottom"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M190-120q-13 0-21.5-8.5T160-150q0-13 8.5-21.5T190-180h580q13 0 21.5 8.5T800-150q0 13-8.5 21.5T770-120H190Zm279-134q-5-2-10-7L307-413q-9-9-8.5-21.5T308-456q9-9 21.5-9t21.5 9l99 100v-454q0-13 8.5-21.5T480-840q13 0 21.5 8.5T510-810v454l96-96q9-9 21-8.5t21 9.5q9 9 9 21.5t-9 21.5L501-261q-5 5-10 7t-11 2q-6 0-11-2Z"/></svg></button></div><div class="ed-scroll"><div class="pg-body" id="apItems" data-align="left"></div></div><div class="ed-foot"><span id="apCount"></span></div></div>
+    <div class="fview" id="apage" role="dialog" aria-label="File page"><div class="ed-top"><button class="back" type="button" id="apBack" aria-label="Back to files" style="display:block"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m406-481 177 177q9 9 8.5 21t-9.5 21q-9 9-21.5 9t-21.5-9L341-460q-5-5-7-10t-2-11q0-6 2-11t7-10l199-199q9-9 21.5-9t21.5 9q9 9 9 21.5t-9 21.5L406-481Z"/></svg></button><div class="ed-head"><button id="apAvatar" type="button" aria-label="Page options" title="Page options"></button><input class="title" id="apTitle" type="text" placeholder="Untitled page" aria-label="Page title" autocomplete="off" maxlength="80"></div><button id="apSaved" type="button" tabindex="-1"></button><button id="apShare" type="button" aria-label="Share" title="Share the attachments"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M686-80q-47.5 0-80.75-33.25T572-194q0-8 5-34L278-403q-16.28 17.34-37.64 27.17Q219-366 194-366q-47.5 0-80.75-33T80-480q0-48 33.25-81T194-594q24 0 45 9.3 21 9.29 37 25.7l301-173q-2-8-3.5-16.5T572-766q0-47.5 33.25-80.75T686-880q47.5 0 80.75 33.25T800-766q0 47.5-33.25 80.75T686-652q-23.27 0-43.64-9Q622-670 606-685L302-516q3 8 4.5 17.5t1.5 18q0 8.5-1 16t-3 15.5l303 173q16-15 36.09-23.5 20.1-8.5 43.07-8.5Q734-308 767-274.75T800-194q0 47.5-33.25 80.75T686-80Zm.04-60q22.96 0 38.46-15.54 15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5Zm-492-286q22.96 0 38.46-15.54 15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5ZM724.5-727.54q15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5 22.96 0 38.46-15.54ZM686-194ZM194-480Zm492-286Z"/></svg></button></div><div class="tools" id="apTools" role="toolbar" aria-label="Page tools"><button class="tool icon" type="button" id="apAttach" aria-label="Attach" title="Attach"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M720-330q0 104-73 177T470-80q-104 0-177-73t-73-177v-370q0-75 52.5-127.5T400-880q75 0 127.5 52.5T580-700v350q0 46-32 78t-78 32q-46 0-78-32t-32-78v-330h80v330q0 13 8.5 21.5T470-320q13 0 21.5-8.5T500-350v-350q-1-42-29.5-71T400-800q-42 0-71 29t-29 71v370q-1 71 49 120.5T470-160q70 0 119-49.5T640-330v-350h80v350Z"/></svg></button><button class="tool icon" type="button" id="apContext" aria-pressed="false" aria-label="Context" title="Context: text or a link for a file (or swipe the file to the right)"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M680-160v-120H560v-80h120v-120h80v120h120v80H760v120h-80ZM440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm560-40h-80q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480Z"/></svg></button><button class="tool icon" type="button" id="apSort" aria-label="Sort" title="Sort: tap for the next order, hold for the list" aria-haspopup="menu"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M120-240v-80h240v80H120Zm0-200v-80h480v80H120Zm0-200v-80h720v80H120Z"/></svg></button><button class="tool icon" type="button" data-cmd="right" id="apAlign" aria-pressed="false" aria-label="Align" title="Align the attachments: left or right"><svg class="i-left" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm0-165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg><svg class="i-right" width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M150-780q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm240 165q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h420q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H390ZM150-120q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h660q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg></button><button class="tool icon" type="button" data-cmd="typewriter" id="apFollow" aria-pressed="false" aria-label="Follow" title="Follow: keep the newest attachment at the bottom"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"/></svg></button></div><div class="ed-scroll"><div class="pg-body" id="apItems" data-align="left" contenteditable="true" inputmode="none" spellcheck="false" tabindex="-1"></div></div><div class="ed-foot"><span id="apCount"></span></div></div>
+  </section>
+
+  <section class="cal" id="cal" aria-label="Calendar">
+    <div class="folder-bar"><div class="folder-list" id="cyears" role="tablist" aria-label="Years"></div></div>
+    <ul class="list cal-months" id="cmonths"></ul>
   </section>
 
   <nav class="dock" id="dock" aria-label="Sections">
@@ -888,10 +964,14 @@ label.arow { cursor: text; }
     <details class="card" style="--tc:var(--coral);--on-tc:var(--on-coral)">
       <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M180-120q-24 0-42-18t-18-42v-600q0-24 18-42t42-18h600q24 0 42 18t18 42v600q0 24-18 42t-42 18H180Zm0-513h600v-147H180v147Zm600 60H180v393h600v-393Zm-600-60v60-60Zm0 0v-147 147Zm0 60v393-393Z"/></svg></span><b>Toolbar</b><span class="sync-state" id="tbState"></span></summary>
       <div class="card-body">
-        <p class="card-desc">Choose the toolbar position and the list styles.</p>
+        <p class="card-desc">Choose the toolbar position, the file sort and the list styles.</p>
         <div class="set-row"><span>Position</span>
         <div class="pills" id="tbSeg" role="radiogroup" aria-label="Toolbar position">
-          <button class="pill glyph" type="button" role="radio" data-tb="top" aria-label="Top" title="Top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"/><rect x="4" y="3.5" width="16" height="4.5" rx="1" fill="currentColor" stroke="none"/></svg></button><button class="pill glyph" type="button" role="radio" data-tb="bottom" aria-label="Bottom" title="Bottom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"/><rect x="4" y="16" width="16" height="4.5" rx="1" fill="currentColor" stroke="none"/></svg></button><button class="pill glyph" type="button" role="radio" data-tb="typewriter" aria-label="Follow" title="Follow"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M190-120q-13 0-21.5-8.5T160-150q0-13 8.5-21.5T190-180h580q13 0 21.5 8.5T800-150q0 13-8.5 21.5T770-120H190Zm279-134q-5-2-10-7L307-413q-9-9-8.5-21.5T308-456q9-9 21.5-9t21.5 9l99 100v-454q0-13 8.5-21.5T480-840q13 0 21.5 8.5T510-810v454l96-96q9-9 21-8.5t21 9.5q9 9 9 21.5t-9 21.5L501-261q-5 5-10 7t-11 2q-6 0-11-2Z"/></svg></button>
+          <button class="pill glyph" type="button" role="radio" data-tb="top" aria-label="Top" title="Top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"/><rect x="4" y="3.5" width="16" height="4.5" rx="1" fill="currentColor" stroke="none"/></svg></button><button class="pill glyph" type="button" role="radio" data-tb="bottom" aria-label="Bottom" title="Bottom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"/><rect x="4" y="16" width="16" height="4.5" rx="1" fill="currentColor" stroke="none"/></svg></button><button class="pill glyph" type="button" role="radio" data-tb="typewriter" aria-label="Follow" title="Follow"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"/></svg></button>
+        </div></div>
+        <div class="set-row"><span>Sort</span>
+        <div class="pills" id="fsSeg" role="radiogroup" aria-label="Default sort for file pages">
+          <button class="pill glyph" type="button" role="radio" data-fs="date" aria-label="Date" title="Date"></button><button class="pill glyph" type="button" role="radio" data-fs="type" aria-label="Type" title="Type"></button><button class="pill glyph" type="button" role="radio" data-fs="az" aria-label="A to Z" title="A to Z"></button>
         </div></div>
         <div class="set-row"><span>Bullet</span>
         <div class="pills" id="blSeg" role="radiogroup" aria-label="Bullet look">
@@ -915,18 +995,33 @@ label.arow { cursor: text; }
       </div>
     </details>
 
-    <details class="card" style="--tc:var(--amber);--on-tc:var(--on-amber)">
-      <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M435.5-128.6Q427-137.2 427-150v-165q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v53h323q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H487v52q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM150-202q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h187q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm165.5-174.6Q307-385.2 307-398v-52H150q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h157v-54q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v166q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM457-450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h353q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H457Zm144.5-173.6Q593-632.2 593-645v-165q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v52h157q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H653v53q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM150-698q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h353q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg></span><b>Preset</b><span class="sync-state" id="dkState"></span></summary>
+    <details class="card" id="presetCard" style="--tc:var(--amber);--on-tc:var(--on-amber)">
+      <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M435.5-128.6Q427-137.2 427-150v-165q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v53h323q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H487v52q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM150-202q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h187q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Zm165.5-174.6Q307-385.2 307-398v-52H150q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h157v-54q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v166q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM457-450q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h353q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H457Zm144.5-173.6Q593-632.2 593-645v-165q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v52h157q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H653v53q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6ZM150-698q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h353q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H150Z"/></svg></span><b>Preset</b><span class="sync-state" style="font-size:12px;letter-spacing:-.1px">Notes <span id="dkState"></span> · Files <span id="fpState"></span></span></summary>
       <div class="card-body">
-        <p class="card-desc">Choose the rule a new note starts with.</p>
+        <p class="card-desc">Choose the rule a new note or file starts with.</p>
+        <div class="set-row ps-row"><div class="pills" id="psSeg" role="radiogroup" aria-label="Which presets to show"><button class="pill" type="button" role="radio" data-ps="notes" aria-checked="true">Notes</button><button class="pill" type="button" role="radio" data-ps="files" aria-checked="false">Files</button></div></div>
+        <div id="psNotes">
         <div class="dk-list" id="dkSeg" role="radiogroup" aria-label="Rule for new notes"></div>
-        <div class="cf dk-ask" id="dkAsk" hidden><div class="cf-label" id="dkAskText"></div><div class="pills"><button class="pill" type="button" id="dkKeep">Keep</button><button class="pill danger" type="button" id="dkGo">Delete</button></div></div>
         <div class="cf" id="cfForm" hidden>
           <label class="arow"><span>Name</span><input id="cfName" class="aval" type="text" maxlength="16" placeholder="e.g. Journal" aria-label="Name of your preset" autocomplete="off" spellcheck="false"></label>
-          <div class="cf-label">Tap to choose the keys it shows</div>
+          <div class="cf-label">Keys it shows</div>
           <div class="tools cf-tools" id="cfTools" role="group" aria-label="Toolbar keys this mode keeps"></div>
+          <div class="set-row" id="cfListsWrap" hidden><span>List styles</span><div class="tools cf-tools cf-lists" id="cfLists" role="group" aria-label="List styles this preset keeps (grey is left out)"></div></div>
+          <div class="set-row"><span>Override toolbar</span><div class="pills" id="cfBar" role="radiogroup" aria-label="Override the toolbar position for this preset"><button class="pill glyph" type="button" role="radio" data-cfb="auto" aria-label="No override" title="No override"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-60q54 0 104-17.5t92-50.5L228-676q-33 42-50.5 92T160-480q0 134 93 227t227 93Zm252-124q33-42 50.5-92T800-480q0-134-93-227t-227-93q-54 0-104 17.5T284-732l448 448Z"/></svg></button><button class="pill glyph" type="button" role="radio" data-cfb="top" aria-label="Top" title="Top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"/><rect x="4" y="3.5" width="16" height="4.5" rx="1" fill="currentColor" stroke="none"/></svg></button><button class="pill glyph" type="button" role="radio" data-cfb="bottom" aria-label="Bottom" title="Bottom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"/><rect x="4" y="16" width="16" height="4.5" rx="1" fill="currentColor" stroke="none"/></svg></button><button class="pill glyph" type="button" role="radio" data-cfb="follow" aria-label="Follow" title="Follow: bottom while Follow is on"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"/></svg></button></div></div>
         </div>
         <div class="dk-foot"><button class="reset" type="button" id="dkAdd">Add</button><button class="reset" type="button" id="dkReset" hidden>Reset</button></div>
+        </div>
+        <div id="psFiles" hidden>
+        <div class="dk-list" id="fpSeg" role="radiogroup" aria-label="Preset for new file pages"></div>
+        <div class="cf" id="fpForm" hidden>
+          <label class="arow"><span>Name</span><input id="fpName" class="aval" type="text" maxlength="16" placeholder="e.g. Receipts" aria-label="Name of your file preset" autocomplete="off" spellcheck="false"></label>
+          <div class="cf-label">Keys it shows</div>
+          <div class="tools cf-tools" id="fpTools" role="group" aria-label="Toolbar keys this preset keeps"></div>
+          <div class="set-row"><span>Override sort</span><div class="pills" id="fpSort" role="radiogroup" aria-label="Override the starting sort"><button class="pill glyph" type="button" role="radio" data-fps="auto" aria-label="No override" title="No override"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-60q54 0 104-17.5t92-50.5L228-676q-33 42-50.5 92T160-480q0 134 93 227t227 93Zm252-124q33-42 50.5-92T800-480q0-134-93-227t-227-93q-54 0-104 17.5T284-732l448 448Z"/></svg></button><button class="pill glyph" type="button" role="radio" data-fps="date" aria-label="Date" title="Date"></button><button class="pill glyph" type="button" role="radio" data-fps="type" aria-label="Type" title="Type"></button><button class="pill glyph" type="button" role="radio" data-fps="az" aria-label="A to Z" title="A to Z"></button></div></div>
+          <div class="set-row"><span>Override toolbar</span><div class="pills" id="fpBar" role="radiogroup" aria-label="Override the toolbar position for this preset"><button class="pill glyph" type="button" role="radio" data-fpb="auto" aria-label="No override" title="No override"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-60q54 0 104-17.5t92-50.5L228-676q-33 42-50.5 92T160-480q0 134 93 227t227 93Zm252-124q33-42 50.5-92T800-480q0-134-93-227t-227-93q-54 0-104 17.5T284-732l448 448Z"/></svg></button><button class="pill glyph" type="button" role="radio" data-fpb="top" aria-label="Top" title="Top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"/><rect x="4" y="3.5" width="16" height="4.5" rx="1" fill="currentColor" stroke="none"/></svg></button><button class="pill glyph" type="button" role="radio" data-fpb="bottom" aria-label="Bottom" title="Bottom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"/><rect x="4" y="16" width="16" height="4.5" rx="1" fill="currentColor" stroke="none"/></svg></button><button class="pill glyph" type="button" role="radio" data-fpb="follow" aria-label="Follow" title="Follow: bottom while Follow is on"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"/></svg></button></div></div>
+        </div>
+        <div class="dk-foot"><button class="reset" type="button" id="fpAdd">Add preset</button><button class="reset" type="button" id="fpReset" hidden>Reset</button></div>
+        </div>
       </div>
     </details>
 
@@ -996,7 +1091,7 @@ ${Nn(this.code(t,r))}
   }
 
   /* ================= Constants ================= */
-  const APP_VERSION = '3.0';                           // shown in Settings > About; change it here only
+  const APP_VERSION = '3.6';                           // shown in Settings > About; change it here only
   const STORE_KEY = 'daybook:v3';
   const TOOL_CHOICES = [['plain', 'Text'], ['heading', 'Heading'], ['bold', 'Bold'], ['right', 'Align'], ['kind', 'List'], ['pagebreak', 'Page break'], ['typewriter', 'Follow']];   // the toolbar keys a custom mode can keep
   const COLORS = ['blue', 'coral', 'amber', 'green', 'violet', 'grey'];
@@ -1084,6 +1179,15 @@ ${Nn(this.code(t,r))}
               are real formatting and never characters inside the text.
      folders: { id, name }     (the built-in "All" folder is not stored; only its name)
      settings: typewriter, shortcutsOn, shortcuts { commandId: { code, alt?, shift? } } */
+  /* File presets: the keys a page toolbar keeps and how a new page starts (Sort, Align, Context). Three are ready-made, and up to three are your own. */
+  const FP_KEYS = [['attach', 'Attach', 'apAttach'], ['context', 'Context', 'apContext'], ['sort', 'Sort', 'apSort'], ['align', 'Align', 'apAlign'], ['follow', 'Follow', 'apFollow']];
+  const FP_IDS = ['fp0', 'fp1', 'fp2'], FP_ALL = FP_KEYS.map(([k]) => k);
+  const FP_BUILTIN = {
+    none:   { id: 'none',   name: 'None',      keys: 'All keys', tools: FP_ALL, sort: null,   align: 'left', bar: 'auto' },
+    photos: { id: 'photos', name: 'Photos',    tools: ['attach', 'sort', 'align', 'follow'], sort: 'date', align: 'left', bar: 'auto' },
+    docs:   { id: 'docs',   name: 'Documents', tools: ['attach', 'context', 'sort'], sort: 'az', align: 'left', bar: 'auto' }
+  };
+  const LIST_ALL = ['bullet', 'check', 'number'];   // the list styles the List key can hold
   const CUSTOM_IDS = ['custom', 'custom1', 'custom2'];   // up to three own presets; 'custom' is the first so older notes keep working
   const isCustomKind = (k) => CUSTOM_IDS.includes(k);
   const store = {
@@ -1143,7 +1247,7 @@ ${Nn(this.code(t,r))}
       id: raw.id, title: str(raw.title), content: cleanContent(raw.content),
       color: COLORS.includes(raw.color) ? raw.color : 'grey',
       pinned: raw.pinned === true,
-      ...((raw.kind === 'list' || raw.kind === 'chat' || isCustomKind(raw.kind)) && { kind: raw.kind }),     // 'list' notes only hold bullet and checklist lines, 'chat' notes a few tools; anything else is a plain note
+      ...((raw.kind === 'list' || raw.kind === 'dlist' || raw.kind === 'chat' || isCustomKind(raw.kind)) && { kind: raw.kind === 'list' ? 'dlist' : raw.kind }),     // 'dlist' and 'chat' notes keep a few tools (an older 'list' note is now a Dlist note); anything else is a plain note
       created: isNum(raw.created) ? raw.created : updated,
       updated,
       meta: isNum(raw.meta) ? raw.meta : updated
@@ -1160,7 +1264,7 @@ ${Nn(this.code(t,r))}
     return out;
   }
   function load() {
-    const s = { notes: [], folders: [], gone: {}, allName: 'All', settings: { typewriter: true, toolbar: 'typewriter', defaultKind: 'notes', bullet: 'point', number: 'decimal', customs: [], shortcutsOn: true, shortcuts: {} } };
+    const s = { notes: [], folders: [], gone: {}, allName: 'All', settings: { typewriter: true, toolbar: 'typewriter', defaultKind: 'notes', fileSort: 'date', fpresets: [], fileDefault: 'none', bullet: 'point', number: 'decimal', customs: [], shortcutsOn: true, shortcuts: {} } };
     let raw = null;
     try { raw = JSON.parse(bootRaw); store.size = bootRaw ? bootRaw.length : 0; }
     catch (e) { if (!(e instanceof SyntaxError)) store.ok = false; }
@@ -1175,16 +1279,26 @@ ${Nn(this.code(t,r))}
       const cleanCustom = (c, id) => {          // your own preset: a name and the toolbar keys it keeps
         if (!isObj(c) || !str(c.name).trim()) return null;
         const keys = Array.isArray(c.tools) ? c.tools.filter((t) => TOOL_CHOICES.some(([k]) => k === t)) : [];
-        return { id, name: c.name.trim().slice(0, 16), tools: [...new Set(keys)] };
+        const ls = Array.isArray(c.lists) ? LIST_ALL.filter((k) => c.lists.includes(k)) : [];
+        return { id, name: c.name.trim().slice(0, 16), tools: [...new Set(keys)], lists: ls.length ? ls : [...LIST_ALL], bar: ['top', 'bottom', 'follow'].includes(c.bar) ? c.bar : 'auto' };
       };
       const list = Array.isArray(raw.settings.customs) ? raw.settings.customs : [];
       list.forEach((c) => { const id = isObj(c) && CUSTOM_IDS.includes(c.id) ? c.id : null; const k = id && cleanCustom(c, id); if (k && !s.settings.customs.some((x) => x.id === id)) s.settings.customs.push(k); });
-      if (['notes', 'list', 'chat', ...CUSTOM_IDS].includes(raw.settings.defaultKind)) s.settings.defaultKind = raw.settings.defaultKind;
+      if (raw.settings.defaultKind === 'list') raw.settings.defaultKind = 'dlist';
+      if (['notes', 'dlist', 'chat', ...CUSTOM_IDS].includes(raw.settings.defaultKind)) s.settings.defaultKind = raw.settings.defaultKind;
       if (['top', 'bottom', 'typewriter'].includes(raw.settings.toolbar)) s.settings.toolbar = raw.settings.toolbar;
       if (['point', 'dash', 'square'].includes(raw.settings.bullet)) s.settings.bullet = raw.settings.bullet;
       if (['decimal', 'alpha', 'roman'].includes(raw.settings.number)) s.settings.number = raw.settings.number;
       if (isCustomKind(s.settings.defaultKind) && !s.settings.customs.some((x) => x.id === s.settings.defaultKind)) s.settings.defaultKind = 'notes';
       s.settings.shortcutsOn = raw.settings.shortcutsOn !== false;
+      if (['date', 'type', 'az'].includes(raw.settings.fileSort)) s.settings.fileSort = raw.settings.fileSort;
+      if (Array.isArray(raw.settings.fpresets)) raw.settings.fpresets.forEach((c) => {   // your own file presets: a name, the keys kept and how a page starts
+        const id = isObj(c) && FP_IDS.includes(c.id) && !s.settings.fpresets.some((x) => x.id === c.id) ? c.id : null;
+        if (!id || !str(c.name).trim()) return;
+        const tools = [...new Set((Array.isArray(c.tools) ? c.tools : []).filter((t) => FP_KEYS.some(([k]) => k === t)))];
+        if (tools.length) s.settings.fpresets.push({ id, name: c.name.trim().slice(0, 16), tools, sort: ['date', 'type', 'az'].includes(c.sort) ? c.sort : null, align: 'left', bar: ['top', 'bottom', 'follow'].includes(c.bar) ? c.bar : 'auto' });
+      });
+      if (typeof raw.settings.fileDefault === 'string' && (FP_BUILTIN[raw.settings.fileDefault] || s.settings.fpresets.some((x) => x.id === raw.settings.fileDefault))) s.settings.fileDefault = raw.settings.fileDefault;
       s.settings.shortcuts = cleanShortcuts(raw.settings.shortcuts);
     }
     return s;
@@ -1308,7 +1422,6 @@ ${Nn(this.code(t,r))}
     const [line] = quill.getLine(range.index);
     if (isDivider(line)) { if (line.length() <= 1) dropLine(line); else quill.formatLine(range.index, 1, 'divider', false, USER); return false; }
     const [prev] = range.index ? quill.getLine(range.index - 1) : [null];
-    if (isListNote() && !isDivider(prev)) return listBackspace(range, prev);
     if (!isDivider(prev)) return true;
     const n = prev.length(); dropLine(prev); quill.setSelection(range.index - n, 0, USER); return false;
   });
@@ -1323,18 +1436,21 @@ ${Nn(this.code(t,r))}
   first('Delete');
   /* List notes: every line is a bullet or a checklist item (or a page break), and it can never be switched off. */
   const customOf = (id) => settings.customs.find((c) => c.id === id);
-  const isListNote = () => activeNote()?.kind === 'list';
-  const LIST_OK = new Set(['kind', 'bullet', 'check', 'pagebreak']);               // the only tools that stay on in a list note
+  /* How a note of this kind starts: where its toolbar sits. Chat (beta) writes with the toolbar at the bottom. */
+  const startOf = (kind) => (kind === 'chat' ? { bar: 'bottom' } : customOf(kind) || {});
+  const DLIST_OK = new Set(['kind', 'bullet', 'check', 'number', 'heading', 'pagebreak']);   // Dlist notes: the list key (bullet, checklist, numbering), heading and page break
   const CHAT_OK = new Set(['bold', 'right', 'pagebreak']);   // chat notes (beta): bold, align, page break; no headings, bullets, checklists or numbering
   /* The keys a chat or custom note keeps, or null when the note has no limit. Style also keeps its shortcuts (bullet, checklist, numbering). */
+  const listStyles = (note) => { const cu = note && isCustomKind(note.kind) && customOf(note.kind); return cu && cu.lists && cu.lists.length ? cu.lists : LIST_ALL; };   // the list styles this note may use
   function toolsFor(note) {
     if (!note) return null;
     if (note.kind === 'chat') return CHAT_OK;
+    if (note.kind === 'dlist') return DLIST_OK;
     const cu = isCustomKind(note.kind) && customOf(note.kind);
-    if (cu) { const t = new Set(cu.tools); if (t.has('kind')) ['bullet', 'check', 'number'].forEach((x) => t.add(x)); return t; }
+    if (cu) { const t = new Set(cu.tools); if (t.has('kind')) listStyles(note).forEach((x) => t.add(x)); return t; }
     return null;
   }
-  const toolOk = (id) => { if (isListNote()) return LIST_OK.has(id); const t = toolsFor(activeNote()); return t ? t.has(id) : true; };
+  const toolOk = (id) => { const t = toolsFor(activeNote()); return t ? t.has(id) : true; };
   /* Chat and custom notes keep only some keys. What a key would have made and is not allowed (a heading, a list, bold, alignment) is taken off,
      whether it was typed ("# ", "- ", "1. ") or pasted. */
   function enforceKind(source, allow) {
@@ -1343,7 +1459,7 @@ ${Nn(this.code(t,r))}
       const len = typeof op.insert === 'string' ? op.insert.length : 1;
       const a = op.attributes;
       if (a?.header && !allow.has('heading')) fix.push(['line', at, 'header']);
-      if (a?.list && !allow.has('kind')) fix.push(['line', at, 'list']);
+      if (a?.list && (!allow.has('kind') || !allow.has({ bullet: 'bullet', checked: 'check', unchecked: 'check', ordered: 'number' }[a.list]))) fix.push(['line', at, 'list']);   // a style that is left out is taken off too
       if (a?.align && !allow.has('right')) fix.push(['line', at, 'align']);
       if (a?.bold && !allow.has('bold')) fix.push(['text', at, len]);
       at += len;
@@ -1353,45 +1469,6 @@ ${Nn(this.code(t,r))}
     try { for (const [t, i, x] of fix) { if (t === 'line') quill.formatLine(i, 1, x, false, source); else quill.formatText(i, x, 'bold', false, source); } } finally { enforcing = false; }
   }
   let enforcing = false;
-  /* Any line that is not a list item or a page break becomes one (after paste, undo, or text from another device). It takes the type of the line above. */
-  function enforceList(source) {
-    const todo = []; let type = 'unchecked';
-    for (const line of quill.getLines()) {
-      if (isDivider(line)) continue;
-      const i = quill.getIndex(line), cur = quill.getFormat(i, 0).list;
-      if (cur === 'bullet' || cur === 'checked' || cur === 'unchecked') type = cur === 'bullet' ? 'bullet' : 'unchecked';
-      else todo.push([i, type]);
-    }
-    enforcing = true;
-    try { for (const [i, t] of todo) quill.formatLine(i, 1, 'list', t, source); } finally { enforcing = false; }
-    return todo.length > 0;
-  }
-  /* Bullet and Checklist in a list note switch the line between the two. Pressing the active one does nothing, so a line can never lose its list. */
-  function setListType(value) {
-    const r = curRange();
-    quill.history.cutoff();
-    const at = quill.getLines(r.index, r.length || 1).filter((l) => !isDivider(l)).map((l) => quill.getIndex(l));
-    for (const i of at) {
-      const cur = quill.getFormat(i, 0).list;
-      if (value === 'bullet' ? cur !== 'bullet' : (cur !== 'checked' && cur !== 'unchecked')) quill.formatLine(i, 1, 'list', value, USER);
-    }
-    quill.history.cutoff();
-    syncTools();
-  }
-  /* Backspace at the start of a list item joins it onto the item above (an empty item simply disappears); the item above keeps its own type. The first item stays. */
-  function listBackspace(range, prev) {
-    if (!prev) return false;
-    quill.history.cutoff();
-    const keep = quill.getFormat(quill.getIndex(prev), 0).list;
-    const at = quill.getIndex(prev) + prev.length() - 1;
-    quill.deleteText(at, 1, USER);
-    quill.formatLine(at, 1, 'list', keep, USER);
-    quill.setSelection(at, 0, USER);
-    quill.history.cutoff();
-    return false;
-  }
-  quill.keyboard.addBinding({ key: 'Enter', collapsed: true, empty: true, format: ['list'] }, () => !isListNote());   // Enter on an empty item does nothing in a list note (it would normally end the list)
-  first('Enter');
   quill.keyboard.addBinding({ key: 'Enter', collapsed: true, format: ['divider'] }, (range) => {
     quill.insertText(range.index, '\n', USER); quill.formatLine(range.index + 1, 1, 'divider', false, USER); quill.setSelection(range.index + 1, 0, USER); return false;
   });
@@ -1473,16 +1550,17 @@ ${Nn(this.code(t,r))}
     ['header', 'list', 'align'].forEach((name) => quill.formatLine(r.index, r.length, name, false, USER));
     syncTools();
   }
-  /* Line style: one key that goes Text -> Bullet -> Checklist -> Numbering -> Text. A list note has no plain text, so there it flips Bullet <-> Checklist.
+  /* Line style: one key that goes Bullet -> Checklist -> Numbering -> Bullet (the Text key takes the style off). A list note has no plain text, so there it flips Bullet <-> Checklist.
      Heading is its own key; a bullet on a heading line replaces the heading. */
   const lineKind = () => (fmt.list === 'bullet' ? 'bullet' : fmt.list === 'checked' || fmt.list === 'unchecked' ? 'check' : fmt.list === 'ordered' ? 'number' : 'text');
   function cycleKind() {
     const r = curRange();
     fmt = quill.getFormat(r.index, r.length);
     const k = lineKind();
-    if (isListNote()) return setListType(k === 'bullet' ? 'unchecked' : 'bullet');
     quill.history.cutoff();
-    const next = { text: 'bullet', bullet: 'unchecked', check: 'ordered', number: false }[k];
+    const val = { bullet: 'bullet', check: 'unchecked', number: 'ordered' }, order = LIST_ALL.filter((x) => listStyles(activeNote()).includes(x));
+    // Text has its own key, so the turns go Bullet, Checklist, Numbering and round again; a preset with one style only switches it on and off
+    const next = order.length === 1 ? (k === order[0] ? false : val[order[0]]) : val[order[(order.indexOf(k) + 1) % order.length]];
     quill.formatLine(r.index, r.length, 'list', next, USER);
     quill.history.cutoff();
     syncTools();
@@ -1511,31 +1589,33 @@ ${Nn(this.code(t,r))}
 
   /* One list of commands drives the toolbar buttons and the keyboard shortcuts. */
   const COMMANDS = {
-    kind:       { label: 'List',      isOn: () => lineKind() !== 'text',               run: cycleKind },
+    kind:       { label: 'List',      def: { code: 'KeyL', mod: 'alt' }, isOn: () => lineKind() !== 'text',               run: cycleKind },
     plain:      { label: 'Text',      def: { code: 'Digit0', mod: 'alt' },   isOn: () => false,                                    run: plainText },
     heading:    { label: 'Heading',   def: { code: 'Digit1', mod: 'alt' },   isOn: isHeading,                                    run: () => lineFormat('header', 1, (f) => typeof f.header === 'number') },
     bold:       { label: 'Bold',      def: { code: 'KeyB', mod: 'ctrl' },                isOn: () => fmt.bold === true,                    run: bold },
     right:      { label: 'Align',     def: { code: 'KeyR', mod: 'alt' },   isOn: isRight,                                       run: toggleRight },
-    bullet:     { label: 'Bullet',    def: { code: 'KeyL', mod: 'alt' },   isOn: () => fmt.list === 'bullet',                  run: () => (isListNote() ? setListType('bullet') : lineFormat('list', 'bullet', (f) => f.list === 'bullet')) },
-    check:      { label: 'Checklist', def: { code: 'KeyK', mod: 'alt' }, isOn: () => fmt.list === 'checked' || fmt.list === 'unchecked', run: () => (isListNote() ? setListType('unchecked') : lineFormat('list', 'unchecked', (f) => f.list === 'checked' || f.list === 'unchecked')) },
-    number:     { label: 'Numbering', def: { code: 'KeyO', mod: 'alt' }, isOn: () => fmt.list === 'ordered',            run: () => lineFormat('list', 'ordered', (f) => f.list === 'ordered') },
     pagebreak:  { label: 'Page break', def: { code: 'Enter', mod: 'alt' },             isOn: () => false,                                run: pageBreak },
-    typewriter: { label: 'Follow',                                          isOn: typewriterOn,                                 run: toggleTypewriter }
+    typewriter: { label: 'Follow',     def: { code: 'KeyF', mod: 'alt' },   isOn: typewriterOn,                                 run: toggleTypewriter }
   };
   const SHORTCUT_IDS = Object.keys(COMMANDS).filter((id) => COMMANDS[id].def);
   /* Keys for the whole app. They sit in Settings with the text ones and can be changed the same way. */
   const APP = {
-    newnote:   { label: 'New note',   def: { code: 'KeyN', mod: 'alt' },   run: () => $($('app').dataset.tab === 'files' ? 'addFile' : 'newNote').click() },
-    search:    { label: 'Search',     def: { code: 'KeyS', mod: 'alt' },   run: () => { if (el.app.dataset.view === 'editor' && phoneMQ.matches) setView('list'); setTimeout(() => el.search.focus(), 60); } },
-    settings:  { label: 'Settings',   def: { code: 'Comma', mod: 'alt' }, run: () => $('settingsBtn').click() },
-    pin:       { label: 'Pin note',   def: { code: 'KeyP', mod: 'alt' },   run: () => { const n = activeNote(); if (n) { n.pinned = !n.pinned; touchMeta(n); toast(n.pinned ? 'Pinned to top' : 'Unpinned'); } } },
-    sharepdf:  { label: 'Share PDF',  def: { code: 'KeyE', mod: 'alt' },   run: () => { if (activeNote()) shareNote('pdf'); } },
-    sharetext: { label: 'Share text', def: { code: 'KeyT', mod: 'alt' },   run: () => { if (activeNote()) shareNote('text'); } },
-    delete:    { label: 'Delete note', def: { code: 'Delete', mod: 'alt' }, run: () => { const n = activeNote(); if (n) deleteNote(n.id); } }
+    newnote:   { label: 'New',        def: { code: 'KeyN', mod: 'alt' },   run: () => $($('app').dataset.tab === 'files' ? 'addFile' : 'newNote').click() },
+    sharepdf:  { label: 'Share',      def: { code: 'KeyE', mod: 'alt' },   run: () => { if (pg) $('apShare').click(); else if (activeNote()) shareNote('pdf'); } },
+    delete:    { label: 'Delete', def: { code: 'Delete', mod: 'alt' }, run: () => { if (pg) deletePage(); else { const n = activeNote(); if (n) deleteNote(n.id); } } }
   };
-  const APP_IDS = Object.keys(APP), ALL_IDS = [...SHORTCUT_IDS, ...APP_IDS], cmdOf = (id) => COMMANDS[id] || APP[id];
+  /* Keys for a file page. They only work while a page is open, and each one presses the button of the same name on its toolbar.
+     Align, Follow and Share are not repeated here: a file page uses the same keys as a note (FILE_SAME). */
+  const FILE_SAME = { right: 'apAlign', typewriter: 'apFollow', sharepdf: 'apShare' };
+  const pressPg = (id) => () => { if (pg && keyShown(id)) $(id).click(); };
+  const FILE = {
+    fattach:  { label: 'Attach',         def: { code: 'KeyA', mod: 'alt' }, btn: 'apAttach',  run: pressPg('apAttach') },
+    fcontext: { label: 'Context',        def: { code: 'KeyC', mod: 'alt' }, btn: 'apContext', run: pressPg('apContext') },
+    fsort:    { label: 'Sort',           def: { code: 'KeyD', mod: 'alt' }, btn: 'apSort',    run: pressPg('apSort') }
+  };
+  const APP_IDS = Object.keys(APP), FILE_IDS = Object.keys(FILE), ALL_IDS = [...SHORTCUT_IDS, ...APP_IDS, ...FILE_IDS], cmdOf = (id) => COMMANDS[id] || APP[id] || FILE[id];
 
-  function renderEditorTools() { const n = activeNote(); if (isCustomKind(n?.kind)) { const a = toolsFor(n); if (a) enforceKind(Quill.sources.API, a); } syncTools(); }
+  function renderEditorTools() { const n = activeNote(); if (n?.kind === 'dlist' || isCustomKind(n?.kind)) { const a = toolsFor(n); if (a) enforceKind(Quill.sources.API, a); } syncTools(); }
   function syncTools() {
     const r = curRange();
     fmt = quill.getFormat(r.index, r.length);
@@ -1551,8 +1631,8 @@ ${Nn(this.code(t,r))}
   const atEnd = () => { const r = quill.getSelection(); return !r || r.index + r.length >= quill.getLength() - 1; };
   const toEnd = () => { root.scrollTop = root.scrollHeight; };
   const TB_NAME = { top: 'Top', bottom: 'Bottom', typewriter: 'Follow' };
-  const DK_NAME = { notes: 'None', list: 'List', chat: 'Chat' };
-  const DK_ALLOW = { notes: 'All keys', list: 'Checklist, Bullet', chat: 'Text, Align, Break' };   // what each kind allows
+  const DK_NAME = { notes: 'None', dlist: 'Dlist', chat: 'Chat' };
+  const DK_ALLOW = { notes: 'All keys', dlist: 'List, Heading, Break', chat: 'Text, Align, Break' };   // what each kind allows
   function applyDefaultKind() {
     const dk = settings.defaultKind, nm = customOf(dk) ? customOf(dk).name : DK_NAME[dk];
     $('dkState').textContent = nm;   // nothing chosen: the + button makes a normal note
@@ -1565,9 +1645,12 @@ ${Nn(this.code(t,r))}
     $('blSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.bl === settings.bullet)));
   }
   function applyToolbar() {
-    el.editor.dataset.tb = settings.toolbar === 'bottom' || (settings.toolbar === 'typewriter' && typewriterOn()) ? 'bottom' : 'top';
+    const bar = startOf(activeNote()?.kind).bar;   // a preset can pin its own toolbar position
+    const mode = bar === 'top' || bar === 'bottom' ? bar : bar === 'follow' ? 'typewriter' : settings.toolbar;   // Follow: at the bottom only while Follow is on
+    el.editor.dataset.tb = mode === 'bottom' || (mode === 'typewriter' && typewriterOn()) ? 'bottom' : 'top';
     $('tbState').textContent = TB_NAME[settings.toolbar]; applyDefaultKind(); applyBullet();
     $('tbSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.tb === settings.toolbar)));
+    $('fsSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.fs === settings.fileSort)));
   }
   function applyTypewriter(jumpToEnd) {
     $('body').classList.toggle('typewriter', typewriterOn());
@@ -1579,7 +1662,7 @@ ${Nn(this.code(t,r))}
   quill.on('text-change', (delta, old, source) => {
     if (source === SILENT || enforcing) return;
     const n = activeNote(); if (!n) return;
-    if (n.kind === 'list') enforceList(Quill.sources.API); else { const allow = toolsFor(n); if (allow) enforceKind(Quill.sources.API, allow); enforcePageAlign(Quill.sources.API); }
+    { const allow = toolsFor(n); if (allow) enforceKind(Quill.sources.API, allow); enforcePageAlign(Quill.sources.API); }
     n.content = quill.getContents().ops;
     touch(n); syncTools(); followEnd();
   });
@@ -1756,10 +1839,11 @@ ${Nn(this.code(t,r))}
     const i = info(n);
     $('count').textContent = [`${i.words} words`, `${i.text.length.toLocaleString()} characters`, i.total && `${i.done} of ${i.total} tasks done`, `created ${ago(n.created)}`, `edited ${ago(n.updated)}`].filter(Boolean).join(' · ');
     $('pdf').disabled = !i.text.trim() && !n.title.trim();
+    prepPdf(n);
     paintSaved();
   }
 
-  const untitled = (n) => (n.kind === 'list' ? 'Untitled list' : n.kind === 'chat' ? 'Untitled chat' : customOf(n.kind) ? 'Untitled ' + customOf(n.kind).name.toLowerCase() : 'Untitled note');   // what an empty title shows
+  const untitled = (n) => (n.kind === 'dlist' ? 'Untitled Dlist' : n.kind === 'chat' ? 'Untitled chat' : customOf(n.kind) ? 'Untitled ' + customOf(n.kind).name.toLowerCase() : 'Untitled note');   // what an empty title shows
   function renderEditor() {
     const n = activeNote();
     el.blank.hidden = !!n;
@@ -1773,7 +1857,7 @@ ${Nn(this.code(t,r))}
     el.title.value = n.title;
     el.title.placeholder = untitled(n);
     quill.setContents(n.content, SILENT);
-    if (n.kind === 'list') enforceList(SILENT); else { const allow = toolsFor(n); if (allow) enforceKind(SILENT, allow); }
+    { const allow = toolsFor(n); if (allow) enforceKind(SILENT, allow); }
     quill.history.clear();
     fmt = {};
     lastSel = { index: Math.max(0, quill.getLength() - 1), length: 0 };
@@ -1876,11 +1960,11 @@ ${Nn(this.code(t,r))}
     if (motionOK()) $('edScroll').animate([{ opacity: 0 }, { opacity: 1 }], { duration: MOTION.base, easing: MOTION.ease });
   }
   /* A random accent for each new note, never the same as the newest note's, so neighbours in the list look different. */
-  function newNote(kind) {   // 'notes' (a plain page) or 'list' (only bullet and checklist lines); no kind means the one chosen in Settings
+  function newNote(kind) {   // 'notes' (a plain page), 'dlist' or 'chat'; no kind means the one chosen in Settings
     const now = Date.now();
-    const ok = (k) => ['notes', 'list', 'chat'].includes(k) || (isCustomKind(k) && !!customOf(k));
-    const want = ok(kind) ? kind : ok(settings.defaultKind) ? settings.defaultKind : 'notes', list = want === 'list';
-    const n = { id: uid(), title: '', content: list ? [{ insert: '\n', attributes: { list: 'unchecked' } }] : [{ insert: '\n' }], color: 'grey', pinned: false, created: now, updated: now };
+    const ok = (k) => ['notes', 'dlist', 'chat'].includes(k) || (isCustomKind(k) && !!customOf(k));
+    const want = ok(kind) ? kind : ok(settings.defaultKind) ? settings.defaultKind : 'notes';
+    const n = { id: uid(), title: '', content: [{ insert: '\n' }], color: 'grey', pinned: false, created: now, updated: now };
     if (want !== 'notes') n.kind = want;
     if (ui.folder !== ALL) n.folders = [ui.folder];
     state.notes.unshift(n);
@@ -1947,10 +2031,14 @@ ${Nn(this.code(t,r))}
 
   function renderShortcutHints() {
     $('scSwitch').setAttribute('aria-checked', String(settings.shortcutsOn));
-    [['newNote', 'newnote', 'New note (hold or right-click for more)'], ['settingsBtn', 'settings', 'Settings'], ['pdf', 'sharepdf', 'Tap: PDF. Hold: text']].forEach(([b, id, text]) => { $(b).title = text + (settings.shortcutsOn ? ` (${shortcutText(shortcutFor(id))})` : ''); });
+    [['newNote', 'newnote', 'New note (hold or right-click for more)'], ['pdf', 'sharepdf', 'Tap: PDF. Hold: text']].forEach(([b, id, text]) => { $(b).title = text + (settings.shortcutsOn ? ` (${shortcutText(shortcutFor(id))})` : ''); });
     SHORTCUT_IDS.forEach((id) => {
       const b = el.tools.querySelector(`[data-cmd="${id}"]`);
-      if (b) b.title = COMMANDS[id].label + (settings.shortcutsOn ? ` (${shortcutText(shortcutFor(id))})` : '');
+      if (b) { if (id === 'kind') b.dataset.hint ??= b.title; b.title = (id === 'kind' ? b.dataset.hint : COMMANDS[id].label) + (settings.shortcutsOn ? ` (${shortcutText(shortcutFor(id))})` : ''); }   // the List key keeps its tap and hold hint
+    });
+    [...FILE_IDS.map((id) => [FILE[id].btn, id]), ...Object.entries(FILE_SAME).map(([id, btn]) => [btn, id])].forEach(([btn, id]) => {   // the file page toolbar keeps its own hint and adds the key
+      const b = $(btn); if (!b) return;
+      b.dataset.hint ??= b.title; b.title = b.dataset.hint + (settings.shortcutsOn ? ` (${shortcutText(shortcutFor(id))})` : '');
     });
   }
 
@@ -1959,8 +2047,15 @@ ${Nn(this.code(t,r))}
   const say = (t) => { $('kmsg').textContent = t || ''; };
   const keyText = (id) => shortcutText(shortcutFor(id)).replace(/ \+ /g, '+');
   function paintKeys() { $('krows').querySelectorAll('[data-rec]').forEach((i) => { i.value = recording === i.dataset.rec ? '' : keyText(i.dataset.rec); }); }
+  /* The shortcut list is in three groups: Common keys work in Notes and in Files, the others only in their own tab. */
+  const SC_GROUPS = [
+    ['Common', ['newnote', 'sharepdf', 'right', 'typewriter', 'delete']],
+    ['Notes', ['plain', 'heading', 'bold', 'kind', 'pagebreak']],
+    ['Files', ['fattach', 'fcontext', 'fsort']]
+  ];
   function renderDialog() {
-    $('krows').innerHTML = ALL_IDS.map((id) => `<label class="krow"><span>${esc(cmdOf(id).label)}</span><input class="kbtn" type="text" inputmode="none" placeholder="Type keys" data-rec="${id}" autocomplete="off" aria-label="Shortcut for ${esc(cmdOf(id).label)}"></label>`).join('');
+    const row = (id) => `<label class="krow"><span>${esc(cmdOf(id).label)}</span><input class="kbtn" type="text" inputmode="none" placeholder="Type keys" data-rec="${id}" autocomplete="off" aria-label="Shortcut for ${esc(cmdOf(id).label)}"></label>`;
+    $('krows').innerHTML = SC_GROUPS.map(([name, ids]) => `<div class="kgroup">${name}</div>${ids.filter((id) => ALL_IDS.includes(id)).map(row).join('')}`).join('');
     paintKeys();
   }
   function fillAbout() {
@@ -1969,7 +2064,13 @@ ${Nn(this.code(t,r))}
     $('aboutVer').textContent = 'Version ' + APP_VERSION; $('aboutVerRow').textContent = APP_VERSION;
   }
   function openDialog() { recording = null; fillAbout(); el.dlg.querySelectorAll('details[open]').forEach((d) => { d.open = false; });   // always opens tidy, every tile closed
-    say(''); renderDialog(); renderSync(); clearTimeout(dlgTimer); el.dlg.classList.remove('closing'); el.dlg.hidden = false; pushLayer('dlg'); $('kDone').focus(); }
+    say(''); renderDialog(); renderSync(); resetDialogView(); clearTimeout(dlgTimer); el.dlg.classList.remove('closing'); el.dlg.hidden = false; pushLayer('dlg'); el.dlg.querySelector('.dlg-panel').scrollTop = 0; $('kDone').focus(); }
+  /* Settings always opens the same way: at the top, every card closed, Notes shown in Preset, no preset form or question left open. Your settings themselves stay as they are. */
+  function resetDialogView() {
+    $('psSeg').querySelector('[data-ps="notes"]').click();
+    ['cfForm', 'fpForm'].forEach((id) => { $(id).hidden = true; });
+    dkSure = false; fpSure = false; foot(); fpFoot();
+  }
   /* Settings and the note menu fade out for a moment instead of vanishing. */
   let dlgTimer = 0, menuTimer = 0;
   function hideDlg() {
@@ -2008,7 +2109,7 @@ ${Nn(this.code(t,r))}
   /* New note kinds: Note is the plain page; List holds only bullet and checklist lines; Chat is in beta: a note with only bold, align and page break; Custom is a greyed-out placeholder. */
   const KINDS = [
     ['notes', 'None',  'blue',  true,  'M180-180h400v-170q0-12.8 8.6-21.4Q597.2-380 610-380h170v-400H180v600Zm0 60q-24.8 0-42.4-17.6Q120-155.2 120-180v-600q0-24.8 17.6-42.4Q155.2-840 180-840h600q24.8 0 42.4 17.6Q840-804.8 840-780v395q0 12.4-5 23.7T822-342L618-138q-8 8-19.3 13-11.3 5-23.7 5H180Zm260-300H330q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h110q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5Zm190-160H330q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5ZM180-180v-600 600Z'],
-    ['list',  'List',  'green', true,  'm222-299 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-235q-9 9-21 9t-21-9L101-335q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm0-320 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-555q-9 9-21 9t-21-9L101-655q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm328 329q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Zm0-320q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Z'],
+    ['dlist', 'Dlist', 'green', true,  'm222-299 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-235q-9 9-21 9t-21-9L101-335q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm0-320 158-158q9-9 21-8.5t21.4 9.5q8.6 9 8.6 21t-9 21L243-555q-9 9-21 9t-21-9L101-655q-9-9-9-21t9-21q9-9 21-8.5t21 8.5l79 78Zm328 329q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Zm0-320q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h300q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H550Z'],
     ['chat',  'Chat',  'grey',  true, 'M240-240 131-131q-14 14-32.5 6.3Q80-132.3 80-152v-668q0-24 18-42t42-18h680q24 0 42 18t18 42v520q0 24-18 42t-42 18H240Zm-26-60h606v-520H140v600l74-80Zm-74 0v-520 520Z'],
     ['custom', 'Custom', 'violet', true, 'M658-487 487-658q-5-5-7-10.1-2-5.1-2-11 0-5.8 2-10.8 2-5 7-10l171-171q5-5 10.1-7 5.1-2 11-2 5.8 0 10.8 2 5 2 10 7l171 171q5 5 7 10.1 2 5.1 2 11 0 5.8-2 10.8-2 5-7 10L700-487q-5 5-10.1 7-5.1 2-11 2-5.8 0-10.8-2-5-2-10-7Zm-538-81v-241q0-12.7 8.6-21.3Q137.2-839 150-839h241q12.7 0 21.3 8.6Q421-821.7 421-809v241q0 12.7-8.6 21.3Q403.7-538 391-538H150q-12.7 0-21.3-8.6Q120-555.2 120-568Zm418 418v-241q0-12.7 8.6-21.3Q555.2-421 568-421h241q12.7 0 21.3 8.6Q839-403.7 839-391v241q0 12.7-8.6 21.3Q821.7-120 809-120H568q-12.7 0-21.3-8.6Q538-137.2 538-150Zm-418 0v-241q0-12.7 8.6-21.3Q137.2-421 150-421h241q12.7 0 21.3 8.6Q421-403.7 421-391v241q0 12.7-8.6 21.3Q403.7-120 391-120H150q-12.7 0-21.3-8.6Q120-137.2 120-150Zm60-448h181v-181H180v181Zm502 51 129-129-129-129-129 129 129 129Zm-84 367h181v-181H598v181Zm-418 0h181v-181H180v181Zm181-418Zm192-78ZM361-361Zm237 0Z']
   ];
@@ -2016,21 +2117,29 @@ ${Nn(this.code(t,r))}
   const TICK = '<svg class="dk-tick" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m378-332 363-363q9-9 21.5-9t21.5 9q9 9 9 21.5t-9 21.5L399-267q-9 9-21 9t-21-9L175-449q-9-9-8.5-21.5T176-492q9-9 21.5-9t21.5 9l159 160Z"/></svg>';
   const toolSummary = (tools) => TOOL_CHOICES.filter(([id]) => tools.includes(id)).map(([, n]) => n).join(', ') || 'No keys';
   /* Preset: List and Chat, then your own mode (or Add, to make one), each one plain row like About, stacked so more can be added. */
-  function foot() {            // the two buttons under the presets: Add | Reset normally, Cancel | Save while making one
-    const f = !$('cfForm').hidden, n = settings.customs.length;
-    $('dkAdd').textContent = f ? 'Cancel' : 'Add preset'; $('dkAdd').hidden = !f && n >= 3;
-    $('dkReset').textContent = f ? 'Save' : 'Reset'; $('dkReset').hidden = !f && !n;
-    $('dkReset').classList.toggle('solid', f); $('dkReset').disabled = f && (!cfTools.length || !$('cfName').value.trim());   // needs a name and at least one key
+  let dkSure = false;          // Reset was pressed once: the same two buttons now say Cancel | Confirm
+  function foot() {            // the two buttons under the presets: Add | Reset normally, Cancel | Save while making one, Cancel | Confirm after Reset
+    const f = !$('cfForm').hidden, c = dkSure && !f, n = settings.customs.length;
+    $('dkAdd').textContent = f || c ? 'Cancel' : 'Add preset'; $('dkAdd').hidden = !f && !c && n >= 3;
+    $('dkReset').textContent = f ? 'Save' : c ? 'Confirm' : 'Reset'; $('dkReset').hidden = !f && !c && !n;
+    $('dkReset').classList.toggle('solid', f || c); $('dkReset').classList.toggle('danger', c); $('dkReset').disabled = f && (!cfTools.length || !$('cfName').value.trim());   // needs a name and at least one key
   }
   function buildPreset() {
     const row = (id, name, keys) => `<button class="dk-row" type="button" role="radio" data-dk="${id}"><span class="dk-name">${esc(name)}</span><b class="dk-keys">${esc(keys)}</b><span class="dk-radio">${TICK}</span></button>`;
-    const rows = [row('notes', 'None', DK_ALLOW.notes), row('list', 'List', DK_ALLOW.list), row('chat', 'Chat (Beta)', DK_ALLOW.chat)];
+    const rows = [row('notes', 'None', DK_ALLOW.notes), row('dlist', 'Dlist', DK_ALLOW.dlist), row('chat', 'Chat (Beta)', DK_ALLOW.chat)];
     settings.customs.forEach((c) => rows.push(row(c.id, c.name, toolSummary(c.tools))));
     $('dkSeg').innerHTML = rows.join('');
     foot();
     applyDefaultKind();
   }
   buildPreset();
+  /* One Preset card for both: the switch at the top shows the Notes presets or the Files presets (each keeps its own list, form and buttons). */
+  $('psSeg').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-ps]'); if (!b) return;
+    $('psSeg').querySelectorAll('button').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+    $('psNotes').hidden = b.dataset.ps !== 'notes'; $('psFiles').hidden = b.dataset.ps !== 'files';
+    dkSure = false; fpSure = false; foot(); fpFoot();
+  });
   const kindIcon = (c, path) => `<span class="pk" style="background:var(--${c});color:var(--on-${c})"><svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="${path}"/></svg></span>`;
   function renderMenu() {
     const m = el.menu;
@@ -2055,17 +2164,33 @@ ${Nn(this.code(t,r))}
         (menu.id === ALL ? '' : `<button class="mdel" type="button" data-act="ask" aria-label="Delete folder" title="Delete folder">${TRASH_SVG}</button>`) + '</div>';
       return;
     }
+    if (menu.kind === 'lkind') {   // the line style of the note being written
+      const cur = lineKind(), opts = LIST_ALL.filter((x) => listStyles(activeNote()).includes(x));
+      m.innerHTML = opts.map((k) => `<button class="mi preset" type="button" data-act="lkind" data-v="${k}" role="menuitemradio" aria-checked="${cur === k}">${kindIcon(KIND_COL[k], document.querySelector(`#tools .k-${k === 'check' ? 'check' : k} path`).getAttribute('d'))}<b>${KIND_NAME[k]}</b><span class="mck">${cur === k ? TICK : ''}</span></button>`).join('');
+      return;
+    }
+    if (menu.kind === 'fnew') {   // the file page presets, from the + button
+      const IC = { none: ['blue', 'M120-120v-320h320v320H120Zm0-400v-320h320v320H120Zm400 400v-320h320v320H520Zm0-400v-320h320v320H520Z'], photos: ['coral', 'M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Z'], docs: ['amber', 'M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520Z'] };
+      const all = [...Object.values(FP_BUILTIN), ...settings.fpresets], cIcon = KINDS.find((k) => k[0] === 'custom');
+      m.innerHTML = all.map((p) => { const [c, d] = IC[p.id] || ['violet', cIcon[4]]; return `<button class="mi preset" type="button" data-act="fmake" data-v="${p.id}" role="menuitem">${kindIcon(c, d)}<b>${esc(p.name)}</b></button>`; }).join('');
+      return;
+    }
+    if (menu.kind === 'sort') {   // how the files on a page are ordered
+      const cur = pgSort(), ic = { date: kindIcon('blue', 'M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm112 168 56-56-128-128v-184h-80v216l152 152ZM480-160q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z'), type: kindIcon('violet', 'm260-520 220-360 220 360H260ZM700-80q-75 0-127.5-52.5T520-260q0-75 52.5-127.5T700-440q75 0 127.5 52.5T880-260q0 75-52.5 127.5T700-80Zm-580-20v-320h320v320H120Zm580-60q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29Zm-500-20h160v-160H200v160Zm202-420h156l-78-126-78 126Zm78 0ZM360-240Zm340 0Z'), az: '<span class="pk" style="background:var(--green);color:var(--on-green);font-size:0.6rem;font-weight:700">AZ</span>' };
+      m.innerHTML = [['date', 'Date'], ['type', 'Type'], ['az', 'A\u2013Z']].map(([k, name]) => `<button class="mi preset" type="button" data-act="sortby" data-v="${k}" role="menuitemradio" aria-checked="${cur === k}">${ic[k]}<b>${name}</b><span class="mck">${cur === k ? TICK : ''}</span></button>`).join('');
+      return;
+    }
     if (menu.kind === 'share') {   // every file of the page: tick the ones to send, or send one with its own button
       if (!pg || !pg.items.length) return closeMenu();
       const left = [...shareSel].filter((i) => pg.items[i]).length, all = left === pg.items.length;
-      const rows = pg.items.map((it, i) => `<div class="sh-row"><button class="sh-chk" type="button" role="checkbox" data-act="shk" data-v="${i}" aria-checked="${shareSel.has(i)}"><span class="sh-box">${TICK}</span><span class="sh-name">${esc(it.name)}</span></button><button class="sh-one" type="button" data-act="sh1" data-v="${i}" aria-label="Share ${esc(it.name)}" title="Share this file"><svg width="18" height="18" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M686-80q-47.5 0-80.75-33.25T572-194q0-8 5-34L278-403q-16.28 17.34-37.64 27.17Q219-366 194-366q-47.5 0-80.75-33T80-480q0-48 33.25-81T194-594q24 0 45 9.3 21 9.29 37 25.7l301-173q-2-8-3.5-16.5T572-766q0-47.5 33.25-80.75T686-880q47.5 0 80.75 33.25T800-766q0 47.5-33.25 80.75T686-652q-23.27 0-43.64-9Q622-670 606-685L302-516q3 8 4.5 17.5t1.5 18q0 8.5-1 16t-3 15.5l303 173q16-15 36.09-23.5 20.1-8.5 43.07-8.5Q734-308 767-274.75T800-194q0 47.5-33.25 80.75T686-80Zm.04-60q22.96 0 38.46-15.54 15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5Zm-492-286q22.96 0 38.46-15.54 15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5ZM724.5-727.54q15.5-15.53 15.5-38.5 0-22.96-15.54-38.46-15.53-15.5-38.5-15.5-22.96 0-38.46 15.54-15.5 15.53-15.5 38.5 0 22.96 15.54 38.46 15.53 15.5 38.5 15.5 22.96 0 38.46-15.54ZM686-194ZM194-480Zm492-286Z"/></svg></button></div>`).join('');
-      m.innerHTML = `<div class="mh">Share</div>${rows}<div class="mrow"><button class="btn solid" type="button" data-act="shall"${left ? '' : ' disabled'} style="flex:1">${all ? 'Share all' : left ? `Share ${left}` : 'Pick a file'}</button></div>`;
+      const rows = pg.items.map((it, i) => `<div class="sh-row"><button class="sh-chk" type="button" role="checkbox" data-act="shk" data-v="${i}" aria-checked="${shareSel.has(i)}"><span class="fi mfi" data-k="${fkind(it)}">${esc(fext(it))}</span><span class="sh-name">${esc(it.name)}</span><span class="sh-box">${TICK}</span></button></div>`).join('');
+      m.innerHTML = `<div class="mh">Share</div>${rows}<div class="mrow"><button class="btn" type="button" data-act="shall"${left ? '' : ' disabled'}><svg width="18" height="18" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M720-80q-50 0-85-35t-35-85q0-7 1-14.500t3-13.500L322-392q-17 15-38 23.500t-44 8.500q-50 0-85-35t-35-85q0-50 35-85t85-35q23 0 44 8.500t38 23.500l282-164q-2-6-3-13.500t-1-14.500q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35q-23 0-44-8.500T638-648L356-484q2 6 3 13.500t1 14.500q0 7-1 14.500t-3 13.500l282 164q17-15 38-23.500t44-8.500q50 0 85 35t35 85q0 50-35 85t-85 35Z"/></svg>${left && !all ? `Share ${left}` : 'Share'}</button><button class="btn" type="button" data-act="zipall"${left ? '' : ' disabled'}><svg width="18" height="18" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>${left && !all ? `Download ${left}` : 'Download'}</button></div>`;
       return;
     }
     if (menu.kind === 'att') {   // one attachment
       const [it] = attOf(); if (!it) return closeMenu();
       m.innerHTML = `<div class="mhead"><span class="fi mfi" data-k="${fkind(it)}">${esc(fext(it))}</span><div class="mtitle"></div>` +
-        `<button class="mpin" type="button" data-act="ar" aria-label="Rename" title="Rename"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg></button><button class="mdel" type="button" data-act="ad" aria-label="Remove" title="Remove">${TRASH_SVG}</button></div>`;
+        `<button class="mpin" type="button" data-act="ar" aria-label="Rename" title="Rename"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg></button><button class="mpin" type="button" data-act="apin" aria-pressed="${!!it.pinned}" aria-label="${it.pinned ? 'Unpin' : 'Pin to top'}" title="${it.pinned ? 'Unpin' : 'Pin to top'}">${PIN_SVG}</button><button class="mdel" type="button" data-act="ad" aria-label="Remove" title="Remove">${TRASH_SVG}</button></div>`;
       return;
     }
     if (menu.kind === 'page') {   // the profile picker of a page: colour, folders (any number), pin, delete; the same from the list and from inside the page
@@ -2108,18 +2233,24 @@ ${Nn(this.code(t,r))}
     el.menu.querySelectorAll('.sw').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.v === c)));
   }
   function openMenu(kind, id, x, y) {
-    if (kind === 'note' ? !findNote(id) : kind === 'att' ? !attOfId(id)[0] : kind === 'share' ? !(pg && pg.items.length) : kind === 'page' ? !(files.some((f) => f.id === id) || (pg && pg.id === id)) : kind === 'ffolder' ? ffLabel(id) === undefined : kind === 'file' ? !files.some((f) => f.id === id) : kind !== 'new' && folderLabel(id) === undefined) return;
+    if (kind === 'note' ? !findNote(id) : kind === 'att' ? !attOfId(id)[0] : kind === 'share' ? !(pg && pg.items.length) : kind === 'sort' ? !pg : kind === 'fnew' ? false : kind === 'lkind' ? !activeNote() :  kind === 'page' ? !(files.some((f) => f.id === id) || (pg && pg.id === id)) : kind === 'ffolder' ? ffLabel(id) === undefined : kind === 'file' ? !files.some((f) => f.id === id) : kind !== 'new' && folderLabel(id) === undefined) return;
     Object.assign(menu, { kind, id, confirm: false });
     renderMenu();
     const m = el.menu; clearTimeout(menuTimer); m.classList.remove('closing'); m.hidden = false; pushLayer('menu');
     const vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    if (kind === 'lkind') { const b = document.querySelector('#tools [data-cmd="kind"]').getBoundingClientRect(); x = b.left; y = b.top > vh / 2 ? b.top - m.offsetHeight - 8 : b.bottom + 8; }
+    if (kind === 'fnew') { const f = $('addFile'); f.classList.add('open'); const b = f.getBoundingClientRect(); x = b.right - m.offsetWidth; y = b.bottom - m.offsetHeight; }   // grows out of the button, same corner as the notes +
+    if (kind === 'sort') { const b = $('apSort').getBoundingClientRect(); x = b.left; y = b.top > vh / 2 ? b.top - m.offsetHeight - 8 : b.bottom + 8; }   // opens on the side of the button that has room
+    if (kind === 'share') { const b = $('apShare').getBoundingClientRect(); x = b.right - m.offsetWidth; y = b.bottom + 6; }   // right edge under the Share button
     if (kind === 'new') { const f = $('newNote'); f.classList.add('open'); const b = f.getBoundingClientRect(); x = b.right - m.offsetWidth; y = b.bottom - m.offsetHeight; }   // grows out of the button, same corner
+    const below = kind === 'sort' || kind === 'lkind' ? y >= (document.querySelector(kind === 'sort' ? '#apSort' : '#tools [data-cmd="kind"]')?.getBoundingClientRect().bottom || 0) : false;
+    m.style.transformOrigin = kind === 'new' || kind === 'fnew' ? 'bottom right' : kind === 'sort' || kind === 'lkind' ? (below ? 'top left' : 'bottom left') : '';   // the menu grows out of the button it belongs to
     m.style.left = `${Math.max(8, Math.min(x, vw - m.offsetWidth - 8))}px`;
     m.style.top = `${Math.max(8, Math.min(y, vh - m.offsetHeight - 8))}px`;
     m.querySelector('button')?.focus({ preventScroll: true });
   }
   function hideMenu() {
-    $('newNote').classList.remove('open');
+    $('newNote').classList.remove('open'); $('addFile').classList.remove('open');
     Object.assign(menu, { kind: null, id: null, confirm: false });
     if (el.menu.hidden || el.menu.classList.contains('closing')) return;
     if (!motionOK()) { el.menu.hidden = true; return; }
@@ -2129,6 +2260,13 @@ ${Nn(this.code(t,r))}
   function closeMenu() { hideMenu(); dropLayer('menu'); }
 
   const menuActions = {
+    lkind:           (n, v) => {
+      closeMenu();
+      const r = curRange(); fmt = quill.getFormat(r.index, r.length);
+      quill.history.cutoff(); quill.formatLine(r.index, r.length, 'list', { bullet: 'bullet', check: 'unchecked', number: 'ordered' }[v], USER); quill.history.cutoff(); syncTools();
+    },
+    fmake:           (n, v) => { closeMenu(); openPage(undefined, v); },
+    sortby:          (n, v) => { if (!pg) return; pg.sort = v; closeMenu(); savePg(true); paintPg(); },
     make:            (n, v) => { closeMenu(); newNote(v); },
     rename:          () => { const id = menu.id, ff = menu.kind === 'ffolder'; closeMenu(); ff ? startFRename(id) : startRename(id); },
     ask:             () => { if (menu.kind === 'note') { const id = menu.id; closeMenu(); deleteNote(id); return; } menu.confirm = true; renderMenu(); },   // a note goes at once and can be undone; a folder still asks
@@ -2157,8 +2295,9 @@ ${Nn(this.code(t,r))}
     pdelete:         () => { const r = menuRec(); closeMenu(); if (!r) return; if (r === pg) deletePage(); else deleteRecord(r); },
     ar:              () => { const [, i] = attOf(); closeMenu(); if (i !== undefined) { pgRename = i; paintItems(); } },
     shk:             (n, v) => { const i = +v; if (shareSel.has(i)) shareSel.delete(i); else shareSel.add(i); renderMenu(); },
-    sh1:             (n, v) => { closeMenu(); if (pg && pg.items[+v]) shareItems([pg.items[+v]]); },
-    shall:           () => { const list = [...shareSel].sort((a, b) => a - b).map((i) => pg && pg.items[i]).filter(Boolean); closeMenu(); if (list.length) shareItems(list); },
+    shall:           (n, v, btn) => runShareMenu(btn, 'share'),
+    zipall:          (n, v, btn) => runShareMenu(btn, 'save'),
+    apin:            () => { const [, i] = attOf(); closeMenu(); if (i !== undefined) togglePin(i); },
     ad:              () => { const [, i] = attOf(); closeMenu(); if (i !== undefined) removeItem(i); },
     pin:             (n) => { n.pinned = !n.pinned; touchMeta(n); closeMenu(); toast(n.pinned ? 'Pinned to top' : 'Unpinned'); },
     color:           (n, v) => setNoteColor(n, v),
@@ -2211,7 +2350,7 @@ ${Nn(this.code(t,r))}
   const fs = (() => { try { const j = JSON.parse(localStorage.getItem(FF_KEY)); if (j && Array.isArray(j.folders)) return { all: String(j.all || 'All'), folders: j.folders.filter((x) => x && x.id && x.name) }; } catch (e) {} return { all: 'All', folders: [] }; })();
   const fsSave = () => { try { localStorage.setItem(FF_KEY, JSON.stringify(fs)); } catch (e) {} };
   let fFolder = ALL, fRenaming = null, fColor = '', fTag = '', fColOpen = false;
-  const fTags = (f) => { const t = new Set(hashtags(f.title || f.name || '')); (f.items || []).forEach((i) => hashtags(i.comment || '').forEach((x) => t.add(x))); return [...t]; };   // #tags in a page's title and comments
+  const fTags = (f) => { const t = new Set(hashtags(f.title || f.name || '')); (f.items || []).forEach((i) => hashtags(i.comment || '').forEach((x) => t.add(x))); return [...t]; };   // #tags in a page's title and context
   function paintFColours() {
     $('fSearchRow').dataset.colours = fColOpen ? 'open' : 'closed';
     $('fcBtn').setAttribute('aria-expanded', String(fColOpen));
@@ -2326,10 +2465,36 @@ ${Nn(this.code(t,r))}
     }
     renderFStats(inFolder);
   }
+  /* Calendar: years are the folders, months are the list; a month opens its days in place. */
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const cal = { year: new Date().getFullYear(), open: new Date().getMonth() };
+  function renderCal() {
+    const now = new Date(), ny = now.getFullYear();
+    const yrs = []; for (let y = ny - 2; y <= Math.max(2030, ny + 2); y++) yrs.push(y);
+    if (!yrs.includes(cal.year)) yrs.push(cal.year);
+    $('cyears').innerHTML = yrs.sort().map((y) => `<div class="folder" role="tab" tabindex="0" data-cyear="${y}" aria-selected="${y === cal.year}"><span class="folder-name">${y}</span></div>`).join('');
+    $('cmonths').innerHTML = MONTHS.map((m, i) => {
+      const days = new Date(cal.year, i + 1, 0).getDate(), lead = new Date(cal.year, i, 1).getDay(), isNow = cal.year === ny && i === now.getMonth(), c = COLORS[i % COLORS.length], ab = m.slice(0, 3);
+      let g = '';
+      if (cal.open === i) {
+        g = '<div class="cal-grid">' + ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d) => `<span class="dow">${d}</span>`).join('') + '<span></span>'.repeat(lead);
+        for (let d = 1; d <= days; d++) g += `<span${isNow && d === now.getDate() ? ' class="today"' : ''}>${d}</span>`;
+        g += '</div>';
+      }
+      return `<li class="item" style="--nc:var(--${c});--on-nc:var(--on-${c})"><button class="row" type="button" data-cm="${i}" aria-current="${cal.open === i}" aria-expanded="${cal.open === i}"><span class="av-gap"></span><span class="row-main">` +
+        `<span class="row-top"><span class="row-title">${m}</span><span class="row-time">${isNow ? "This month · " : ""}${days} days</span></span>` +
+        `</span></button>` +
+        `<span class="cal-av" aria-hidden="true">${ab}</span>${g}</li>`;
+    }).join('');
+    const o = $('cmonths').querySelector('[aria-expanded="true"]'); if (o) $('cmonths').scrollTop = Math.max(0, o.parentElement.offsetTop - $('cmonths').offsetTop - 8);
+  }
+  $('cyears').addEventListener('click', (e) => { const b = e.target.closest('[data-cyear]'); if (!b) return; cal.year = +b.dataset.cyear; cal.open = cal.year === new Date().getFullYear() ? new Date().getMonth() : 0; renderCal(); });
+  $('cmonths').addEventListener('click', (e) => { const b = e.target.closest('[data-cm]'); if (!b) return; const i = +b.dataset.cm; cal.open = cal.open === i ? -1 : i; renderCal(); });
   function setTab(t) {
     $('app').dataset.tab = t;
     document.querySelectorAll('[data-dock]').forEach((b) => (b.dataset.dock === t ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current')));
     if (t === 'files') renderFiles();
+    if (t === 'calendar') renderCal();
   }
   /* What a file is: a colour for its badge, and whether we can draw a small preview of it. */
   const EXT = (f) => (f.name.includes('.') ? f.name.split('.').pop().toLowerCase() : '');
@@ -2380,6 +2545,34 @@ ${Nn(this.code(t,r))}
     if (!r || Date.now() - r.t > 3600000) return;
     setTab(r.tab); const f = r.page && files.find((x) => x.id === r.page); if (f) openPage(f);
   }
+  /* Download all: every file of the page in one .zip. Files are stored as they are (no compression), so it works offline with no library. */
+  const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  const crc32 = (u8) => { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  async function zipItems(items, onStep) {
+    let step = 0;
+    const enc = new TextEncoder(), parts = [], central = [], used = new Set(), now = new Date();
+    const dt = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1), dd = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+    let offset = 0, cdSize = 0;
+    for (const it of items) {
+      const data = new Uint8Array(await it.blob.arrayBuffer());
+      let name = it.name || 'file', n = 1; const dot = name.lastIndexOf('.'), stem = dot > 0 ? name.slice(0, dot) : name, ext = dot > 0 ? name.slice(dot) : '';
+      while (used.has(name)) name = `${stem} (${++n})${ext}`;   // two files with one name keep both
+      used.add(name);
+      if (onStep) { onStep(++step, items.length); await new Promise((r) => setTimeout(r, 0)); }   // lets the menu repaint its progress
+      const nb = enc.encode(name), crc = crc32(data);
+      const lh = new DataView(new ArrayBuffer(30));
+      lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(10, dt, true); lh.setUint16(12, dd, true);
+      lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, nb.length, true);
+      const ch = new DataView(new ArrayBuffer(46));
+      ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(12, dt, true); ch.setUint16(14, dd, true);
+      ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true); ch.setUint16(28, nb.length, true); ch.setUint32(42, offset, true);
+      parts.push(lh.buffer, nb, data); central.push(ch.buffer, nb);
+      offset += 30 + nb.length + data.length; cdSize += 46 + nb.length;
+    }
+    const end = new DataView(new ArrayBuffer(22));
+    end.setUint32(0, 0x06054b50, true); end.setUint16(8, items.length, true); end.setUint16(10, items.length, true); end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
+    return new Blob([...parts, ...central, end.buffer], { type: 'application/zip' });
+  }
   function saveBlob(f) { const u = URL.createObjectURL(f.blob), a = document.createElement('a'); a.href = u; a.download = f.name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 60000); }
   let fvRec = null, fvText = '', fvHits = [], fvCur = -1;
   function closeFile() { closeFileUi(); dropLayer('fv'); }
@@ -2424,8 +2617,12 @@ ${Nn(this.code(t,r))}
   /* A file page works like a note: a title, a colour avatar (the profile picker), a toolbar with Attach and Align, and any number of
      attachments in the body. It saves itself as you go, and an empty page that is closed leaves nothing behind. */
   let pg = null, pgFresh = false, pgTimer = 0;
+  const fpOf = (id) => FP_BUILTIN[id] || settings.fpresets.find((x) => x.id === id) || FP_BUILTIN.none;
+  const fpHas = (k) => fpOf(pg && pg.preset).tools.includes(k);
+  const keyShown = (btn) => $(btn).style.display !== 'none';
+  const pgSort = () => (pg && pg.sort) || settings.fileSort || 'date';   // the page's own order, else the one chosen in Settings
   const pgName = (p) => (p.title || '').trim() || (p.items.length > 1 ? `${p.items.length} files` : p.items.length ? p.items[0].name.replace(/\.[^.]+$/, '') : 'Untitled page');
-  let pgEdit = null, pgComments = false, swipedAt = 0, pgRename = null;
+  let pgEdit = null, pgContext = false, swipedAt = 0, pgRename = null;
   const baseName = (n) => (n.lastIndexOf('.') > 0 ? n.slice(0, n.lastIndexOf('.')) : n);
   const extOf = (n) => (n.lastIndexOf('.') > 0 ? n.slice(n.lastIndexOf('.')) : '');
   const pgFollow = () => (pg && pg.follow !== undefined ? pg.follow : settings.typewriter);   // like a note: follow the newest at the bottom
@@ -2436,21 +2633,47 @@ ${Nn(this.code(t,r))}
     const pgEl = $('apage'); pgEl.style.setProperty('--nc', `var(--${pg.color})`); pgEl.style.setProperty('--on-nc', `var(--on-${pg.color})`);
     $('apAvatar').innerHTML = avatar({ title: $('apTitle').value.trim() || pgName(pg), color: pg.color }, 32);
     $('apAlign').setAttribute('aria-pressed', String(pg.align === 'right'));
-    $('apComment').setAttribute('aria-pressed', String(pgComments));
+    $('apContext').setAttribute('aria-pressed', String(pgContext));
     $('apFollow').setAttribute('aria-pressed', String(pgFollow()));
-    pgEl.dataset.tb = settings.toolbar === 'bottom' || (settings.toolbar === 'typewriter' && pgFollow()) ? 'bottom' : 'top';
+    $('apSort').setAttribute('aria-pressed', String(pgSort() !== settings.fileSort)); paintSortIcon();
+    FP_KEYS.forEach(([k, , b]) => { $(b).style.display = fpHas(k) ? '' : 'none'; });   // the page's preset decides which keys show
+    const fbar = fpOf(pg.preset).bar;   // a preset can pin its own toolbar position
+    const fmode = fbar === 'top' || fbar === 'bottom' ? fbar : fbar === 'follow' ? 'typewriter' : settings.toolbar;
+    pgEl.dataset.tb = fmode === 'bottom' || (fmode === 'typewriter' && pgFollow()) ? 'bottom' : 'top';
+  }
+  /* Web addresses written in a file's context are highlighted and open when tapped; a tap anywhere else on the context still edits it. Only http and https are opened.
+     It looks for addresses that start with http:// or www., or end in a common ending such as .com, so a file name like notes.md is left alone. */
+  const URL_RE = /\b((?:https?:\/\/|www\.)[^\s<>"']+|(?:[a-z0-9-]+\.)+(?:com|net|org|io|app|dev|ai|co|me|edu|gov|info|xyz|ly|tv)(?![a-z0-9-])(?:[/?#][^\s<>"']*)?)/gi;
+  function linkify(text) {
+    let out = '', last = 0, m; URL_RE.lastIndex = 0;
+    while ((m = URL_RE.exec(text))) {
+      let u = m[0]; const trail = (u.match(/[.,;:!?)\]]+$/) || [''])[0]; if (trail) u = u.slice(0, -trail.length);
+      if (!u) continue;
+      out += esc(text.slice(last, m.index)) + `<span class="lnk" data-url="${esc(/^https?:\/\//i.test(u) ? u : 'https://' + u)}">${esc(u)}</span>`;
+      last = m.index + u.length; URL_RE.lastIndex = last;
+    }
+    return out + esc(text.slice(last));
+  }
+  /* Sort for a page: Date (the order the files came), Type (like files together: PDFs, photos, videos ...) or A-Z. Pinned files are always first. */
+  const TYPE_ORDER = ['pdf', 'doc', 'sheet', 'slide', 'image', 'video', 'audio', 'zip', 'code'];
+  const typeRank = (it) => { const r = TYPE_ORDER.indexOf(fkind(it)); return r < 0 ? TYPE_ORDER.length : r; };
+  function pgOrder(a, b) {
+    const x = pg.items[a], y = pg.items[b], mode = pgSort();
+    return (!!y.pinned - !!x.pinned)
+      || (mode === 'type' ? typeRank(x) - typeRank(y) : 0)
+      || (mode === 'az' ? x.name.localeCompare(y.name, undefined, { numeric: true, sensitivity: 'base' }) : 0)
+      || a - b;
   }
   function paintItems() {
     if (!pg) return;
-    const box = $('apItems'); box.dataset.align = pg.align === 'right' ? 'right' : 'left'; box.dataset.follow = pgFollow() ? 'on' : 'off';
+    const box = $('apItems'); box.dataset.align = pg.align === 'right' ? 'right' : 'left'; box.dataset.context = pgContext ? 'on' : 'off'; box.dataset.follow = pgFollow() ? 'on' : 'off';
     box.innerHTML = pg.items.length
-      ? pg.items.map((it, i) => {
-        const note = pgEdit === i ? `<div class="pg-note edit"><textarea data-ci="${i}" rows="1" maxlength="240" placeholder="Add a comment" aria-label="Comment on ${esc(it.name)}"></textarea></div>`
-          : it.comment ? `<button class="pg-note" type="button" data-ci="${i}" data-pa="comment" aria-label="Edit comment">${esc(it.comment)}</button>`
-          : pgComments ? `<button class="pg-note add" type="button" data-ci="${i}" data-pa="comment">Add a comment</button>` : '';
-        return `<div class="pg-entry" data-i="${i}"><span class="pg-reply" aria-hidden="true">${REPLY_SVG}</span><div class="pg-item"><${pgRename === i ? 'div' : 'button'} class="fv-open"${pgRename === i ? '' : ' type="button"'} data-pi="${i}" data-pa="open"><span class="fi" data-k="${fkind(it)}">${esc(fext(it))}</span><span>${pgRename === i ? `<input class="pg-rename" data-ri="${i}" type="text" maxlength="80" value="${esc(baseName(it.name))}" aria-label="Rename ${esc(it.name)}">` : `<span class="fn">${esc(it.name)}</span>`}<span class="fs">${fsize(it.size)}</span></span></${pgRename === i ? 'div' : 'button'}><button class="icon-btn" type="button" data-pi="${i}" data-pa="dl" aria-label="Download" title="Download"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg></button></div>${note}</div>`;
+      ? pg.items.map((it, i) => i).sort(pgOrder).map((i) => { const it = pg.items[i];   // pinned files first, then by the page's Sort (date = the order they came)
+        const note = pgEdit === i ? `<div class="pg-note edit"><textarea data-ci="${i}" rows="1" maxlength="240" placeholder="Add context" aria-label="Context for ${esc(it.name)}"></textarea></div>`
+          : it.comment ? `<button class="pg-note" type="button" data-ci="${i}" data-pa="context" aria-label="Edit context">${linkify(it.comment)}</button>` : '';
+        return `<div class="pg-entry" contenteditable="false" data-i="${i}"><span class="pg-reply" aria-hidden="true">${REPLY_SVG}</span><div class="pg-item">${it.pinned ? `<span class="pg-pin" title="Pinned">${PIN_SVG}</span>` : ''}<${pgRename === i ? 'div' : 'button'} class="fv-open"${pgRename === i ? '' : ' type="button"'} data-pi="${i}" data-pa="open"><span class="fi" data-k="${fkind(it)}">${esc(fext(it))}</span><span>${pgRename === i ? `<input class="pg-rename" data-ri="${i}" type="text" maxlength="80" value="${esc(baseName(it.name))}" aria-label="Rename ${esc(it.name)}">` : `<span class="fn">${esc(it.name)}</span>`}<span class="fs">${fsize(it.size)}</span></span></${pgRename === i ? 'div' : 'button'}><button class="icon-btn" type="button" data-pi="${i}" data-pa="dl" aria-label="Download" title="Download"><svg width="20" height="20" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg></button></div>${note}</div>`;
       }).join('')
-      : '<p class="pg-empty">Tap the paperclip to add a file or take a photo. You can also paste (Ctrl V) or drop files here.</p>';
+      : '<p class="pg-empty" contenteditable="false">Tap the paperclip to add files or photos. You can also paste (Ctrl V) or drop files here.</p>';
     const rn = box.querySelector('.pg-rename'); if (rn) { rn.focus({ preventScroll: true }); rn.select(); }
     const ta = box.querySelector('textarea');
     if (ta) { ta.value = pg.items[+ta.dataset.ci]?.comment || ''; ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; ta.focus({ preventScroll: true }); ta.setSelectionRange(ta.value.length, ta.value.length); }
@@ -2458,13 +2681,13 @@ ${Nn(this.code(t,r))}
     $('apCount').textContent = [pg.items.length ? `${pg.items.length} ${pg.items.length === 1 ? 'file' : 'files'}` : 'no files yet', pg.items.length && fsize(total), `created ${ago(pg.created || pg.added)}`, `edited ${ago(pg.edited || pg.created || pg.added)}`].filter(Boolean).join(' · ');
   }
   const paintPg = () => { paintHead(); paintItems(); };
-  function commitComment(i, text) {   // one comment per attachment; clearing it takes it away
+  function commitContext(i, text) {   // one context per attachment; clearing it takes it away (it is saved under the key "comment", so nothing saved earlier is lost)
     if (!pg || pgEdit !== i) return;
     const it = pg.items[i], v = text.trim(); pgEdit = null;
     if (it) { if (v) it.comment = v; else delete it.comment; }
     savePg(true); paintItems();
   }
-  const startComment = (i) => { if (!pg || !pg.items[i]) return; pgEdit = i; paintItems(); };
+  const startContext = (i) => { if (!pg || !pg.items[i]) return; pgEdit = i; paintItems(); };
   function savePg(now) {
     if (!pg) return; clearTimeout(pgTimer);
     const go = () => {
@@ -2479,10 +2702,11 @@ ${Nn(this.code(t,r))}
     };
     if (now) go(); else pgTimer = setTimeout(go, 350);
   }
-  function openPage(f) {
+  function openPage(f, presetId) {
     if (f) { pg = f; pgFresh = false; if (!pg.items) pg.items = []; if (!pg.align) pg.align = 'left'; }
-    else { pg = { id: uid(), kind: 'page', title: '', name: 'Untitled page', color: 'grey', type: 'page', size: 0, added: Date.now(), created: Date.now(), items: [], align: 'left' }; if (fFolder !== ALL) pg.folders = [fFolder]; pgFresh = true; }
-    pgEdit = null; pgComments = false;
+    else { pg = { id: uid(), kind: 'page', title: '', name: 'Untitled page', color: 'grey', type: 'page', size: 0, added: Date.now(), created: Date.now(), items: [], align: 'left' }; if (fFolder !== ALL) pg.folders = [fFolder]; pgFresh = true;
+      const fp = fpOf(presetId || settings.fileDefault); pg.preset = fp.id; pg.align = fp.align || 'left'; if (fp.sort) pg.sort = fp.sort; }   // a new page starts the way its preset says
+    pgEdit = null; pgContext = false;
     $('apTitle').value = pg.title ?? pg.name ?? '';
     $('apage').classList.add('show'); pushLayer('pg'); paintPg(); toEndPg();
     if (pgFresh) $('apTitle').focus({ preventScroll: true });
@@ -2527,7 +2751,7 @@ ${Nn(this.code(t,r))}
     picked.forEach((b) => pg.items.push({ name: uniqueName(b.name), type: b.type, size: b.size, blob: b }));
     savePg(true); paintPg(); toEndPg(); toast(picked.length > 1 ? `${picked.length} files attached` : 'File attached');
   }
-  $('addFile').addEventListener('click', () => openPage());
+  $('addFile').addEventListener('click', () => { if (!swallowPressTap()) openPage(); });   // tap: the default preset; hold (or right-click): choose one
   $('apBack').addEventListener('click', closePg);
   $('apSaved').innerHTML = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SAVE_ICON.saved}</svg>`;
   $('apSaved').title = 'Saved on this device'; $('apSaved').setAttribute('aria-label', 'Saved on this device');
@@ -2535,33 +2759,104 @@ ${Nn(this.code(t,r))}
   const MIME = { pdf: 'application/pdf', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml', txt: 'text/plain', csv: 'text/csv', json: 'application/json', mp4: 'video/mp4', mov: 'video/quicktime', mp3: 'audio/mpeg', m4a: 'audio/mp4', wav: 'audio/wav', zip: 'application/zip', doc: 'application/msword', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', xls: 'application/vnd.ms-excel', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', ppt: 'application/vnd.ms-powerpoint', pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' };
   const mimeOf = (it) => it.type || MIME[(it.name.split('.').pop() || '').toLowerCase()] || 'application/octet-stream';
   let shareSel = new Set();
-  async function shareItems(items) {
+  async function shareItems(items) {   // gives back 'ok' when shared, '' when cancelled, or the reason it could not
     const files = items.map((it) => new File([it.blob], it.name, { type: mimeOf(it) })), many = files.length > 1;
-    if (!navigator.share) { toast('Sharing is not available here'); return; }
-    if (navigator.canShare && !navigator.canShare({ files })) { toast(many ? 'This phone cannot share these files' : 'This phone cannot share this file'); return; }
+    if (!navigator.share) return 'Sharing is not available here';
+    if (navigator.canShare && !navigator.canShare({ files })) return many ? 'This phone cannot share these files' : 'This phone cannot share this file';
     try { await navigator.share({ files, title: pg ? pg.name : 'Files' }); }
-    catch (e) { if (e && e.name === 'AbortError') return; toast('Could not share'); }
+    catch (e) { if (e && e.name === 'AbortError') return ''; return 'Could not share'; }
+    return 'ok';
+  }
+  /* Share and Download from the share menu run through this one routine, so they behave alike: the button shows its work (a spinner, and a count while zipping),
+     then Done and the menu closes, or Failed and the menu goes back to normal. Only one runs at a time; if the menu is closed or replaced meanwhile the work
+     still finishes but nothing else on screen is touched. */
+  const CROSS = '<svg viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>';
+  let shareBusy = false;
+  const pause = (ms) => new Promise((r) => setTimeout(r, motionOK() ? ms : 0));
+  const chosenItems = () => [...shareSel].sort((a, b) => a - b).map((i) => pg && pg.items[i]).filter(Boolean);
+  function paintBtn(btn, state, html, p = 0) {
+    if (!btn.isConnected) return;
+    btn.classList.remove('zipping', 'done', 'failed');
+    if (state) btn.classList.add(state === 'busy' ? 'zipping' : state === 'done' ? 'zipping' : 'failed');
+    if (state === 'done') btn.classList.add('done');
+    btn.style.setProperty('--p', p); btn.innerHTML = html;
+  }
+  async function runShareMenu(btn, mode) {   // mode: 'share' or 'save'
+    if (shareBusy || !btn) return;
+    const list = chosenItems(); if (!list.length) { closeMenu(); return; }
+    shareBusy = true;
+    const SPIN = '<span class="zspin" aria-hidden="true"></span>', live = () => btn.isConnected && menu.kind === 'share' && !el.menu.hidden;
+    el.menu.querySelectorAll('.mrow .btn, .sh-chk').forEach((x) => { x.disabled = true; });
+    let why = '';
+    try {
+      if (mode === 'share') {
+        paintBtn(btn, 'busy', `${SPIN}Sharing`, 0.5);
+        const r = await shareItems(list);   // called straight from the tap, so the phone still allows it
+        if (r === '') { if (live()) closeMenu(); return; }   // cancelled in the phone's own share sheet: nothing to show
+        if (r !== 'ok') why = r;
+      } else if (list.length === 1) {
+        paintBtn(btn, 'busy', `${SPIN}Saving`, 0.5); saveBlob(list[0]); await pause(500);   // one file is saved as it is, not zipped
+      } else {
+        const name = ((pgName(pg) || 'files').replace(/[\\/:*?"<>|]+/g, '-').trim() || 'files') + '.zip';
+        paintBtn(btn, 'busy', `${SPIN}Zipping`, 0);
+        const [blob] = await Promise.all([zipItems(list, (k, n) => paintBtn(btn, 'busy', `${SPIN}${k}/${n}`, k / n)), pause(650)]);
+        saveBlob({ blob, name });
+      }
+    } catch { why = mode === 'share' ? 'Could not share' : list.length > 1 ? 'Could not make the zip' : 'Could not save'; }
+    finally { shareBusy = false; }
+    if (why) {
+      paintBtn(btn, 'failed', `${CROSS}Failed`); toast(why);
+      await pause(1400); if (live()) renderMenu();   // back to the normal menu, ready to try again
+      return;
+    }
+    paintBtn(btn, 'done', `${TICK}Done`, 1);
+    if (mode === 'save') toast('Downloaded');
+    await pause(700); if (live()) closeMenu();
   }
   $('apShare').addEventListener('click', (e) => {
     if (!pg) return; if (!pg.items.length) { toast('Nothing attached yet'); return; }
-    if (pg.items.length === 1) { shareItems(pg.items); return; }   // one file: nothing to choose
+    if (pg.items.length === 1) { shareItems(pg.items).then((why) => { if (why && why !== 'ok') toast(why); }); return; }   // one file: nothing to choose
     shareSel = new Set(pg.items.map((_, i) => i));
     const r = e.currentTarget.getBoundingClientRect(); openMenu('share', pg.id, r.right - 244, r.bottom + 6);
   });
-  $('apAttach').addEventListener('click', () => { if (pg) $('fileIn').click(); });   // one button: the phone's own sheet offers Camera, Photos and Files
-  $('fileIn').addEventListener('change', (e) => { const picked = [...e.target.files]; e.target.value = ''; attachToPage(picked); });
+  /* One paperclip: it opens the phone's own picker for anything (files, photo library). Ctrl V and dropping files work on the whole page. */
+  $('apAttach').addEventListener('click', () => { if (pg) $('fileIn').click(); });
+  for (const id of ['fileIn']) $(id).addEventListener('change', (e) => { const picked = [...e.target.files]; e.target.value = ''; attachToPage(picked); });
   $('apTitle').addEventListener('input', () => { paintHead(); savePg(); });
   $('apAlign').addEventListener('click', () => { if (!pg) return; pg.align = pg.align === 'right' ? 'left' : 'right'; savePg(true); paintPg(); });
-  $('apComment').addEventListener('click', () => { if (!pg) return; pgComments = !pgComments; paintPg(); });
+  $('apContext').addEventListener('click', () => { if (!pg) return; pgContext = !pgContext; paintPg(); });
+  function togglePin(i) { const it = pg && pg.items[i]; if (!it) return; if (it.pinned) delete it.pinned; else it.pinned = true; savePg(true); paintItems(); toast(it.pinned ? 'Pinned to top' : 'Unpinned'); }
+  /* Sort: a tap goes to the next order (Date, Type, A-Z) hold (or right-click) for the list to pick from. */
+  /* The Sort key is the sort icon (lines) with a small mark for the order it is on: a clock for Date, a shape for Type, A over Z for A-Z. */
+  const SORT_ICON = {
+    date: '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h14M3 12h9M3 18h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="18" cy="16.5" r="4.6" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M18 14v2.7l1.7 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>',
+    type: '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h14M3 12h9M3 18h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M18 11.6l4 6.4h-8z" fill="currentColor"/><rect x="13" y="19.4" width="0" height="0"/></svg>',
+    az: '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h14M3 12h9M3 18h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><text x="18" y="15" text-anchor="middle" font-size="7.6" font-weight="800" font-family="inherit" fill="currentColor">A</text><text x="18" y="22.4" text-anchor="middle" font-size="7.6" font-weight="800" font-family="inherit" fill="currentColor">Z</text></svg>'
+  };
+  $('fsSeg').querySelectorAll('[data-fs]').forEach((b) => { b.innerHTML = SORT_ICON[b.dataset.fs]; });   // Settings shows the same icons
+  const paintSortIcon = () => { const b = $('apSort'), k = pgSort(); if (b.dataset.k !== k) { b.dataset.k = k; b.innerHTML = SORT_ICON[k]; } b.setAttribute('aria-label', 'Sort: ' + SORT_NAME[k]); };
+  const SORT_NEXT = { date: 'type', type: 'az', az: 'date' }, SORT_NAME = { date: 'Date', type: 'Type', az: 'A\u2013Z' };
+  $('apSort').addEventListener('click', () => {
+    if (!pg || swallowPressTap()) return;
+    pg.sort = SORT_NEXT[pgSort()] || 'date'; savePg(true); paintPg();
+  });
+  bindMenu($('apSort'), 'sort', () => (pg ? pg.id : null));
+
   $('apFollow').addEventListener('click', () => { if (!pg) return; pg.follow = !pgFollow(); savePg(true); paintPg(); toEndPg(); });
   $('apAvatar').addEventListener('click', (e) => { if (!pg) return; const r = e.currentTarget.getBoundingClientRect(); openMenu('page', pg.id, r.left, r.bottom + 6); });
+  /* The page body is quietly editable, but only so the browser offers its own Paste (right-click, or long-press on empty space). The attachments in it are not
+     editable, so nothing can be typed or dropped as text. A paste that carries files is attached by the page-wide paste handler above; one with only text is refused. */
+  $('apItems').addEventListener('beforeinput', (e) => { if (!e.target.closest('textarea, input')) e.preventDefault(); });
+  $('apItems').addEventListener('paste', (e) => { if (e.target.closest('textarea, input')) return; if (![...(e.clipboardData?.files || [])].length) { e.preventDefault(); toast('Copy a picture or file first'); } });
   $('apItems').addEventListener('click', (e) => {   // open, save or take off one attachment
     if (Date.now() - swipedAt < 400 || swallowPressTap()) return;   // the click that ends a swipe or a long-press is not a tap
-    const cm = e.target.closest('[data-pa="comment"]'); if (cm && pg) { startComment(+cm.dataset.ci); return; }
+    const lk = e.target.closest('.lnk'); if (lk) { window.open(lk.dataset.url, '_blank', 'noopener,noreferrer'); return; }   // a link written in a file's context opens
+    const cm = e.target.closest('[data-pa="context"]'); if (cm && pg) { startContext(+cm.dataset.ci); return; }
     const b = e.target.closest('[data-pi]'); if (!b || !pg) return;
     const i = +b.dataset.pi, it = pg.items[i]; if (!it) return;
     if (b.dataset.pa === 'dl') { saveBlob(it); return; }
     if (b.dataset.pa === 'rm') { removeItem(i); return; }
+    if (b.dataset.pa === 'open' && pgContext) { startContext(+b.dataset.pi); return; }   // context mode: a tap writes the context instead of opening the file
     if (b.dataset.pa === 'open' && isPdf(it)) openInTab(it); else if (b.dataset.pa === 'open' && viewable(it)) showFile(it, true); else saveBlob(it);   // PDFs open in the browser; photos, text, video and audio open here; the rest is saved
   });
   bindMenu($('apItems'), 'att', (e) => { const c = e.target.closest('.pg-entry'); return pg && c && !e.target.closest('textarea, input') ? `${pg.id}:${c.dataset.i}` : null; });   // hold (or right-click) an attachment
@@ -2569,12 +2864,12 @@ ${Nn(this.code(t,r))}
     const ri = e.target.closest('.pg-rename');
     if (ri) { if (e.key === 'Enter') { e.preventDefault(); renameItem(+ri.dataset.ri, ri.value); } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); pgRename = null; paintItems(); } return; }
     const ta = e.target.closest('textarea'); if (!ta) return;
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); commitComment(+ta.dataset.ci, ta.value); }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); commitContext(+ta.dataset.ci, ta.value); }
     else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); pgEdit = null; paintItems(); }
   });
   $('apItems').addEventListener('input', (e) => { const ta = e.target.closest('textarea'); if (ta) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; } });
-  $('apItems').addEventListener('focusout', (e) => { const ri = e.target.closest('.pg-rename'); if (ri) { renameItem(+ri.dataset.ri, ri.value); return; } const ta = e.target.closest('textarea'); if (ta) commitComment(+ta.dataset.ci, ta.value); });
-  /* Swipe an attachment to the right, like replying to a message: a reply arrow follows the card, and letting go past the mark opens its comment. */
+  $('apItems').addEventListener('focusout', (e) => { const ri = e.target.closest('.pg-rename'); if (ri) { renameItem(+ri.dataset.ri, ri.value); return; } const ta = e.target.closest('textarea'); if (ta) commitContext(+ta.dataset.ci, ta.value); });
+  /* Swipe an attachment to the right, like replying to a message: a reply arrow follows the card, and letting go past the mark opens its context. */
   let sw = null;
   $('apItems').addEventListener('pointerdown', (e) => {
     const card = e.target.closest('.pg-item'); if (!card || e.button > 0) return;
@@ -2598,7 +2893,7 @@ ${Nn(this.code(t,r))}
     const s = sw; sw = null; if (!s.on) return;
     swipedAt = Date.now();
     s.card.style.transition = 'transform var(--t-fast) var(--ease)'; s.card.style.transform = ''; s.entry.style.setProperty('--pull', '0');
-    if (!cancelled && s.dx >= 64) startComment(+s.entry.dataset.i);
+    if (!cancelled && s.dx >= 64) { pgContext = true; paintHead(); startContext(+s.entry.dataset.i); }   // a swipe to the right turns context mode on and opens that file's context
   };
   $('apItems').addEventListener('pointerup', (e) => endSwipe(e, false));
   $('apItems').addEventListener('pointercancel', (e) => endSwipe(e, true));
@@ -2679,7 +2974,7 @@ ${Nn(this.code(t,r))}
   });
   document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if ($('fview').classList.contains('show')) closeFile(); else if ($('apage').classList.contains('show')) closePg(); });
   fTx('readonly', (s) => s.getAll()).then((a) => { files = normFiles(a); renderFiles(); resumeAfterPdf(); }).catch(() => {});
-  $('dock').addEventListener('click', (e) => { const b = e.target.closest('[data-dock]'); if (!b) return; const d = b.dataset.dock; if (d === 'notes' || d === 'files') setTab(d); else toast(`${b.getAttribute('aria-label')} is coming soon`); });
+  $('dock').addEventListener('click', (e) => { const b = e.target.closest('[data-dock]'); if (!b) return; const d = b.dataset.dock; if (d === 'notes' || d === 'files' || d === 'calendar') setTab(d); else toast(`${b.getAttribute('aria-label')} is coming soon`); });
   $('newNote').addEventListener('click', () => { if (!swallowPressTap()) { buzz(); newNote(settings.defaultKind); } });
   bindMenu($('newNote'), 'new', () => 'new');                                    // hold (or right-click) turns the button into the kind menu
   $('back').addEventListener('click', () => setView('list'));
@@ -2710,7 +3005,19 @@ ${Nn(this.code(t,r))}
   }, true);
 
   el.tools.addEventListener('mousedown', (e) => e.preventDefault());             // keep the cursor in the text
-  el.tools.addEventListener('click', (e) => { const b = e.target.closest('[data-cmd]'); if (b) runCommand(b.dataset.cmd); });
+  /* List key: a tap goes to the next style; hold (or right-click) for the list of styles to pick from. */
+  const KIND_COL = { bullet: 'blue', check: 'green', number: 'amber' };
+  const KIND_NAME = { text: 'Text', bullet: 'Bullet', check: 'Checklist', number: 'Numbering' };
+  el.tools.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-cmd]'); if (!b) return;
+    if (b.dataset.cmd === 'kind') {
+      if (swallowPressTap() || b.disabled) return;
+      runCommand('kind');
+      return;
+    }
+    runCommand(b.dataset.cmd);
+  });
+  bindMenu(el.tools, 'lkind', (e) => { const b = e.target.closest('[data-cmd="kind"]'); return b && !b.disabled && activeNote() ? activeNote().id : null; });
 
   $('folderAdd').addEventListener('click', newFolder);
   /* Up and Down move through the note list, so it works with arrow keys or a controller. */
@@ -2742,7 +3049,7 @@ ${Nn(this.code(t,r))}
   el.menu.addEventListener('click', (e) => {
     const b = e.target.closest('[data-act]'); if (!b) return;
     const n = findNote(menu.id), run = menuActions[b.dataset.act];
-    if (run && (n || menu.kind === 'folder' || menu.kind === 'new' || menu.kind === 'ffolder' || menu.kind === 'file' || menu.kind === 'page' || menu.kind === 'att' || menu.kind === 'share')) { buzz(); run(n, b.dataset.v, b); }
+    if (run && (n || menu.kind === 'folder' || menu.kind === 'new' || menu.kind === 'ffolder' || menu.kind === 'file' || menu.kind === 'page' || menu.kind === 'att' || menu.kind === 'share' || menu.kind === 'sort' || menu.kind === 'lkind' || menu.kind === 'fnew')) { buzz(); run(n, b.dataset.v, b); }
   });
   document.addEventListener('pointerdown', (e) => { if (!el.menu.hidden && !e.target.closest('#menu')) closeMenu(); }, true);
   window.addEventListener('resize', closeMenu);
@@ -2770,21 +3077,15 @@ ${Nn(this.code(t,r))}
     const b = e.target.closest('[data-dk]'); if (!b || b.disabled) return;
     settings.defaultKind = b.dataset.dk; store.save(); applyDefaultKind();
   });
-  /* Reset deletes your own presets; it asks once. */
-  const ask = () => {
-    $('cfForm').hidden = true; foot();
-    const n = settings.customs.length;
-    $('dkAskText').textContent = `Delete ${n === 1 ? 'your preset' : 'your ' + n + ' presets'}? Notes made with ${n === 1 ? 'it' : 'them'} keep their text.`;
-    $('dkAsk').hidden = false;
-  };
-  $('dkReset').addEventListener('click', () => { if ($('cfForm').hidden) ask(); else saveCustom(); });
-  $('dkAdd').addEventListener('click', () => { if ($('cfForm').hidden) openCustomForm(); else { $('cfForm').hidden = true; foot(); } });
-  $('dkKeep').addEventListener('click', () => { $('dkAsk').hidden = true; });
-  $('dkGo').addEventListener('click', () => {
-    settings.customs = []; settings.defaultKind = 'notes'; $('dkAsk').hidden = true; store.save(); buildPreset(); renderEditorTools();
+  /* Reset deletes your own presets; the same two buttons ask once (Cancel | Confirm). */
+  $('dkReset').addEventListener('click', () => {
+    if (!$('cfForm').hidden) { saveCustom(); return; }
+    if (!dkSure) { dkSure = true; foot(); return; }
+    dkSure = false; settings.customs = []; settings.defaultKind = 'notes'; store.save(); buildPreset(); renderEditorTools();
   });
+  $('dkAdd').addEventListener('click', () => { if (dkSure) { dkSure = false; foot(); } else if ($('cfForm').hidden) openCustomForm(); else { $('cfForm').hidden = true; foot(); } });
   /* Your own mode: a name and the toolbar keys it keeps. One slot; Edit changes it, Delete removes it (its notes then act like plain notes). */
-  let cfTools = [];
+  let cfTools = [], cfLists = [...LIST_ALL], cfStart = { bar: 'auto' };
   function renderCfTools() {            // the editor's own toolbar keys, copied: pressed = kept
     $('cfTools').replaceChildren(...[...$('tools').querySelectorAll('[data-cmd]')].map((b) => {
       const id = b.dataset.cmd, c = b.cloneNode(true);
@@ -2792,24 +3093,77 @@ ${Nn(this.code(t,r))}
       c.setAttribute('aria-pressed', String(cfTools.includes(id)));
       return c;
     }));
+    $('cfListsWrap').hidden = !cfTools.includes('kind');   // asks which list styles only when the List key is on
+    const kb = $('tools').querySelector('[data-cmd="kind"]'), nm = { bullet: 'Bullet', check: 'Checklist', number: 'Numbering' };
+    $('cfLists').replaceChildren(...LIST_ALL.map((k) => { const c = document.createElement('button'); c.type = 'button'; c.className = 'tool icon'; c.dataset.list = k; c.title = c.ariaLabel = nm[k] + (cfLists.includes(k) ? ' (kept)' : ' (left out)'); c.setAttribute('aria-pressed', String(cfLists.includes(k))); c.innerHTML = kb.querySelector('.k-' + k).outerHTML; return c; }));
+    $('cfBar').querySelectorAll('[data-cfb]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.cfb === cfStart.bar)));
     foot();
   }
   function openCustomForm() {
     if (settings.customs.length >= 3) return;
-    $('dkAsk').hidden = true; $('cfName').value = ''; cfTools = [];   // a new preset starts with every key off
+    $('cfName').value = ''; cfTools = []; cfLists = [...LIST_ALL]; cfStart = { bar: 'auto' };   // a new preset starts with every key off
     $('cfForm').hidden = false; renderCfTools(); $('cfName').focus();
   }
   $('cfTools').addEventListener('click', (e) => { const b = e.target.closest('[data-tool]'); if (!b) return; const id = b.dataset.tool; cfTools = cfTools.includes(id) ? cfTools.filter((t) => t !== id) : [...cfTools, id]; renderCfTools(); });
+  $('cfBar').addEventListener('click', (e) => { const b = e.target.closest('[data-cfb]'); if (b) { cfStart.bar = b.dataset.cfb; renderCfTools(); } });
+  $('cfLists').addEventListener('click', (e) => { const b = e.target.closest('[data-list]'); if (!b) return; const k = b.dataset.list; if (cfLists.includes(k) && cfLists.length === 1) return; cfLists = cfLists.includes(k) ? cfLists.filter((x) => x !== k) : [...cfLists, k]; renderCfTools(); });   // at least one stays
   $('cfName').addEventListener('input', foot);
+  $('cfName').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !$('dkReset').disabled) { e.preventDefault(); $('dkReset').click(); } });
   function saveCustom() {
     const name = $('cfName').value.trim().slice(0, 16);
     if (!name) { $('cfName').focus(); return; }
     const id = CUSTOM_IDS.find((i) => !customOf(i)); if (!id || settings.customs.length >= 3) return;
-    settings.customs.push({ id, name, tools: TOOL_CHOICES.map(([k]) => k).filter((k) => cfTools.includes(k)) });
+    settings.customs.push({ id, name, tools: TOOL_CHOICES.map(([k]) => k).filter((k) => cfTools.includes(k)), lists: cfTools.includes('kind') ? LIST_ALL.filter((k) => cfLists.includes(k)) : [...LIST_ALL], ...cfStart });
     store.save(); $('cfForm').hidden = true; buildPreset(); renderEditorTools();
   }
+  /* ---- File presets in Settings: pick the default, add your own (a name, the keys, how a page starts) ---- */
+  let fpDraft = null;
+  const fpSummary = (p) => p.keys || FP_KEYS.filter(([k]) => p.tools.includes(k)).map(([, n]) => n).join(', ');
+  let fpSure = false;
+  function fpFoot() {
+    const f = !$('fpForm').hidden, c = fpSure && !f, n = settings.fpresets.length;
+    $('fpAdd').textContent = f || c ? 'Cancel' : 'Add preset'; $('fpAdd').hidden = !f && !c && n >= 3;
+    $('fpReset').textContent = f ? 'Save' : c ? 'Confirm' : 'Reset'; $('fpReset').hidden = !f && !c && !n;
+    $('fpReset').classList.toggle('solid', f || c); $('fpReset').classList.toggle('danger', c); $('fpReset').disabled = f && (!fpDraft.tools.length || !$('fpName').value.trim());
+  }
+  function buildFPreset() {
+    const row = (p) => `<button class="dk-row" type="button" role="radio" data-fdk="${p.id}" aria-checked="${settings.fileDefault === p.id}"><span class="dk-name">${esc(p.name)}</span><b class="dk-keys">${esc(fpSummary(p))}</b><span class="dk-radio">${TICK}</span></button>`;
+    $('fpSeg').innerHTML = [...Object.values(FP_BUILTIN), ...settings.fpresets].map(row).join('');
+    $('fpState').textContent = fpOf(settings.fileDefault).name;
+    fpFoot();
+  }
+  function paintFpForm() {
+    $('fpTools').replaceChildren(...FP_KEYS.map(([k, , b]) => { const c = $(b).cloneNode(true); c.removeAttribute('id'); c.removeAttribute('disabled'); c.style.display = ''; c.dataset.tool = k; c.setAttribute('aria-pressed', String(fpDraft.tools.includes(k))); return c; }));
+    $('fpBar').querySelectorAll('[data-fpb]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.fpb === fpDraft.bar)));
+    $('fpSort').querySelectorAll('[data-fps]').forEach((b) => { if (!b.firstChild && SORT_ICON[b.dataset.fps]) b.innerHTML = SORT_ICON[b.dataset.fps]; b.setAttribute('aria-checked', String((b.dataset.fps === 'auto' ? null : b.dataset.fps) === fpDraft.sort)); });
+    fpFoot();
+  }
+  $('fpSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-fdk]'); if (!b) return; settings.fileDefault = b.dataset.fdk; store.save(); buildFPreset(); });
+  $('fpAdd').addEventListener('click', () => {
+    if (fpSure) { fpSure = false; fpFoot(); return; }
+    if ($('fpForm').hidden) { if (settings.fpresets.length >= 3) return; fpDraft = { tools: [], sort: null, bar: 'auto' }; $('fpName').value = ''; $('fpForm').hidden = false; paintFpForm(); $('fpName').focus(); }
+    else { $('fpForm').hidden = true; fpFoot(); }
+  });
+  $('fpReset').addEventListener('click', () => {
+    if ($('fpForm').hidden) {
+      if (!fpSure) { fpSure = true; fpFoot(); return; }
+      fpSure = false; settings.fpresets = []; if (!FP_BUILTIN[settings.fileDefault]) settings.fileDefault = 'none'; store.save(); buildFPreset(); if (pg) paintPg(); return;
+    }
+    const name = $('fpName').value.trim().slice(0, 16); if (!name) { $('fpName').focus(); return; }
+    const id = FP_IDS.find((i) => !settings.fpresets.some((x) => x.id === i)); if (!id) return;
+    settings.fpresets.push({ id, name, tools: FP_ALL.filter((k) => fpDraft.tools.includes(k)), sort: fpDraft.sort, align: 'left', bar: fpDraft.bar });
+    store.save(); $('fpForm').hidden = true; buildFPreset();
+  });
+  $('fpTools').addEventListener('click', (e) => { const b = e.target.closest('[data-tool]'); if (!b) return; const k = b.dataset.tool; fpDraft.tools = fpDraft.tools.includes(k) ? fpDraft.tools.filter((t) => t !== k) : [...fpDraft.tools, k]; paintFpForm(); });
+  $('fpSort').addEventListener('click', (e) => { const b = e.target.closest('[data-fps]'); if (b) { fpDraft.sort = b.dataset.fps === 'auto' ? null : b.dataset.fps; paintFpForm(); } });
+  $('fpBar').addEventListener('click', (e) => { const b = e.target.closest('[data-fpb]'); if (b) { fpDraft.bar = b.dataset.fpb; paintFpForm(); } });
+  $('fpName').addEventListener('input', fpFoot);
+  $('fpName').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !$('fpReset').disabled) { e.preventDefault(); $('fpReset').click(); } });
+  bindMenu($('addFile'), 'fnew', () => 'fnew');
+  buildFPreset();
   $('blSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-bl]'); if (!b) return; settings.bullet = b.dataset.bl; store.save(); applyBullet(); });
   $('nlSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-nl]'); if (!b) return; settings.number = b.dataset.nl; store.save(); applyBullet(); });
+  $('fsSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-fs]'); if (!b) return; settings.fileSort = b.dataset.fs; store.save(); applyToolbar(); if (pg) paintPg(); });   // the order a page starts in; a page you sorted yourself keeps its own
   $('tbSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-tb]'); if (!b) return; settings.toolbar = b.dataset.tb; store.save(); applyToolbar(); });
   $('scSwitch').addEventListener('click', () => { settings.shortcutsOn = !settings.shortcutsOn; store.save(); renderShortcutHints(); });
   $('kReset').addEventListener('click', () => { settings.shortcuts = {}; recording = null; say(''); store.save(); renderDialog(); renderShortcutHints(); });
@@ -2823,7 +3177,12 @@ ${Nn(this.code(t,r))}
     if (e.key === 'Escape') { if (el.app.dataset.view === 'editor' && phoneMQ.matches) { e.preventDefault(); setView('list'); } return; }
     const mod = modOf(e); if (!mod || !settings.shortcutsOn) return;
     const id = APP_IDS.find((i) => sameKeys(shortcutFor(i), { code: e.code, mod }));
-    if (id) { e.preventDefault(); APP[id].run(); }
+    if (id) { e.preventDefault(); APP[id].run(); return; }
+    if (!pg) return;                                                                          // the rest work only while a file page is open
+    const fid = FILE_IDS.find((i) => sameKeys(shortcutFor(i), { code: e.code, mod }));
+    if (fid) { e.preventDefault(); FILE[fid].run(); return; }
+    const sid = SHORTCUT_IDS.find((i) => FILE_SAME[i] && sameKeys(shortcutFor(i), { code: e.code, mod }));   // Align and Follow: the note's keys
+    if (sid && keyShown(FILE_SAME[sid])) { e.preventDefault(); $(FILE_SAME[sid]).click(); }
   });
   document.addEventListener('keydown', (e) => {                                  // Escape closes the dialog or the menu; recording takes every key
     if (!el.dlg.hidden) { if (recording) recordKey(e); else if (e.key === 'Escape') closeDialog(); return; }
@@ -3047,26 +3406,43 @@ ${Nn(this.code(t,r))}
   }
   /* Share: tap sends the PDF, hold sends the text. If the phone has no share menu, the PDF is downloaded and the text is copied. */
   const fileName = (t) => t.replace(/[\\/:*?"<>|]+/g, '').trim().slice(0, 60) || 'Note';
-  async function give(data, fallback) {
-    try {
-      if (!navigator.share || (data.files && navigator.canShare && !navigator.canShare({ files: data.files }))) throw new Error('no share');
-      await navigator.share(data);
-    } catch (e) {
-      if (e && e.name === 'AbortError') return;   // closing the share menu is not a failure
-      await fallback();
-    }
+  /* A phone only lets a page open its share menu straight after a tap. Building the PDF takes a moment, and if the tap has expired by then the share is
+     refused. So the PDF is made ahead, a moment after you stop typing, and a tap on Share hands the ready file over at once. */
+  let pdfReady = null, pdfTimer = 0, pdfSeq = 0, pdfWant = '';
+  const pdfKey = (n) => `${n.id}:${n.updated}:${n.title}`;
+  async function buildPdf(n) {
+    const { blob, lost } = await textPdf(n.title.trim(), quill.getContents().ops);
+    return { file: new File([blob], fileName(n.title.trim()) + '.pdf', { type: 'application/pdf' }), lost };
+  }
+  function prepPdf(n) {
+    if (n && ((pdfReady && pdfReady.key === pdfKey(n)) || pdfWant === pdfKey(n))) return;   // nothing changed since it was made
+    clearTimeout(pdfTimer); pdfReady = null; pdfWant = '';
+    if (!n || (!n.title.trim() && !quill.getText().trim())) return;
+    pdfWant = pdfKey(n);
+    pdfTimer = setTimeout(async () => {
+      const key = pdfKey(n), seq = ++pdfSeq;
+      try { const made = await buildPdf(n); if (seq === pdfSeq && activeNote() === n && pdfKey(n) === key) pdfReady = { key, ...made }; } catch { /* built again when needed */ }
+    }, 700);
+  }
+  async function give(data, onFail) {
+    if (!navigator.share) { await onFail(); return; }   // no share menu on this device (a computer)
+    if (data.files && navigator.canShare && !navigator.canShare({ files: data.files })) { toast('This phone cannot share this file'); return; }
+    try { await navigator.share(data); }
+    catch (e) { if (e && e.name === 'AbortError') return; toast('Could not share'); }   // closing the share menu is not a failure
   }
   async function shareNote(fmt) {
     const n = activeNote(); if (!n) return;
     const title = n.title.trim();
     if (fmt === 'text') {
       const text = (title ? title + '\n\n' : '') + quill.getText().trim() + '\n\n— Daybook';
-      await give({ title: title || 'Note', text }, async () => { try { await navigator.clipboard.writeText(text); toast('Copied'); } catch (e) { toast('Could not copy'); } });
+      const copy = async () => { try { await navigator.clipboard.writeText(text); toast('Copied'); } catch (e) { toast('Could not copy'); } };
+      if (!navigator.share) { await copy(); return; }
+      try { await navigator.share({ title: title || 'Note', text }); } catch (e) { if (!e || e.name !== 'AbortError') await copy(); }
       return;
     }
-    const { blob, lost } = await textPdf(title, quill.getContents().ops);
-    const file = new File([blob], fileName(title) + '.pdf', { type: 'application/pdf' });
-    await give({ files: [file], title: title || 'Note' }, async () => {
+    const made = pdfReady && pdfReady.key === pdfKey(n) ? pdfReady : await buildPdf(n);   // ready already: the share starts inside the tap
+    const { file, lost } = made;
+    await give({ files: [file], title: title || 'Note' }, async () => {   // only a device with no share menu at all downloads the file
       const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = file.name;
       document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
       toast('Downloaded');
