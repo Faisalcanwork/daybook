@@ -999,6 +999,7 @@ label.arow { cursor: text; }
         <p class="card-desc">Choose how the month grids are laid out.</p>
         <div class="set-row"><span>Week starts</span><div class="pills" id="csSeg" role="radiogroup" aria-label="First day of the week"><button class="pill" type="button" role="radio" data-cs="sat">Sat</button><button class="pill" type="button" role="radio" data-cs="sun">Sun</button><button class="pill" type="button" role="radio" data-cs="mon">Mon</button></div></div>
         <div class="set-row"><span>Weekend</span><div class="pills" id="cwSeg" role="radiogroup" aria-label="Weekend days to tint"><button class="pill" type="button" role="radio" data-cw="off">Off</button><button class="pill" type="button" role="radio" data-cw="fs">Fri–Sat</button><button class="pill" type="button" role="radio" data-cw="ss">Sat–Sun</button></div></div>
+        <div class="set-row"><span id="cvLabel">Slide open and close</span><button class="switch" type="button" role="switch" id="cvSwitch" aria-checked="true" aria-labelledby="cvLabel"></button></div>
         <div class="set-row"><span id="cnLabel">Week numbers</span><button class="switch" type="button" role="switch" id="cnSwitch" aria-checked="false" aria-labelledby="cnLabel"></button></div>
       </div>
     </details>
@@ -1283,7 +1284,7 @@ ${Nn(this.code(t,r))}
     return out;
   }
   function load() {
-    const s = { notes: [], folders: [], gone: {}, allName: 'All', settings: { typewriter: true, toolbar: 'typewriter', defaultKind: 'notes', fileSort: 'date', calStart: 'sun', calWknd: 'off', calWeeks: false, fpresets: [], fileDefault: 'none', bullet: 'point', number: 'decimal', customs: [], shortcutsOn: true, shortcuts: {} } };
+    const s = { notes: [], folders: [], gone: {}, allName: 'All', settings: { typewriter: true, toolbar: 'typewriter', defaultKind: 'notes', fileSort: 'date', calStart: 'sun', calWknd: 'off', calWeeks: false, calSlide: true, fpresets: [], fileDefault: 'none', bullet: 'point', number: 'decimal', customs: [], shortcutsOn: true, shortcuts: {} } };
     let raw = null;
     try { raw = JSON.parse(bootRaw); store.size = bootRaw ? bootRaw.length : 0; }
     catch (e) { if (!(e instanceof SyntaxError)) store.ok = false; }
@@ -1314,6 +1315,7 @@ ${Nn(this.code(t,r))}
       if (['sun', 'mon', 'sat'].includes(raw.settings.calStart)) s.settings.calStart = raw.settings.calStart;
       if (['off', 'fs', 'ss'].includes(raw.settings.calWknd)) s.settings.calWknd = raw.settings.calWknd;
       s.settings.calWeeks = raw.settings.calWeeks === true;
+      s.settings.calSlide = raw.settings.calSlide !== false;
       if (Array.isArray(raw.settings.fpresets)) raw.settings.fpresets.forEach((c) => {   // your own file presets: a name, the keys kept and how a page starts
         const id = isObj(c) && FP_IDS.includes(c.id) && !s.settings.fpresets.some((x) => x.id === c.id) ? c.id : null;
         if (!id || !str(c.name).trim()) return;
@@ -2489,14 +2491,27 @@ ${Nn(this.code(t,r))}
   }
   /* Calendar: years are the folders, months are the list; a month opens its days in place. */
   const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  const cal = { year: new Date().getFullYear(), open: new Date().getMonth() };
+  const cal = { year: new Date().getFullYear(), open: new Set([new Date().getMonth()]) };   // any number of months can be open
   const CAL_START = { sun: 0, mon: 1, sat: 6 }, CAL_WKND = { off: [], fs: [5, 6], ss: [6, 0] }, CAL_NAME = { sun: 'Sunday', mon: 'Monday', sat: 'Saturday' };
   const isoWeek = (d) => { const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())), n = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - n); return Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7); };
   function paintCalSet() {
     $('csSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.cs === settings.calStart)));
     $('cwSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.cw === settings.calWknd)));
     $('cnSwitch').setAttribute('aria-checked', String(settings.calWeeks));
+    $('cvSwitch').setAttribute('aria-checked', String(settings.calSlide));
     $('calState').textContent = CAL_NAME[settings.calStart];
+  }
+  function gridHTML(i) {          // the day grid of month i (0-11) of the year on show
+    const now = new Date(), isNow = cal.year === now.getFullYear() && i === now.getMonth(), days = new Date(cal.year, i + 1, 0).getDate();
+    const st = CAL_START[settings.calStart], wk = settings.calWeeks, we = CAL_WKND[settings.calWknd];
+    const lead = (new Date(cal.year, i, 1).getDay() - st + 7) % 7;
+    let g = `<div class="cal-grid${wk ? ' wn' : ''}">` + (wk ? '<span class="dow"></span>' : '') + [0, 1, 2, 3, 4, 5, 6].map((k) => `<span class="dow">${'SMTWTFS'[(st + k) % 7]}</span>`).join('');
+    for (let c2 = 0, n = lead + days; c2 < Math.ceil(n / 7) * 7; c2++) {
+      const d = c2 - lead + 1;
+      if (wk && c2 % 7 === 0) g += `<span class="wkn">${isoWeek(new Date(cal.year, i, Math.max(1, d)))}</span>`;
+      g += d < 1 || d > days ? '<span></span>' : `<span class="${[isNow && d === now.getDate() ? 'today' : '', we.includes((st + c2 % 7) % 7) ? 'wknd' : ''].join(' ').trim()}">${d}</span>`;
+    }
+    return g + '</div>';
   }
   function renderCal() {
     paintCalSet();
@@ -2506,19 +2521,8 @@ ${Nn(this.code(t,r))}
     $('cyears').innerHTML = yrs.sort().map((y) => `<div class="folder" role="tab" tabindex="0" data-cyear="${y}" aria-selected="${y === cal.year}"><span class="folder-name">${y}</span></div>`).join('');
     $('cmonths').innerHTML = MONTHS.map((m, i) => {
       const days = new Date(cal.year, i + 1, 0).getDate(), isNow = cal.year === ny && i === now.getMonth(), c = COLORS[i % COLORS.length], ab = m.slice(0, 3);
-      let g = '';
-      if (cal.open === i) {
-        const st = CAL_START[settings.calStart], wk = settings.calWeeks, we = CAL_WKND[settings.calWknd];
-        const lead = (new Date(cal.year, i, 1).getDay() - st + 7) % 7;
-        g = `<div class="cal-grid${wk ? ' wn' : ''}">` + (wk ? '<span class="dow"></span>' : '') + [0, 1, 2, 3, 4, 5, 6].map((k) => `<span class="dow">${'SMTWTFS'[(st + k) % 7]}</span>`).join('');
-        for (let c2 = 0, n = lead + days; c2 < Math.ceil(n / 7) * 7; c2++) {
-          const d = c2 - lead + 1;
-          if (wk && c2 % 7 === 0) g += `<span class="wkn">${isoWeek(new Date(cal.year, i, Math.max(1, d)))}</span>`;
-          g += d < 1 || d > days ? '<span></span>' : `<span class="${[isNow && d === now.getDate() ? 'today' : '', we.includes((st + c2 % 7) % 7) ? 'wknd' : ''].join(' ').trim()}">${d}</span>`;
-        }
-        g += '</div>';
-      }
-      return `<li class="item" style="--nc:var(--${c});--on-nc:var(--on-${c})"><button class="row" type="button" data-cm="${i}" aria-current="${cal.open === i}" aria-expanded="${cal.open === i}"><span class="av-gap"></span><span class="row-main">` +
+      const g = cal.open.has(i) ? gridHTML(i) : '';
+      return `<li class="item" style="--nc:var(--${c});--on-nc:var(--on-${c})"><button class="row" type="button" data-cm="${i}" aria-current="${cal.open.has(i)}" aria-expanded="${cal.open.has(i)}"><span class="av-gap"></span><span class="row-main">` +
         `<span class="row-top"><span class="row-title">${m}</span><span class="row-time">${isNow ? "This month · " : ""}${days} days</span></span>` +
         `</span></button>` +
         `<span class="cal-av" aria-hidden="true">${ab}</span>${g}</li>`;
@@ -2527,10 +2531,36 @@ ${Nn(this.code(t,r))}
   }
   $('csSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-cs]'); if (!b) return; settings.calStart = b.dataset.cs; store.save(); renderCal(); });
   $('cwSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-cw]'); if (!b) return; settings.calWknd = b.dataset.cw; store.save(); renderCal(); });
+  $('cvSwitch').addEventListener('click', () => { settings.calSlide = !settings.calSlide; store.save(); paintCalSet(); });
   $('cnSwitch').addEventListener('click', () => { settings.calWeeks = !settings.calWeeks; store.save(); renderCal(); });
   paintCalSet();
-  $('cyears').addEventListener('click', (e) => { const b = e.target.closest('[data-cyear]'); if (!b) return; cal.year = +b.dataset.cyear; cal.open = cal.year === new Date().getFullYear() ? new Date().getMonth() : 0; renderCal(); });
-  $('cmonths').addEventListener('click', (e) => { const b = e.target.closest('[data-cm]'); if (!b) return; const i = +b.dataset.cm; cal.open = cal.open === i ? -1 : i; renderCal(); });
+  $('cyears').addEventListener('click', (e) => { const b = e.target.closest('[data-cyear]'); if (!b) return; cal.year = +b.dataset.cyear; cal.open = new Set([cal.year === new Date().getFullYear() ? new Date().getMonth() : 0]); renderCal(); });
+  /* A month's days slide down from its heading when it opens and slide up when it closes (Settings > Calendar can turn that off).
+     The list is not redrawn: the grid is added or removed in place, so nothing jumps. */
+  const reduceMQ = matchMedia('(prefers-reduced-motion: reduce)');
+  const COLLAPSED = { height: '0px', opacity: 0, paddingTop: '0px', paddingBottom: '0px' };
+  function slideGrid(g, opening) {
+    const h = g.getBoundingClientRect().height;
+    g.style.boxSizing = 'border-box'; g.style.overflow = 'hidden';
+    const full = { height: h + 'px', opacity: 1 };
+    const a = g.animate(opening ? [COLLAPSED, { ...full, opacity: 1, offset: 1 }] : [full, COLLAPSED], { duration: opening ? MOTION.slow : MOTION.base, easing: opening ? MOTION.ease : 'cubic-bezier(0.4, 0, 0.2, 1)' });
+    return a.finished.catch(() => {}).then(() => { g.style.boxSizing = g.style.overflow = ''; });
+  }
+  $('cmonths').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-cm]'); if (!b || b.dataset.busy) return;
+    const i = +b.dataset.cm, li = b.parentElement, slide = settings.calSlide && !reduceMQ.matches, opening = !cal.open.has(i);
+    const mark = (on) => { b.setAttribute('aria-expanded', String(on)); b.setAttribute('aria-current', String(on)); };
+    b.dataset.busy = '1'; const free = () => { delete b.dataset.busy; };
+    if (opening) {
+      cal.open.add(i); mark(true); li.insertAdjacentHTML('beforeend', gridHTML(i));
+      const g = li.querySelector('.cal-grid');
+      (slide ? slideGrid(g, true) : Promise.resolve()).then(() => { free(); g.scrollIntoView({ block: 'nearest', behavior: slide ? 'smooth' : 'auto' }); });
+    } else {
+      cal.open.delete(i); mark(false);
+      const g = li.querySelector('.cal-grid');
+      (slide && g ? slideGrid(g, false) : Promise.resolve()).then(() => { g?.remove(); free(); });
+    }
+  });
   function setTab(t) {
     $('app').dataset.tab = t;
     document.querySelectorAll('[data-dock]').forEach((b) => (b.dataset.dock === t ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current')));
