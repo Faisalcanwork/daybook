@@ -327,17 +327,12 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .fblank { display: none; }
 @media (min-width: 901px) {
   .files { position: relative; }
-  /* PC: the whole year at once, 3 columns of 4 months, every month's days showing. */
-  .cal-months { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; align-content: start; padding: 0 0 24px; }
-  .cal-months .item { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .cal-months .item:nth-child(3n) { border-right: 0; }
-  .cal-months .item::after { display: none; }
-  .cal-months .row { pointer-events: none; min-height: 64px; }
-  .cal-months .cal-grid span { padding: 6px 0; font-size: 13px; }
-  .files-head, #flist, #fstats, .files > .anchor { width: 300px; flex: none; }
-  #flist { flex: 1 1 auto; border-right: 1px solid var(--line); }
-  .files-head { border-right: 1px solid var(--line); }
-  #fstats { border-right: 1px solid var(--line); }
+  .files-head, #flist, #fstats, .files > .anchor, .cal-head, #cdays, #calStats, .cal > .anchor { width: 300px; flex: none; }
+  #flist, #cdays { flex: 1 1 auto; border-right: 1px solid var(--line); }
+  .cal .folder-bar { width: 300px; border-right: 1px solid var(--line); }
+  .files-head, .cal-head { border-right: 1px solid var(--line); }
+  #fstats, #calStats { border-right: 1px solid var(--line); }
+  .cal #cdayPage { inset: 0 0 0 300px; z-index: 6; }
   .fblank { display: grid; place-items: center; position: absolute; left: 300px; right: 0; top: 0; bottom: 0; color: var(--ink-2); font-size: 0.875rem; background: var(--surface); }
   .files #apage { inset: 0 0 0 300px; z-index: 6; }
 }
@@ -358,21 +353,25 @@ kbd { font-family: var(--font-mono); font-size: 0.72rem; border: 1px solid var(-
 .cal { position: relative; flex: 1; min-height: 0; display: none; flex-direction: column; border-top: 1px solid var(--line); background: var(--surface); }
 .app[data-tab="calendar"] .cal { display: flex; }
 .app[data-tab="calendar"] .panes, .app[data-tab="calendar"] .files, .app[data-tab="calendar"] #newNote, .app[data-tab="calendar"] #cont, .app[data-tab="calendar"] #addFile, .app[data-tab="calendar"] #fcont { display: none; }
-.cal-months { flex: 1; overflow-y: auto; padding-bottom: 80px; }
-.cal-months .item { content-visibility: visible; }
-.cal-months .row { min-height: 65px; }   /* same height as a Notes or Files row */
+.cal .folder-list { flex: 1; justify-content: safe center; padding-left: 0; }   /* the months sit in the middle of the bar */
+.cal-years { align-items: center; gap: 2px; padding: 2px 4px 8px; overflow: visible; }
+.cal-yl, .cal .folder-list { position: relative; }
+#cdays { position: relative; }
+.cal-yl { flex: 1; min-width: 0; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; justify-content: safe center; }
+.cal-yl::-webkit-scrollbar { display: none; }
+#cdays .item { content-visibility: visible; }
+#cdays .row { min-height: 65px; }   /* same height as a Notes or Files row */
+#cdays .row-title.wknd { color: var(--coral); }
+.cal-none { padding: 24px 16px; color: var(--grey); font-size: 0.8125rem; text-align: center; }
+#cdayPage { --nc: var(--blue); background: var(--surface); }
+#cdayPage .cal-av { position: static; flex: none; width: 40px; height: 40px; }
+.cal-dayinfo { margin: 0; padding: 24px 20px; color: var(--ink-2); }
 .cal-av { position: absolute; left: 12px; top: 8px; width: 48px; height: 48px; display: grid; place-items: center; border-radius: 50%; background: var(--nc); color: var(--on-nc); font-size: 0.8125rem; font-weight: 700; pointer-events: none; }
-.cal .folder-list { flex: 1; justify-content: safe center; padding-left: 0; }   /* the years sit in the middle of the bar */
+.folder-arrow:disabled { opacity: 0.3; cursor: default; }
+.folder-arrow:disabled:hover { color: var(--ink-2); }
 .folder-arrow { flex: none; display: flex; align-items: center; justify-content: center; border: 0; background: transparent; color: var(--ink-2); cursor: pointer; padding: 0 8px; }
 .folder-arrow:hover { color: var(--ink); }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; padding: 4px 12px 14px; text-align: center; }
-.cal-grid span { padding: 8px 0; border-radius: 10px; font-size: 14px; }
-.cal-grid .dow { font-size: 11px; color: var(--ink-2); padding: 2px 0; }
-.cal-grid .wknd { color: var(--coral); }
-#csSeg .pill, #cwSeg .pill { white-space: nowrap; padding: 0 10px; }
-.cal-grid .today { background: var(--blue); color: var(--on-blue); font-weight: 600; }
-.cal-grid.wn { grid-template-columns: 1.3fr repeat(7, 1fr); }
-.cal-grid .wkn { align-self: center; font-size: 11px; color: var(--grey); padding: 0; }
+#csSeg .pill { white-space: nowrap; padding: 0 10px; }
 .files-head { flex: none; }
 .fs .pin { width: 14px; height: 14px; margin-left: 6px; vertical-align: -2px; }
 .fs .ftg { margin-left: 6px; color: var(--grey); }
@@ -932,10 +931,16 @@ label.arow { cursor: text; }
   </section>
 
   <section class="cal" id="cal" aria-label="Calendar">
-    <div class="folder-bar"><div class="folder-list" id="cyears" role="tablist" aria-label="Years"></div></div>
-    <ul class="list cal-months" id="cmonths"></ul>
-    <button class="fab" type="button" id="addCal" aria-label="New event" title="New event"><svg width="26" height="26" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M450-450H230q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h220v-220q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v220h220q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H510v220q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-220Z"/></svg></button>
-    <button class="cont" type="button" id="calRecent" aria-label="Today" title="Today" style="--nc:var(--blue)"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-120q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120v-240h80v94q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/></svg></button>
+    <div class="files-head cal-head"><div class="searchrow" id="cSearchRow" data-colours="closed"><div class="searchbox" id="cSearchBox"><svg width="18" height="18" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M378-329q-108.2 0-183.1-75Q120-479 120-585t75-181q75-75 181.5-75t181 75Q632-691 632-584.9 632-542 618-502q-14 40-42 75l242 240q9 8.6 9 21.8T818-143q-9 9-22.2 9-13.2 0-21.8-9L533-384q-30 26-70 40.5Q423.1-329 378-329Zm-1-60q81.2 0 138.1-57.5Q572-504 572-585t-56.9-138.5Q458.2-781 377-781q-82.1 0-139.5 57.5Q180-666 180-585t57.5 138.5Q294.9-389 377-389Z"/></svg><input class="search" id="cSearch" type="search" autocomplete="off" aria-label="Search days"><button class="search-clear" type="button" id="cSearchClear" aria-label="Clear search" hidden><svg width="16" height="16" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-438 270-228q-9 9-21 9t-21-9q-9-9-9-21t9-21l210-210-210-210q-9-9-9-21t9-21q9-9 21-9t21 9l210 210 210-210q9-9 21-9t21 9q9 9 9 21t-9 21L522-480l210 210q9 9 9 21t-9 21q-9 9-21 9t-21-9L480-438Z"/></svg></button></div><div class="cpill"><div class="ctags" id="ctags" role="group" aria-label="Colour tags"></div><button class="cbtn" type="button" id="ccBtn" aria-expanded="false" aria-controls="ctags" aria-label="Filter by colour"></button></div></div><div class="word-bar cal-years" role="group" aria-label="Years"><button class="folder-arrow" type="button" id="cPrev" data-cbatch="-1" aria-label="Previous 10 years" title="Previous 10 years"><svg width="18" height="18" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/></svg></button><div class="cal-yl" id="cyl" role="tablist" aria-label="Years"></div><button class="folder-arrow" type="button" id="cNext" data-cbatch="1" aria-label="Next 10 years" title="Next 10 years"><svg width="18" height="18" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg></button></div></div>
+    <div class="folder-bar"><div class="folder-list" id="cmonths" role="tablist" aria-label="Months"></div></div>
+    <ul class="list" id="cdays"></ul>
+    <div class="anchor">
+  <button class="fab" type="button" id="addCal" aria-label="New event" title="New event"><svg width="26" height="26" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M450-450H230q-12.8 0-21.4-8.7-8.6-8.7-8.6-21.5 0-12.8 8.6-21.3 8.6-8.5 21.4-8.5h220v-220q0-12.8 8.7-21.4 8.7-8.6 21.5-8.6 12.8 0 21.3 8.6 8.5 8.6 8.5 21.4v220h220q12.8 0 21.4 8.7 8.6 8.7 8.6 21.5 0 12.8-8.6 21.3-8.6 8.5-21.4 8.5H510v220q0 12.8-8.7 21.4-8.7 8.6-21.5 8.6-12.8 0-21.3-8.6-8.5-8.6-8.5-21.4v-220Z"/></svg></button>
+  <button class="cont" type="button" id="calRecent" aria-label="Today" title="Today" style="--nc:var(--blue)"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-120q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120v-240h80v94q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Zm112-192L440-464v-216h80v184l128 128-56 56Z"/></svg></button>
+</div>
+<div class="stats" id="calStats" aria-label="Overview"><div><b>–</b><span>Empty</span></div><div><b>–</b><span>Empty</span></div><div><b>–</b><span>Empty</span></div><div><b>–</b><span>Empty</span></div><div><b>–</b><span>Empty</span></div></div>
+    <div class="fblank" aria-hidden="true">Pick a day to see it here</div>
+    <div class="fview" id="cdayPage" role="dialog" aria-label="Day"><div class="ed-top"><button class="back" type="button" id="cdBack" aria-label="Back to the days"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m406-481 177 177q9 9 8.5 21t-9.5 21q-9 9-21.5 9t-21.5-9L341-460q-5-5-7-10t-2-11q0-6 2-11t7-10l199-199q9-9 21.5-9t21.5 9q9 9 9 21.5t-9 21.5L406-481Z"/></svg></button><div class="ed-head"><span class="cal-av" id="cdIcon" aria-hidden="true"></span><input class="title" id="cdTitle" type="text" readonly aria-label="Date"></div></div><div class="ed-scroll"><p class="cal-dayinfo" id="cdBody">Nothing here yet.</p></div></div>
   </section>
 
   <nav class="dock" id="dock" aria-label="Sections">
@@ -1002,10 +1007,9 @@ label.arow { cursor: text; }
     <details class="card" style="--tc:var(--blue);--on-tc:var(--on-blue)">
       <summary><span class="chip"><svg width="22" height="22" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M180-80q-24 0-42-18t-18-42v-620q0-24 18-42t42-18h65v-60h65v60h340v-60h65v60h65q24 0 42 18t18 42v620q0 24-18 42t-42 18H180Zm0-60h600v-430H180v430Zm0-490h600v-130H180v130Zm0 0v-130 130Zm300 230q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-188.5-11.5Q280-423 280-440t11.5-28.5Q303-480 320-480t28.5 11.5Q360-457 360-440t-11.5 28.5Q337-400 320-400t-28.5-11.5ZM640-400q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-188.5-11.5Q280-263 280-280t11.5-28.5Q303-320 320-320t28.5 11.5Q360-297 360-280t-11.5 28.5Q337-240 320-240t-28.5-11.5ZM640-240q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg></span><b>Calendar</b><span class="sync-state" id="calState"></span></summary>
       <div class="card-body">
-        <p class="card-desc">Choose how the month grids are laid out.</p>
+        <p class="card-desc">Choose how the day list looks.</p>
         <div class="set-row"><span>Week starts</span><div class="pills" id="csSeg" role="radiogroup" aria-label="First day of the week"><button class="pill" type="button" role="radio" data-cs="sat">Sat</button><button class="pill" type="button" role="radio" data-cs="sun">Sun</button><button class="pill" type="button" role="radio" data-cs="mon">Mon</button></div></div>
-        <div class="set-row"><span>Weekend</span><div class="pills" id="cwSeg" role="radiogroup" aria-label="Weekend days to tint"><button class="pill" type="button" role="radio" data-cw="off">Off</button><button class="pill" type="button" role="radio" data-cw="fs">Fri–Sat</button><button class="pill" type="button" role="radio" data-cw="ss">Sat–Sun</button></div></div>
-        <div class="set-row"><span id="cvLabel">Slide open and close</span><button class="switch" type="button" role="switch" id="cvSwitch" aria-checked="true" aria-labelledby="cvLabel"></button></div>
+        <div class="set-row" hidden><span id="cvLabel">Slide open and close</span><button class="switch" type="button" role="switch" id="cvSwitch" aria-checked="true" aria-labelledby="cvLabel"></button></div>
         <div class="set-row"><span id="cnLabel">Week numbers</span><button class="switch" type="button" role="switch" id="cnSwitch" aria-checked="false" aria-labelledby="cnLabel"></button></div>
       </div>
     </details>
@@ -2495,96 +2499,87 @@ ${Nn(this.code(t,r))}
     }
     renderFStats(inFolder);
   }
-  /* Calendar: years are the folders, months are the list; a month opens its days in place. */
-  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  /* Calendar: the years are the tags row, the months are the tabs, the days are the list, and a day opens its page. Nothing is stored: every date is worked out. */
   const CAL_BASE = 2021;   // the first batch of 10 years starts here
-  const cal = { year: new Date().getFullYear(), open: new Set([new Date().getMonth()]) };
-  cal.start = CAL_BASE + 10 * Math.floor((cal.year - CAL_BASE) / 10);   // any number of months can be open
-  const CAL_START = { sun: 0, mon: 1, sat: 6 }, CAL_WKND = { off: [], fs: [5, 6], ss: [6, 0] }, CAL_NAME = { sun: 'Sunday', mon: 'Monday', sat: 'Saturday' };
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const cal = { year: new Date().getFullYear(), month: new Date().getMonth(), day: null, q: '', col: '', colOpen: false };
+  cal.start = CAL_BASE + 10 * Math.floor((cal.year - CAL_BASE) / 10);
+  const CAL_WKND = { off: [], fs: [5, 6], ss: [6, 0] }, CAL_START = { sun: 0, mon: 1, sat: 6 }, CAL_NAME = { sun: 'Sunday', mon: 'Monday', sat: 'Saturday' };
+  const calWeekend = () => { const st = CAL_START[settings.calStart]; return [(st + 5) % 7, (st + 6) % 7]; };   // the weekend is the two days before the week starts
+  const dayColour = (wd) => COLORS[Math.min((wd - CAL_START[settings.calStart] + 7) % 7, COLORS.length - 1)];   // the first day of the week is blue, then each day in turn; the 7th shares grey with the 6th
   const isoWeek = (d) => { const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())), n = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - n); return Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7); };
   function paintCalSet() {
     $('csSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.cs === settings.calStart)));
-    $('cwSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.cw === settings.calWknd)));
     $('cnSwitch').setAttribute('aria-checked', String(settings.calWeeks));
-    $('cvSwitch').setAttribute('aria-checked', String(settings.calSlide));
-    $('calState').textContent = CAL_NAME[settings.calStart];
+    $('calState').textContent = '';
   }
-  function gridHTML(i) {          // the day grid of month i (0-11) of the year on show
-    const now = new Date(), isNow = cal.year === now.getFullYear() && i === now.getMonth(), days = new Date(cal.year, i + 1, 0).getDate();
-    const st = CAL_START[settings.calStart], wk = settings.calWeeks, we = CAL_WKND[settings.calWknd];
-    const lead = (new Date(cal.year, i, 1).getDay() - st + 7) % 7;
-    let g = `<div class="cal-grid${wk ? ' wn' : ''}">` + (wk ? '<span class="dow"></span>' : '') + [0, 1, 2, 3, 4, 5, 6].map((k) => `<span class="dow">${'SMTWTFS'[(st + k) % 7]}</span>`).join('');
-    for (let c2 = 0, n = lead + days; c2 < Math.ceil(n / 7) * 7; c2++) {
-      const d = c2 - lead + 1;
-      if (wk && c2 % 7 === 0) g += `<span class="wkn">${isoWeek(new Date(cal.year, i, Math.max(1, d)))}</span>`;
-      g += d < 1 || d > days ? '<span></span>' : `<span class="${[isNow && d === now.getDate() ? 'today' : '', we.includes((st + c2 % 7) % 7) ? 'wknd' : ''].join(' ').trim()}">${d}</span>`;
+  function paintCalColours() {
+    $('cSearchRow').dataset.colours = cal.colOpen ? 'open' : 'closed';
+    $('ccBtn').setAttribute('aria-expanded', String(cal.colOpen));
+    $('ccBtn').setAttribute('aria-label', cal.colOpen ? 'Close colours' : cal.col ? `Colour filter: ${COLOR_NAME[cal.col]}` : 'Filter by colour');
+    let pal = ''; try { pal = PALETTE.replace(/cring/g, 'ccring'); } catch (e) {}        // its own gradient id, like the Files one
+    const html = cal.col ? `<span class="cdot" style="--c:var(--${cal.col})"></span>` : pal;
+    if ($('ccBtn')._h !== html) { $('ccBtn').innerHTML = html; $('ccBtn')._h = html; }
+    const have = new Set(Array.from({ length: new Date(cal.year, cal.month + 1, 0).getDate() }, (_, k) => dayColour(new Date(cal.year, cal.month, k + 1).getDay())));
+    const ch = COLORS.map((c) => `<button type="button" class="tag${have.has(c) ? '' : ' none'}" style="--c:var(--${c})" data-ctag="${c}" aria-pressed="${cal.col === c}" aria-label="${COLOR_NAME[c]}" title="${COLOR_NAME[c]}"></button>`).join('');
+    if ($('ctags')._h !== ch) { $('ctags').innerHTML = ch; $('ctags')._h = ch; }
+  }
+  function renderDays(toToday) {
+    const now = new Date(), days = new Date(cal.year, cal.month + 1, 0).getDate(), we = calWeekend(), q = cal.q.trim().toLowerCase();
+    let html = '';
+    for (let d = 1; d <= days; d++) {
+      const dt = new Date(cal.year, cal.month, d), wd = dt.getDay(), name = WEEKDAYS[wd], c = dayColour(wd);
+      if (cal.col && c !== cal.col) continue;   // the colour filter: a day's colour is its weekday's
+      if (q && !`${name} ${d} ${MONTHS[cal.month]} ${cal.year}`.toLowerCase().includes(q)) continue;
+      const time = [dt.toDateString() === now.toDateString() ? 'Today' : '', settings.calWeeks ? 'W' + isoWeek(dt) : ''].filter(Boolean).join(' · ');
+      html += `<li class="item" style="--nc:var(--${c});--on-nc:var(--on-${c})"><button class="row" type="button" data-cday="${d}" aria-current="${cal.day === d}"><span class="av-gap"></span><span class="row-main"><span class="row-top"><span class="row-title${we.includes(wd) ? ' wknd' : ''}">${d} ${MONTHS[cal.month].slice(0, 3)}</span><span class="row-time">${time}</span></span></span></button><span class="cal-av" aria-hidden="true">${name.slice(0, 3)}</span></li>`;
     }
-    return g + '</div>';
+    $('cdays').innerHTML = html || '<li class="cal-none">No day matches</li>';
+    if (toToday) { const r = $('cdays').querySelector('[data-cday="' + now.getDate() + '"]'); if (r) $('cdays').scrollTop = Math.max(0, r.parentElement.offsetTop - ($('cdays').clientHeight - r.offsetHeight) / 2); }
   }
-  const wideMQ = matchMedia('(min-width: 901px)');
-  function renderCal() {
-    paintCalSet();
-    const now = new Date(), ny = now.getFullYear();
-    const arrow = (d) => `<button class="folder folder-arrow" type="button" data-cbatch="${d}" aria-label="${d < 0 ? 'Previous 10 years' : 'Next 10 years'}" title="${d < 0 ? 'Previous 10 years' : 'Next 10 years'}"><svg width="18" height="18" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="${d < 0 ? 'M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z' : 'M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z'}"/></svg></button>`;
-    $('cyears').innerHTML = (cal.start > CAL_BASE ? arrow(-1) : '') + Array.from({ length: 10 }, (_, k) => yearTab(cal.start + k)).join('') + arrow(1);
-    const sel = $('cyears').querySelector('[aria-selected="true"]'); if (sel) sel.scrollIntoView({ inline: 'center', block: 'nearest' });
-    $('cmonths').innerHTML = cal.year == null ? '' : MONTHS.map((m, i) => {
-      const days = new Date(cal.year, i + 1, 0).getDate(), isNow = cal.year === ny && i === now.getMonth(), c = COLORS[i % COLORS.length], ab = m.slice(0, 3);
-      const g = cal.open.has(i) || wideMQ.matches ? gridHTML(i) : '';
-      return `<li class="item" style="--nc:var(--${c});--on-nc:var(--on-${c})"><button class="row" type="button" data-cm="${i}" aria-current="${cal.open.has(i)}" aria-expanded="${cal.open.has(i)}"><span class="av-gap"></span><span class="row-main">` +
-        `<span class="row-top"><span class="row-title">${m}</span><span class="row-time">${isNow ? "This month · " : ""}${days} days</span></span>` +
-        `</span></button>` +
-        `<span class="cal-av" aria-hidden="true">${ab}</span>${g}</li>`;
-    }).join('');
-    const o = wideMQ.matches ? null : $('cmonths').querySelector('[aria-expanded="true"]'); if (o) $('cmonths').scrollTop = Math.max(0, o.parentElement.offsetTop - $('cmonths').offsetTop - 8);
+  const centreIn = (box, el) => { box.scrollLeft = el ? Math.max(0, el.offsetLeft - (box.clientWidth - el.offsetWidth) / 2) : 0; };   // scrolls only this strip (scrollIntoView would also push the whole page sideways)
+  function renderCal(toToday) {
+    paintCalSet(); paintCalColours();
+    $('cPrev').disabled = cal.start <= CAL_BASE;   // always there; greyed out on the first batch
+    $('cyl').innerHTML = Array.from({ length: 10 }, (_, k) => cal.start + k).map((y) => `<button type="button" class="word" role="tab" data-cyear="${y}" aria-selected="${y === cal.year}" aria-pressed="${y === cal.year}">${y}</button>`).join('');
+    $('cmonths').innerHTML = MONTHS.map((m, i) => `<div class="folder" role="tab" tabindex="0" data-cmonth="${i}" aria-selected="${i === cal.month}"><span class="folder-name">${m.slice(0, 3)}</span></div>`).join('');
+    renderDays(toToday);
+    centreIn($('cyl'), $('cyl').querySelector('[aria-pressed="true"]'));   // a new batch starts at its first year
+    centreIn($('cmonths'), $('cmonths').querySelector('[aria-selected="true"]'));
   }
-  /* The strip holds 10 years (2021-2030 first). The arrows swap it for the next or previous 10, worked out from where this one ends; nothing is stored. */
-  const yearTab = (y) => `<div class="folder" role="tab" tabindex="0" data-cyear="${y}" aria-selected="${y === cal.year}"><span class="folder-name">${y}</span></div>`;
-  $('cyears').addEventListener('click', (e) => {
-    const a = e.target.closest('[data-cbatch]'); if (!a) return;
-    cal.start += 10 * +a.dataset.cbatch; renderCal();   // the open year stays open, even when its tab is out of view
+  /* A day opens its page: beside the list on PC, sliding in like a note on a phone. */
+  function openDay(d) {
+    const dt = new Date(cal.year, cal.month, d), c = dayColour(dt.getDay());
+    cal.day = d; $('cdIcon').textContent = WEEKDAYS[dt.getDay()].slice(0, 3); $('cdTitle').value = `${d} ${MONTHS[cal.month]} ${cal.year}`;   // the weekday is in the circle
+    $('cdayPage').style.setProperty('--nc', `var(--${c})`); $('cdayPage').style.setProperty('--on-nc', `var(--on-${c})`);
+    $('cdayPage').classList.add('show'); renderDays();
+  }
+  function closeDay() { cal.day = null; $('cdayPage').classList.remove('show'); renderDays(); }
+  $('cdays').addEventListener('click', (e) => { const b = e.target.closest('[data-cday]'); if (b) openDay(+b.dataset.cday); });
+  $('cdBack').addEventListener('click', closeDay);
+  $('cmonths').addEventListener('click', (e) => { const b = e.target.closest('[data-cmonth]'); if (!b) return; cal.month = +b.dataset.cmonth; closeDay(); renderCal(); });
+  $('cyl').addEventListener('click', (e) => { const b = e.target.closest('[data-cyear]'); if (!b) return; cal.year = +b.dataset.cyear; closeDay(); renderCal(); });
+  document.querySelector('.cal-years').addEventListener('click', (e) => {
+    const a = e.target.closest('[data-cbatch]'); if (!a || a.disabled) return;
+    cal.start += 10 * +a.dataset.cbatch; renderCal();   // the year you had stays chosen, even when its tab is out of view
   });
-  $('calRecent').addEventListener('click', () => {   // jump to today: its year, with this month open
-    const n = new Date(); cal.year = n.getFullYear(); cal.start = CAL_BASE + 10 * Math.floor((cal.year - CAL_BASE) / 10); cal.open = new Set([n.getMonth()]); renderCal();
+  $('calRecent').addEventListener('click', () => {   // jump to today and open it
+    const n = new Date(); cal.year = n.getFullYear(); cal.month = n.getMonth(); cal.start = CAL_BASE + 10 * Math.floor((cal.year - CAL_BASE) / 10); cal.q = ''; $('cSearch').value = ''; $('cSearchClear').hidden = true;
+    renderCal(true); openDay(n.getDate());
   });
-  wideMQ.addEventListener('change', () => { if ($('app').dataset.tab === 'calendar') renderCal(); });
+  $('cSearch').addEventListener('input', (e) => { cal.q = e.target.value; $('cSearchClear').hidden = !cal.q; renderDays(); });
+  $('cSearchClear').addEventListener('click', () => { cal.q = ''; $('cSearch').value = ''; $('cSearchClear').hidden = true; $('cSearch').focus(); renderDays(); });
+  $('ccBtn').addEventListener('click', () => { cal.colOpen = !cal.colOpen; paintCalColours(); });
+  $('ctags').addEventListener('click', (e) => { const b = e.target.closest('[data-ctag]'); if (!b) return; cal.col = cal.col === b.dataset.ctag ? '' : b.dataset.ctag; paintCalColours(); renderDays(); });
   $('csSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-cs]'); if (!b) return; settings.calStart = b.dataset.cs; store.save(); renderCal(); });
-  $('cwSeg').addEventListener('click', (e) => { const b = e.target.closest('[data-cw]'); if (!b) return; settings.calWknd = b.dataset.cw; store.save(); renderCal(); });
-  $('cvSwitch').addEventListener('click', () => { settings.calSlide = !settings.calSlide; store.save(); paintCalSet(); });
   $('cnSwitch').addEventListener('click', () => { settings.calWeeks = !settings.calWeeks; store.save(); renderCal(); });
   paintCalSet();
-  $('cyears').addEventListener('click', (e) => { const b = e.target.closest('[data-cyear]'); if (!b) return; cal.year = +b.dataset.cyear; cal.open = new Set([cal.year === new Date().getFullYear() ? new Date().getMonth() : 0]); renderCal(); });
-  /* A month's days slide down from its heading when it opens and slide up when it closes (Settings > Calendar can turn that off).
-     The list is not redrawn: the grid is added or removed in place, so nothing jumps. */
-  const reduceMQ = matchMedia('(prefers-reduced-motion: reduce)');
-  const COLLAPSED = { height: '0px', opacity: 0, paddingTop: '0px', paddingBottom: '0px' };
-  function slideGrid(g, opening) {
-    const h = g.getBoundingClientRect().height;
-    g.style.boxSizing = 'border-box'; g.style.overflow = 'hidden';
-    const full = { height: h + 'px', opacity: 1 };
-    const a = g.animate(opening ? [COLLAPSED, { ...full, opacity: 1, offset: 1 }] : [full, COLLAPSED], { duration: opening ? MOTION.slow : MOTION.base, easing: opening ? MOTION.ease : 'cubic-bezier(0.4, 0, 0.2, 1)' });
-    return a.finished.catch(() => {}).then(() => { g.style.boxSizing = g.style.overflow = ''; });
-  }
-  $('cmonths').addEventListener('click', (e) => {
-    const b = e.target.closest('[data-cm]'); if (!b || b.dataset.busy) return;
-    const i = +b.dataset.cm, li = b.parentElement, slide = settings.calSlide && !reduceMQ.matches, opening = !cal.open.has(i);
-    const mark = (on) => { b.setAttribute('aria-expanded', String(on)); b.setAttribute('aria-current', String(on)); };
-    b.dataset.busy = '1'; const free = () => { delete b.dataset.busy; };
-    if (opening) {
-      cal.open.add(i); mark(true); li.insertAdjacentHTML('beforeend', gridHTML(i));
-      const g = li.querySelector('.cal-grid');
-      (slide ? slideGrid(g, true) : Promise.resolve()).then(() => { free(); g.scrollIntoView({ block: 'nearest', behavior: slide ? 'smooth' : 'auto' }); });
-    } else {
-      cal.open.delete(i); mark(false);
-      const g = li.querySelector('.cal-grid');
-      (slide && g ? slideGrid(g, false) : Promise.resolve()).then(() => { g?.remove(); free(); });
-    }
-  });
   function setTab(t) {
     $('app').dataset.tab = t;
     document.querySelectorAll('[data-dock]').forEach((b) => (b.dataset.dock === t ? b.setAttribute('aria-current', 'page') : b.removeAttribute('aria-current')));
     if (t === 'files') renderFiles();
-    if (t === 'calendar') renderCal();
+    if (t === 'calendar') renderCal(true);
   }
   /* What a file is: a colour for its badge, and whether we can draw a small preview of it. */
   const EXT = (f) => (f.name.includes('.') ? f.name.split('.').pop().toLowerCase() : '');
