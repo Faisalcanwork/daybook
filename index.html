@@ -1124,7 +1124,8 @@ ${Nn(this.code(t,r))}
   const APP_VERSION = '4.0';                           // shown in Settings > About; change it here only
   const STORE_KEY = 'daybook:v3';
   const TOOL_CHOICES = [['plain', 'Text'], ['heading', 'Heading'], ['bold', 'Bold'], ['right', 'Align'], ['kind', 'List'], ['pagebreak', 'Page break'], ['typewriter', 'Follow']];   // the toolbar keys a custom mode can keep
-  const COLORS = ['blue', 'coral', 'amber', 'green', 'violet', 'grey'];
+  const COLORS = ['coral', 'amber', 'blue', 'green', 'violet', 'grey'];   // Ember, Honey, Ocean, Fern, Dusk, Stone
+  const DEFAULT_COLOR = COLORS[COLORS.length - 1];   // new notes and pages start with the palette's last colour
   const COLOR_NAME = { blue: 'Ocean', coral: 'Ember', amber: 'Honey', green: 'Fern', violet: 'Dusk', grey: 'Stone' };   // a colour is also a tag: each has a name   // in this order in the colour picker
   const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
   const ALL = 'all';                                   // id of the built-in folder that shows every note
@@ -1275,7 +1276,7 @@ ${Nn(this.code(t,r))}
     const updated = isNum(raw.updated) ? raw.updated : Date.now();
     const note = {
       id: raw.id, title: str(raw.title), content: cleanContent(raw.content),
-      color: COLORS.includes(raw.color) ? raw.color : 'grey',
+      color: COLORS.includes(raw.color) ? raw.color : DEFAULT_COLOR,
       pinned: raw.pinned === true,
       ...((raw.kind === 'list' || raw.kind === 'dlist' || raw.kind === 'chat' || isCustomKind(raw.kind)) && { kind: raw.kind === 'list' ? 'dlist' : raw.kind }),     // 'dlist' and 'chat' notes keep a few tools (an older 'list' note is now a Dlist note); anything else is a plain note
       created: isNum(raw.created) ? raw.created : updated,
@@ -1998,7 +1999,7 @@ ${Nn(this.code(t,r))}
     const now = Date.now();
     const ok = (k) => ['notes', 'dlist', 'chat'].includes(k) || (isCustomKind(k) && !!customOf(k));
     const want = ok(kind) ? kind : ok(settings.defaultKind) ? settings.defaultKind : 'notes';
-    const n = { id: uid(), title: '', content: [{ insert: '\n' }], color: 'grey', pinned: false, created: now, updated: now };
+    const n = { id: uid(), title: '', content: [{ insert: '\n' }], color: DEFAULT_COLOR, pinned: false, created: now, updated: now };
     if (want !== 'notes') n.kind = want;
     if (ui.folder !== ALL) n.folders = [ui.folder];
     state.notes.unshift(n);
@@ -2507,7 +2508,7 @@ ${Nn(this.code(t,r))}
   cal.start = CAL_BASE + 10 * Math.floor((cal.year - CAL_BASE) / 10);
   const CAL_WKND = { off: [], fs: [5, 6], ss: [6, 0] }, CAL_START = { sun: 0, mon: 1, sat: 6 }, CAL_NAME = { sun: 'Sunday', mon: 'Monday', sat: 'Saturday' };
   const calWeekend = () => { const st = CAL_START[settings.calStart]; return [(st + 5) % 7, (st + 6) % 7]; };   // the weekend is the two days before the week starts
-  const dayColour = (wd) => COLORS[Math.min((wd - CAL_START[settings.calStart] + 7) % 7, COLORS.length - 1)];   // the first day of the week is blue, then each day in turn; the 7th shares grey with the 6th
+  const dayColour = (wd) => COLORS[((wd - CAL_START[settings.calStart] + 8) % 7) % COLORS.length];   // the one formula: the colours in order, starting on the day before the week starts; the 7th day wraps round to the first
   const isoWeek = (d) => { const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())), n = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - n); return Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7); };
   function paintCalSet() {
     $('csSeg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.cs === settings.calStart)));
@@ -2604,7 +2605,7 @@ ${Nn(this.code(t,r))}
     return list.map((f) => {
       let dirty = false;
       if (f.kind !== 'page') {
-        f = { id: f.id, kind: 'page', title: '', name: baseName(f.name), color: 'grey', type: 'page', size: f.size, added: f.added, created: f.added, edited: f.added, items: [{ name: f.name, type: f.type, size: f.size, blob: f.blob }], align: 'left', ...(f.folder ? { folders: [f.folder] } : {}), ...(f.pinned ? { pinned: true } : {}) };
+        f = { id: f.id, kind: 'page', title: '', name: baseName(f.name), color: DEFAULT_COLOR, type: 'page', size: f.size, added: f.added, created: f.added, edited: f.added, items: [{ name: f.name, type: f.type, size: f.size, blob: f.blob }], align: 'left', ...(f.folder ? { folders: [f.folder] } : {}), ...(f.pinned ? { pinned: true } : {}) };
         dirty = true;
       } else if (f.folder) { f.folders = [...new Set([...(f.folders || []), f.folder])]; delete f.folder; dirty = true; }
       if (!f.created) { f.created = f.added || Date.now(); dirty = true; }
@@ -2688,7 +2689,7 @@ ${Nn(this.code(t,r))}
     c.hidden = !f || !!(fq || fColor || fTag);
     if (c.hidden) return;
     const name = f.kind === 'page' ? pgName(f) : f.name;
-    c.style.setProperty('--nc', `var(--${f.kind === 'page' ? f.color : 'grey'})`); c.title = c.ariaLabel = `Continue: ${name}`;
+    c.style.setProperty('--nc', `var(--${f.kind === 'page' ? f.color : DEFAULT_COLOR})`); c.title = c.ariaLabel = `Continue: ${name}`;
   }
   $('fcont').addEventListener('click', () => { if (fLast) openFile(fLast); });
   function openFile(id) {
@@ -2789,7 +2790,7 @@ ${Nn(this.code(t,r))}
   }
   function openPage(f, presetId) {
     if (f) { pg = f; pgFresh = false; if (!pg.items) pg.items = []; if (!pg.align) pg.align = 'left'; }
-    else { pg = { id: uid(), kind: 'page', title: '', name: 'Untitled page', color: 'grey', type: 'page', size: 0, added: Date.now(), created: Date.now(), items: [], align: 'left' }; if (fFolder !== ALL) pg.folders = [fFolder]; pgFresh = true;
+    else { pg = { id: uid(), kind: 'page', title: '', name: 'Untitled page', color: DEFAULT_COLOR, type: 'page', size: 0, added: Date.now(), created: Date.now(), items: [], align: 'left' }; if (fFolder !== ALL) pg.folders = [fFolder]; pgFresh = true;
       const fp = fpOf(presetId || settings.fileDefault); pg.preset = fp.id; pg.align = fp.align || 'left'; if (fp.sort) pg.sort = fp.sort; }   // a new page starts the way its preset says
     pgEdit = null; pgContext = false;
     $('apTitle').value = pg.title ?? pg.name ?? '';
